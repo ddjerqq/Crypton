@@ -3,10 +3,10 @@
 // </copyright>
 
 using Crypton.Application;
-using Crypton.Diamond;
-using Crypton.Identity;
+using Crypton.Infrastructure.Diamond;
+using Crypton.Infrastructure.Identity;
 using Crypton.Infrastructure;
-using Crypton.Persistence;
+using Crypton.Infrastructure.Persistence;
 using Crypton.WebAPI;
 using dotenv.net;
 

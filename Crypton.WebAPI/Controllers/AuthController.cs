@@ -4,7 +4,7 @@
 
 using Crypton.Application.Auth;
 using Crypton.Application.Dtos;
-using Crypton.Diamond;
+using Crypton.Infrastructure.Diamond;
 using Crypton.Domain.Entities;
 using Crypton.Infrastructure.Services;
 using Microsoft.AspNetCore.Authorization;

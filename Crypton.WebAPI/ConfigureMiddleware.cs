@@ -2,8 +2,8 @@
 // Copyright (c) PlaceholderCompany. All rights reserved.
 // </copyright>
 
-using Crypton.Diamond;
-using Crypton.Persistence;
+using Crypton.Infrastructure.Diamond;
+using Crypton.Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
 
 namespace Crypton.WebAPI;

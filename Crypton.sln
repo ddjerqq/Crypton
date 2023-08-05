@@ -15,7 +15,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Crypton.Application", "Cryp
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Crypton.Infrastructure", "Crypton.Infrastructure\Crypton.Infrastructure.csproj", "{B7CD981C-1E19-42CA-83AF-9AE0A0D46917}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Crypton.Persistence", "Crypton.Persistence\Crypton.Persistence.csproj", "{CDC93EBB-A227-4E16-8678-967EFDA5F438}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Crypton.Infrastructure.Persistence", "Crypton.Infrastructure.Persistence\Crypton.Infrastructure.Persistence.csproj", "{CDC93EBB-A227-4E16-8678-967EFDA5F438}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Crypton.WebAPI", "Crypton.WebAPI\Crypton.WebAPI.csproj", "{D9D9730D-1ECF-4F30-8B9D-0ACDED6BD151}"
 EndProject
@@ -23,9 +23,9 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Crypton.WebUI", "Crypton.We
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebApplication1", "WebApplication1\WebApplication1.csproj", "{9AA3C2B6-8726-4D9B-B1A4-0F41C9696C86}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Crypton.Identity", "Crypton.Identity\Crypton.Identity.csproj", "{B3A42F75-09A3-441D-814A-350CDB41F229}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Crypton.Infrastructure.Identity", "Crypton.Infrastructure.Identity\Crypton.Infrastructure.Identity.csproj", "{B3A42F75-09A3-441D-814A-350CDB41F229}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Crypton.Diamond", "Crypton.Diamond\Crypton.Diamond.csproj", "{D975A2E0-0BD9-49A8-B0C0-1B01F4090E0E}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Crypton.Infrastructure.Diamond", "Crypton.Infrastructure.Diamond\Crypton.Infrastructure.Diamond.csproj", "{D975A2E0-0BD9-49A8-B0C0-1B01F4090E0E}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
