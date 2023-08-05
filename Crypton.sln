@@ -9,7 +9,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{B2E8C719-2ED
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{26BC55E7-9DFA-4F95-A491-1F5311017D42}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Crypton.Domain.UnitTests", "Crypton.Domain.UnitTests\Crypton.Domain.UnitTests.csproj", "{0CF262CB-0852-4AD2-933D-0E8B3393521A}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Crypton.Test.Domain.UnitTests", "Crypton.Test.Domain.UnitTests\Crypton.Test.Domain.UnitTests.csproj", "{0CF262CB-0852-4AD2-933D-0E8B3393521A}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Crypton.Application", "Crypton.Application\Crypton.Application.csproj", "{07C7E262-8A59-44E7-88CA-D4BE9580737D}"
 EndProject
