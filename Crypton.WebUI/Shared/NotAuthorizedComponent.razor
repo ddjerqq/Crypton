@@ -1,0 +1,28 @@
+﻿@inject NavigationManager NavigationManager
+
+<AuthorizeView>
+    <Authorized>
+        <PageTitle>403 - Forbidden</PageTitle>
+    </Authorized>
+    <NotAuthorized>
+        <PageTitle>401 - Unauthorized</PageTitle>
+    </NotAuthorized>
+</AuthorizeView>
+
+<div class="d-flex flex-column justify-content-center align-items-center w-100 h-100">
+    <div class="text-center mt-md-5 text-geo">
+        <AuthorizeView>
+            <Authorized>
+                <h2>You cannot access this resource.</h2>
+            </Authorized>
+
+            <NotAuthorized>
+                <h2 class="fw-bold">You need to log in to access this resource</h2>
+
+                <a class="btn btn-lg btn-outline-success text-geo mt-3" href="/login?return=@NavigationManager.Uri">
+                    Login
+                </a>
+            </NotAuthorized>
+        </AuthorizeView>
+    </div>
+</div>

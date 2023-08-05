@@ -1,0 +1,26 @@
+﻿@inherits LayoutComponentBase
+
+<div class="position-relative d-flex flex-column h-100">
+    <AuthorizeView>
+        <Authorized>
+            <div class="sidebar">
+                <Navbar/>
+            </div>
+        </Authorized>
+    </AuthorizeView>
+
+    <main class="bg-polkadot">
+        <article class="d-flex flex-column justify-content-center align-items-center h-100 w-100 p-3 shadow">
+            <div class="d-flex flex-column justify-content-start justify-content-sm-center align-items-center h-100 w-100 p-3 bg-blur bg-blur-1 border border-1 border-secondary rounded-3">
+                @Body
+            </div>
+        </article>
+    </main>
+</div>
+
+<BlazoredToasts Position="ToastPosition.TopCenter"
+                Timeout="15"
+                ShowProgressBar="true"
+                PauseProgressOnHover="true"
+                RemoveToastsOnNavigation="false"
+                MaxToastCount="5"/>

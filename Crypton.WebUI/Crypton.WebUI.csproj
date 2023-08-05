@@ -1,0 +1,46 @@
+<Project Sdk="Microsoft.NET.Sdk.BlazorWebAssembly">
+
+    <PropertyGroup>
+        <TargetFramework>net8.0</TargetFramework>
+        <Nullable>enable</Nullable>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
+        <Company>Crypton</Company>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <PackageReference Include="Blazored.FluentValidation" Version="2.1.0" />
+        <PackageReference Include="Blazored.LocalStorage" Version="4.3.0" />
+        <PackageReference Include="Blazored.Toast" Version="4.1.0" />
+        <PackageReference Include="dotenv.net" Version="3.1.2" />
+        <PackageReference Include="Microsoft.AspNetCore.Components.QuickGrid" Version="8.0.0-preview.6.23329.11" />
+        <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly" Version="8.0.0-preview.6.23329.11" />
+        <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.Authentication" Version="8.0.0-preview.6.23329.11" />
+        <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.DevServer" Version="8.0.0-preview.6.23329.11" PrivateAssets="all" />
+        <PackageReference Include="StyleCop.Analyzers" Version="1.2.0-beta.507">
+          <PrivateAssets>all</PrivateAssets>
+          <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+        </PackageReference>
+    </ItemGroup>
+
+    <ItemGroup>
+      <Content Include="..\.dockerignore">
+        <Link>.dockerignore</Link>
+      </Content>
+    </ItemGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\Crypton.Domain\Crypton.Domain.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <_ContentIncludedByDefault Remove="wwwroot\sample-data\weather.json" />
+      <_ContentIncludedByDefault Remove="wwwroot\css\bootstrap-icons\bootstrap-icons.css" />
+      <_ContentIncludedByDefault Remove="wwwroot\css\bootstrap-icons\bootstrap-icons.json" />
+      <_ContentIncludedByDefault Remove="wwwroot\css\bootstrap-icons\bootstrap-icons.min.css" />
+      <_ContentIncludedByDefault Remove="wwwroot\css\bootstrap-icons\bootstrap-icons.scss" />
+      <_ContentIncludedByDefault Remove="wwwroot\css\bootstrap-icons\fonts\bootstrap-icons.woff" />
+      <_ContentIncludedByDefault Remove="wwwroot\css\bootstrap-icons\fonts\bootstrap-icons.woff2" />
+    </ItemGroup>
+
+</Project>

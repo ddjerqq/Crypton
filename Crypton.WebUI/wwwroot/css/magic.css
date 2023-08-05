@@ -1,0 +1,48 @@
+[data-bs-theme=light] * {
+    --polkadot-fg: #757575;
+    --polkadot-bg: #ffffff;
+}
+
+[data-bs-theme=dark] * {
+    --polkadot-fg: #7c7c7c;
+    --polkadot-bg: #212529;
+}
+
+.bg-blur {
+    -webkit-backdrop-filter: blur(0.125rem);
+    backdrop-filter: blur(0.125rem);
+    transform: translate3d(0, 0, 0);
+}
+
+.bg-blur-1 {
+    backdrop-filter: blur(0.25rem) !important;
+}
+
+.bg-blur-2 {
+    backdrop-filter: blur(0.5rem) !important;
+}
+
+.bg-blur-3 {
+    backdrop-filter: blur(1rem) !important;
+}
+
+.card.bg-blur {
+    --bs-card-bg: none !important;
+}
+
+.bg-polkadot {
+    background-color: var(--polkadot-bg);
+    background-image: radial-gradient(
+            var(--polkadot-fg) 1px,
+            var(--polkadot-bg) 1px);
+    background-size: 35px 35px;
+}
+
+.bg-image-waves {
+    z-index: 1;
+
+    background-image: url(/image/bg-waves.png);
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+}

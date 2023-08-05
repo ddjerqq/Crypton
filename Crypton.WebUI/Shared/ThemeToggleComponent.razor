@@ -1,0 +1,41 @@
+﻿@inject IThemeService ThemeService
+
+<button id="themeToggleBtn"
+        class="btn btn-sm @ButtonClass mx-1"
+        @onclick="@ToggleTheme"
+        data-bs-toggle="tooltip"
+        data-bs-title="ფონის შეცვლა"
+        data-bs-placement="bottom">
+    <span id="themeIcon" class="oi @IconClass" style="min-width: 20px; min-height: 20px"></span>
+</button>
+
+
+@code {
+
+    private Theme Theme { get; set; }
+
+    private string ButtonClass => Theme == Theme.Light ? "btn-outline-dark" : "btn-outline-light";
+    private string IconClass => Theme == Theme.Light ? "oi-moon text-dark" : "oi-sun text-white";
+
+    protected override async Task OnInitializedAsync()
+    {
+        Theme = await ThemeService.GetThemeAsync();
+
+        ThemeService.OnThemeChanged += async (_, theme) =>
+        {
+            Theme = theme.Theme;
+            await InvokeAsync(StateHasChanged);
+        };
+
+        StateHasChanged();
+
+        await base.OnInitializedAsync();
+    }
+
+    private async Task ToggleTheme()
+    {
+        await ThemeService.ToggleThemeAsync();
+        StateHasChanged();
+    }
+
+}

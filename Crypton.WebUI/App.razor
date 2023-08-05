@@ -1,0 +1,32 @@
+﻿<CascadingAuthenticationState>
+    <Router AppAssembly="@typeof(App).Assembly">
+        <Found Context="routeData">
+            <AuthorizeRouteView RouteData="@routeData" DefaultLayout="@typeof(MainLayout)">
+                <Authorizing>
+                    <div class="h-100 d-flex flex-column justify-content-center text-geo text-center">
+                        <div>
+                            <div class="spinner-border text-info" role="status"></div>
+                            <span class="ms-3 fs-1">loading...</span>
+                        </div>
+                    </div>
+                </Authorizing>
+
+                <NotAuthorized>
+                    <NotAuthorizedComponent/>
+                </NotAuthorized>
+            </AuthorizeRouteView>
+        </Found>
+
+        <NotFound>
+            <PageTitle>Not found</PageTitle>
+            <LayoutView Layout="@typeof(MainLayout)">
+                <div class="d-flex flex-column justify-content-center align-items-center w-100 h-100">
+                    <div class="text-center mt-md-5 text-geo">
+                        <h1>404 - Not found</h1>
+                        <p role="alert">We searched everywhere, seems not even AI can find this page.</p>
+                    </div>
+                </div>
+            </LayoutView>
+        </NotFound>
+    </Router>
+</CascadingAuthenticationState>
