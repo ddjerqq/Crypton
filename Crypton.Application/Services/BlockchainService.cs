@@ -22,8 +22,7 @@ public class BlockchainService : IBlockchainService
         var dbContext = scope.ServiceProvider.GetRequiredService<IAppDbContext>();
 
         this.blocks = dbContext.Transactions
-            .Include(x => x.Sender)
-            .Include(x => x.Receiver)
+            .Include(x => x.Participants)
             .ToList();
     }
 
