@@ -4,8 +4,8 @@
 
 using Crypton.Application.Auth;
 using Crypton.Application.Dtos;
-using Crypton.Infrastructure.Diamond;
 using Crypton.Domain.Entities;
+using Crypton.Infrastructure.Diamond;
 using Crypton.Infrastructure.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
@@ -50,7 +50,6 @@ public sealed class AuthController : ControllerBase
         return this.BadRequest();
     }
 
-
     [AllowAnonymous]
     [HttpPost("login")]
     public async Task<IActionResult> Login([FromBody] UserLoginCommand command)
@@ -77,14 +76,12 @@ public sealed class AuthController : ControllerBase
         return this.BadRequest();
     }
 
-
     [IgnoreDigitalSignature]
     [HttpGet("rules")]
     public IActionResult Rules()
     {
-        return Ok((Rules)this.rules);
+        return this.Ok((Rules)this.rules);
     }
-
 
     [HttpGet("me")]
     public async Task<IActionResult> Me()

@@ -3,9 +3,9 @@
 // </copyright>
 
 using Crypton.Application;
+using Crypton.Infrastructure;
 using Crypton.Infrastructure.Diamond;
 using Crypton.Infrastructure.Identity;
-using Crypton.Infrastructure;
 using Crypton.Infrastructure.Persistence;
 using Crypton.WebAPI;
 using dotenv.net;
