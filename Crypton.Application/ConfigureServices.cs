@@ -4,6 +4,8 @@
 
 using System.Reflection;
 using Crypton.Application.Common.Behaviours;
+using Crypton.Application.Interfaces;
+using Crypton.Application.Services;
 using Crypton.Domain;
 using FluentValidation;
 using MediatR;
@@ -29,6 +31,8 @@ public static class ConfigureServices
             cfg.AddBehavior(typeof(IPipelineBehavior<,>), typeof(ErrorOrBehaviour<,>));
             cfg.AddBehavior(typeof(IPipelineBehavior<,>), typeof(LoggingPipelineBehaviour<,>));
         });
+
+        services.AddSingleton<IBlockchainService, BlockchainService>();
 
         return services;
     }

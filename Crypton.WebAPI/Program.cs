@@ -26,6 +26,7 @@ builder.Services.AddSingleton(builder.Configuration);
 builder.Services
     .AddApplicationServices()
     .AddInfrastructureServices()
+    .AddBackgroundServices()
     .AddPersistenceServices()
     .AddWebApiServices(builder.Environment)
     .AddIdentityServices()

@@ -11,6 +11,23 @@ namespace Crypton.Infrastructure.Persistence.Interceptors;
 
 public sealed class AuditableEntitySaveChangesInterceptor : SaveChangesInterceptor
 {
+    public static void UpdateEntities(DbContext? context)
+    {
+        // have some kind of user manager get the user id who performed the action here
+        context?.ChangeTracker
+            .Entries<IAuditableDomainEntity>()
+            .ToList()
+            .ForEach(entry =>
+            {
+                if (entry.State == EntityState.Added)
+                    entry.Entity.Created = DateTime.UtcNow;
+
+                if (entry.State == EntityState.Added || entry.State == EntityState.Modified ||
+                    HasChangedOwnedEntities(entry))
+                    entry.Entity.LastModified = DateTime.UtcNow;
+            });
+    }
+
     public override InterceptionResult<int> SavingChanges(
         DbContextEventData eventData,
         InterceptionResult<int> result)
@@ -26,24 +43,6 @@ public sealed class AuditableEntitySaveChangesInterceptor : SaveChangesIntercept
     {
         UpdateEntities(eventData.Context);
         return await base.SavingChangesAsync(eventData, result, ct);
-    }
-
-    public void UpdateEntities(DbContext? context)
-    {
-        if (context is null) return;
-
-        // have some kind of user manager get the user id who performed the action here
-        context.ChangeTracker
-            .Entries<IAuditableDomainEntity>()
-            .ToList()
-            .ForEach(entry =>
-            {
-                if (entry.State == EntityState.Added)
-                    entry.Entity.Created = DateTime.UtcNow;
-
-                if (entry.State == EntityState.Added || entry.State == EntityState.Modified || HasChangedOwnedEntities(entry))
-                    entry.Entity.LastModified = DateTime.UtcNow;
-            });
     }
 
     private static bool HasChangedOwnedEntities(EntityEntry entry) =>

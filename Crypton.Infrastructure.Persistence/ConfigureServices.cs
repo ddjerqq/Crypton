@@ -2,8 +2,7 @@
 // Copyright (c) PlaceholderCompany. All rights reserved.
 // </copyright>
 
-using Crypton.Application.Common.Interfaces;
-using Crypton.Infrastructure.Persistence.Interceptors;
+using Crypton.Application.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -20,16 +19,16 @@ public static class ConfigureServices
             return Environment.GetEnvironmentVariable(key) ?? @default!;
         }
 
-        string dbHost = GetEnv("POSTGRES_HOST", "localhost");
-        string port = GetEnv("POSTGRES_PORT", "5432");
-        string db = GetEnv("POSTGRES_DB", "postgres");
-        string user = GetEnv("POSTGRES_USER", "postgres");
+        var dbHost = GetEnv("POSTGRES_HOST", "localhost");
+        var port = GetEnv("POSTGRES_PORT", "5432");
+        var db = GetEnv("POSTGRES_DB", "postgres");
+        var user = GetEnv("POSTGRES_USER", "postgres");
 
-        string password = GetEnv("POSTGRES_PASSWORD");
+        var password = GetEnv("POSTGRES_PASSWORD");
         if (string.IsNullOrEmpty(password)) return false;
 
-        bool inDevelopment = GetEnv("DOTNET_ENVIRONMENT") == "Development"
-                             || GetEnv("ASPNETCORE_ENVIRONMENT") == "Development";
+        var inDevelopment = GetEnv("DOTNET_ENVIRONMENT") == "Development"
+                            || GetEnv("ASPNETCORE_ENVIRONMENT") == "Development";
 
         connectionString =
             $"Host={dbHost};" +
@@ -52,12 +51,14 @@ public static class ConfigureServices
                 o.EnableSensitiveDataLogging();
             }
 
-            if (TryLoadConnectionString(out string connectionString))
+            if (TryLoadConnectionString(out var connectionString))
                 o.UseNpgsql(connectionString);
             else
                 o.UseSqlite("Data Source=C:/work/crypton/app.db;");
 
-            o.AddInterceptors(new AuditableEntitySaveChangesInterceptor());
+            o.AddInterceptors(
+                AppDbContext.AuditableEntitySaveChangesInterceptor,
+                AppDbContext.UserMaterializationInterceptor);
         });
 
         // delegate the IDbContext to the EmeraldDbContext;

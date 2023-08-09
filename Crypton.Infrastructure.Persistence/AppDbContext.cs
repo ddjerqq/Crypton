@@ -2,12 +2,13 @@
 // Copyright (c) PlaceholderCompany. All rights reserved.
 // </copyright>
 
-using Crypton.Application.Common.Interfaces;
+using Crypton.Application.Interfaces;
 using Crypton.Domain.Common.Extensions;
 using Crypton.Domain.Entities;
+using Crypton.Domain.ValueTypes;
 using Crypton.Infrastructure.Persistence.Common.Extensions;
+using Crypton.Infrastructure.Persistence.Interceptors;
 using MediatR;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
@@ -15,6 +16,9 @@ namespace Crypton.Infrastructure.Persistence;
 
 public sealed class AppDbContext : IdentityDbContext<User>, IAppDbContext
 {
+    public static readonly AuditableEntitySaveChangesInterceptor AuditableEntitySaveChangesInterceptor = new();
+    public static readonly UserMaterializationInterceptor UserMaterializationInterceptor = new();
+
     private readonly IMediator mediator;
 
     public AppDbContext(DbContextOptions<AppDbContext> options, IMediator mediator)
@@ -23,9 +27,17 @@ public sealed class AppDbContext : IdentityDbContext<User>, IAppDbContext
         this.mediator = mediator;
     }
 
+    public DbSet<Item> Items => this.Set<Item>();
+
+    public DbSet<Transaction> Transactions => this.Set<Transaction>();
+
+    public DbSet<TransactionUser> TransactionUsers => this.Set<TransactionUser>();
+
+    public DbSet<ItemType> ItemTypes => this.Set<ItemType>();
+
     public override async Task<int> SaveChangesAsync(CancellationToken ct = default)
     {
-        await mediator.DispatchDomainEvents(this);
+        await this.mediator.DispatchDomainEvents(this);
         return await base.SaveChangesAsync(ct);
     }
 
@@ -37,6 +49,12 @@ public sealed class AppDbContext : IdentityDbContext<User>, IAppDbContext
 
         foreach (var entity in builder.Model.GetEntityTypes())
         {
+            var entityTableName = entity.GetTableName()!
+                .Replace("AspNet", string.Empty)
+                .ToSnakeCase();
+
+            entity.SetTableName(entityTableName);
+
             foreach (var property in entity.GetProperties())
             {
                 property.SetColumnName(property.GetColumnName().ToSnakeCase());
@@ -57,13 +75,5 @@ public sealed class AppDbContext : IdentityDbContext<User>, IAppDbContext
                 index.SetDatabaseName(index.GetDatabaseName()!.ToSnakeCase());
             }
         }
-
-        builder.Entity<User>().ToTable("user");
-        builder.Entity<IdentityRole>().ToTable("role");
-        builder.Entity<IdentityUserRole<string>>().ToTable("user_role");
-        builder.Entity<IdentityUserClaim<string>>().ToTable("user_claim");
-        builder.Entity<IdentityUserLogin<string>>().ToTable("user_login");
-        builder.Entity<IdentityUserToken<string>>().ToTable("user_token");
-        builder.Entity<IdentityRoleClaim<string>>().ToTable("role_claim");
     }
 }

@@ -12,21 +12,11 @@ public sealed class UserConfiguration : IEntityTypeConfiguration<User>
 {
     public void Configure(EntityTypeBuilder<User> builder)
     {
-        builder.ToTable("user");
-
-        builder.HasKey(e => e.Id);
-
-        builder.Property(e => e.UserName)
-            .HasMaxLength(32)
-            .IsRequired();
-
-        builder.Property(e => e.Balance)
-            .IsRequired();
-
-        builder.Property(e => e.Created)
-            .HasDefaultValueSql("now()");
-
         builder.HasIndex(e => e.UserName)
             .IsUnique();
+
+        builder.HasMany(e => e.Items)
+            .WithOne(x => x.Owner)
+            .HasForeignKey(x => x.OwnerId);
     }
 }
