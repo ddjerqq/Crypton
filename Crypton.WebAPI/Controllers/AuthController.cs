@@ -30,6 +30,7 @@ public sealed class AuthController : ControllerBase
         this.userManager = userManager;
     }
 
+    [IgnoreDigitalSignature]
     [AllowAnonymous]
     [HttpPost("register")]
     public async Task<IActionResult> Register([FromBody] UserRegisterCommand command)
@@ -50,6 +51,7 @@ public sealed class AuthController : ControllerBase
         return this.BadRequest();
     }
 
+    [IgnoreDigitalSignature]
     [AllowAnonymous]
     [HttpPost("login")]
     public async Task<IActionResult> Login([FromBody] UserLoginCommand command)
@@ -83,6 +85,7 @@ public sealed class AuthController : ControllerBase
         return this.Ok((Rules)this.rules);
     }
 
+    [IgnoreDigitalSignature]
     [HttpGet("me")]
     public async Task<IActionResult> Me()
     {
