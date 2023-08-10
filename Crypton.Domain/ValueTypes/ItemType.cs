@@ -1,8 +1,4 @@
-﻿// <copyright file="ItemType.cs" company="PlaceholderCompany">
-// Copyright (c) PlaceholderCompany. All rights reserved.
-// </copyright>
-
-using Crypton.Domain.Common.Abstractions;
+﻿using Crypton.Domain.Common.Abstractions;
 
 namespace Crypton.Domain.ValueTypes;
 

@@ -1,9 +1,6 @@
-﻿// <copyright file="User.cs" company="PlaceholderCompany">
-// Copyright (c) PlaceholderCompany. All rights reserved.
-// </copyright>
-
-using System.ComponentModel.DataAnnotations.Schema;
+﻿using System.ComponentModel.DataAnnotations.Schema;
 using Crypton.Domain.Common.Abstractions;
+using Crypton.Domain.Common.Extensions;
 
 namespace Crypton.Domain.Entities;
 
@@ -14,6 +11,17 @@ public sealed class User : UserBase
 
     [NotMapped]
     public IReadOnlyCollection<Item> Items { get; private set; } = new List<Item>();
+
+    public bool IsSystem => this.Id == GuidExtensions.ZeroGuidValue;
+
+    public static User SystemUser()
+    {
+        return new User
+        {
+            Id = GuidExtensions.ZeroGuidValue,
+            UserName = "System",
+        };
+    }
 
     public void SetBalance(decimal balance)
     {

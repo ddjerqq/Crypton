@@ -1,8 +1,4 @@
-﻿// <copyright file="UserLoginCommand.cs" company="PlaceholderCompany">
-// Copyright (c) PlaceholderCompany. All rights reserved.
-// </copyright>
-
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 using Crypton.Application.Common.Abstractions;
 using FluentValidation;
 using Microsoft.AspNetCore.Identity;

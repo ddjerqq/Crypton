@@ -1,8 +1,4 @@
-﻿// <copyright file="ThemeService.cs" company="PlaceholderCompany">
-// Copyright (c) PlaceholderCompany. All rights reserved.
-// </copyright>
-
-using Blazored.LocalStorage;
+﻿using Blazored.LocalStorage;
 using Crypton.WebUI.Services.Interfaces;
 using Microsoft.JSInterop;
 

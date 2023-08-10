@@ -1,8 +1,4 @@
-﻿// <copyright file="IResultRequestHandler.cs" company="PlaceholderCompany">
-// Copyright (c) PlaceholderCompany. All rights reserved.
-// </copyright>
-
-using ErrorOr;
+﻿using ErrorOr;
 using MediatR;
 
 namespace Crypton.Application.Common.Abstractions;

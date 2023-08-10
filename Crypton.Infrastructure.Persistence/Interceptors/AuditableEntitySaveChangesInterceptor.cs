@@ -1,8 +1,4 @@
-﻿// <copyright file="AuditableEntitySaveChangesInterceptor.cs" company="PlaceholderCompany">
-// Copyright (c) PlaceholderCompany. All rights reserved.
-// </copyright>
-
-using Crypton.Domain.Common.Abstractions;
+﻿using Crypton.Domain.Common.Abstractions;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
 using Microsoft.EntityFrameworkCore.Diagnostics;

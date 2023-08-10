@@ -1,8 +1,4 @@
-﻿// <copyright file="UserRegisterCommand.cs" company="PlaceholderCompany">
-// Copyright (c) PlaceholderCompany. All rights reserved.
-// </copyright>
-
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 using FluentValidation;
 
 namespace Crypton.Application.Auth;

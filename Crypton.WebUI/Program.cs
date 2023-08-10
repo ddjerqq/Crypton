@@ -1,7 +1,3 @@
-// <copyright file="Program.cs" company="PlaceholderCompany">
-// Copyright (c) PlaceholderCompany. All rights reserved.
-// </copyright>
-
 using Blazored.Toast;
 using Crypton.WebUI;
 using Microsoft.AspNetCore.Components.Web;

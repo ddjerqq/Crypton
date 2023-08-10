@@ -1,8 +1,4 @@
-﻿// <copyright file="UserMaterializationInterceptor.cs" company="PlaceholderCompany">
-// Copyright (c) PlaceholderCompany. All rights reserved.
-// </copyright>
-
-using Crypton.Application.Interfaces;
+﻿using Crypton.Application.Interfaces;
 using Crypton.Domain.Entities;
 using Microsoft.EntityFrameworkCore.Diagnostics;
 using Microsoft.EntityFrameworkCore.Infrastructure;
@@ -11,17 +7,19 @@ namespace Crypton.Infrastructure.Persistence.Interceptors;
 
 public class UserMaterializationInterceptor : IMaterializationInterceptor
 {
-    private IBlockchainService blockchain = null!;
+    private readonly ITransactionService transaction;
+
+    public UserMaterializationInterceptor(ITransactionService transaction)
+    {
+        this.transaction = transaction;
+    }
 
     public object InitializedInstance(MaterializationInterceptionData materializationData, object instance)
     {
-        // ReSharper disable once NullCoalescingConditionIsAlwaysNotNullAccordingToAPIContract
-        this.blockchain ??= materializationData.Context.GetService<IBlockchainService>();
-
         if (instance is User user)
         {
-            user.SetBalance(this.blockchain.GetUserBalance(user.Id));
-            user.SetItems(this.blockchain.GetUserItems(user.Id));
+            user.SetBalance(this.transaction.GetUserBalance(user.Id));
+            user.SetItems(this.transaction.GetUserItems(user.Id));
         }
 
         return instance;

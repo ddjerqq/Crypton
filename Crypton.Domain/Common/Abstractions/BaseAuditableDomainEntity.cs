@@ -1,8 +1,4 @@
-﻿// <copyright file="BaseAuditableDomainEntity.cs" company="PlaceholderCompany">
-// Copyright (c) PlaceholderCompany. All rights reserved.
-// </copyright>
-
-using System.ComponentModel.DataAnnotations.Schema;
+﻿using System.ComponentModel.DataAnnotations.Schema;
 using MediatR;
 
 namespace Crypton.Domain.Common.Abstractions;
@@ -14,7 +10,7 @@ public abstract class BaseAuditableDomainEntity : IAuditableDomainEntity
 
     public DateTime Created { get; set; }
 
-    public string? CratedBy { get; set; }
+    public string? CreatedBy { get; set; }
 
     public DateTime? LastModified { get; set; }
 

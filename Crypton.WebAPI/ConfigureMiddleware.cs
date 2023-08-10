@@ -1,7 +1,4 @@
-﻿// <copyright file="ConfigureMiddleware.cs" company="PlaceholderCompany">
-// Copyright (c) PlaceholderCompany. All rights reserved.
-// </copyright>
-
+﻿using Crypton.Application.Interfaces;
 using Crypton.Infrastructure.Diamond;
 using Crypton.Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
@@ -22,6 +19,20 @@ public static class ConfigureMiddleware
         {
             dbContext.Database.Migrate();
         }
+
+        return app;
+    }
+
+    public static WebApplication InitializeTransactions(this WebApplication app)
+    {
+        using var scope = app.Services.CreateScope();
+
+        var transactions = scope.ServiceProvider.GetRequiredService<ITransactionService>();
+
+        transactions.InitializeAsync()
+            .ConfigureAwait(false)
+            .GetAwaiter()
+            .GetResult();
 
         return app;
     }
@@ -53,7 +64,7 @@ public static class ConfigureMiddleware
 
         // this should be after UseRouting
         // https://stackoverflow.com/a/71951181/14860947
-        app.UseDigitalSignature();
+        // app.UseDigitalSignature();
 
         app.UseAuthorization();
 

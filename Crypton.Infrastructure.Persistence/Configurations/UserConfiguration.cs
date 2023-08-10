@@ -1,8 +1,4 @@
-﻿// <copyright file="UserConfiguration.cs" company="PlaceholderCompany">
-// Copyright (c) PlaceholderCompany. All rights reserved.
-// </copyright>
-
-using Crypton.Domain.Entities;
+﻿using Crypton.Domain.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 

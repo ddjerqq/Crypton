@@ -1,8 +1,4 @@
-﻿// <copyright file="IThemeService.cs" company="PlaceholderCompany">
-// Copyright (c) PlaceholderCompany. All rights reserved.
-// </copyright>
-
-namespace Crypton.WebUI.Services.Interfaces;
+﻿namespace Crypton.WebUI.Services.Interfaces;
 
 public interface IThemeService
 {

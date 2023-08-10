@@ -1,8 +1,4 @@
-﻿// <copyright file="ThemeExtensions.cs" company="PlaceholderCompany">
-// Copyright (c) PlaceholderCompany. All rights reserved.
-// </copyright>
-
-namespace Crypton.WebUI.Services;
+﻿namespace Crypton.WebUI.Services;
 
 public static class ThemeExtensions
 {

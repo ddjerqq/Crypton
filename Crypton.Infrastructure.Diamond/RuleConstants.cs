@@ -1,8 +1,4 @@
-﻿// <copyright file="RuleConstants.cs" company="PlaceholderCompany">
-// Copyright (c) PlaceholderCompany. All rights reserved.
-// </copyright>
-
-namespace Crypton.Infrastructure.Diamond;
+﻿namespace Crypton.Infrastructure.Diamond;
 
 public static class RuleConstants
 {

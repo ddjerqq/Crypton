@@ -1,8 +1,4 @@
-﻿// <copyright file="AppDbContext.cs" company="PlaceholderCompany">
-// Copyright (c) PlaceholderCompany. All rights reserved.
-// </copyright>
-
-using Crypton.Application.Interfaces;
+﻿using Crypton.Application.Interfaces;
 using Crypton.Domain.Common.Extensions;
 using Crypton.Domain.Entities;
 using Crypton.Domain.ValueTypes;
@@ -16,15 +12,21 @@ namespace Crypton.Infrastructure.Persistence;
 
 public sealed class AppDbContext : IdentityDbContext<User>, IAppDbContext
 {
-    public static readonly AuditableEntitySaveChangesInterceptor AuditableEntitySaveChangesInterceptor = new();
-    public static readonly UserMaterializationInterceptor UserMaterializationInterceptor = new();
+    private readonly AuditableEntitySaveChangesInterceptor auditableEntitySaveChangesInterceptor;
+    private readonly UserMaterializationInterceptor userMaterializationInterceptor;
 
     private readonly IMediator mediator;
 
-    public AppDbContext(DbContextOptions<AppDbContext> options, IMediator mediator)
+    public AppDbContext(
+        DbContextOptions<AppDbContext> options,
+        IMediator mediator,
+        AuditableEntitySaveChangesInterceptor auditableEntitySaveChangesInterceptor,
+        UserMaterializationInterceptor userMaterializationInterceptor)
         : base(options)
     {
         this.mediator = mediator;
+        this.auditableEntitySaveChangesInterceptor = auditableEntitySaveChangesInterceptor;
+        this.userMaterializationInterceptor = userMaterializationInterceptor;
     }
 
     public DbSet<Item> Items => this.Set<Item>();
@@ -43,9 +45,11 @@ public sealed class AppDbContext : IdentityDbContext<User>, IAppDbContext
 
     protected override void OnModelCreating(ModelBuilder builder)
     {
-        base.OnModelCreating(builder);
-
+        builder.Entity<BalanceTransaction>();
+        builder.Entity<ItemTransaction>();
         builder.ApplyConfigurationsFromAssembly(typeof(AppDbContext).Assembly);
+
+        base.OnModelCreating(builder);
 
         foreach (var entity in builder.Model.GetEntityTypes())
         {
@@ -75,5 +79,14 @@ public sealed class AppDbContext : IdentityDbContext<User>, IAppDbContext
                 index.SetDatabaseName(index.GetDatabaseName()!.ToSnakeCase());
             }
         }
+    }
+
+    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+    {
+        optionsBuilder.AddInterceptors(
+            this.auditableEntitySaveChangesInterceptor,
+            this.userMaterializationInterceptor);
+
+        base.OnConfiguring(optionsBuilder);
     }
 }

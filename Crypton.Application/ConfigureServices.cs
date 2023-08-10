@@ -1,8 +1,4 @@
-﻿// <copyright file="ConfigureServices.cs" company="PlaceholderCompany">
-// Copyright (c) PlaceholderCompany. All rights reserved.
-// </copyright>
-
-using System.Reflection;
+﻿using System.Reflection;
 using Crypton.Application.Common.Behaviours;
 using Crypton.Application.Interfaces;
 using Crypton.Application.Services;
@@ -32,7 +28,7 @@ public static class ConfigureServices
             cfg.AddBehavior(typeof(IPipelineBehavior<,>), typeof(LoggingPipelineBehaviour<,>));
         });
 
-        services.AddSingleton<IBlockchainService, BlockchainService>();
+        services.AddSingleton<ITransactionService, TransactionService>(sp => new TransactionService(sp));
 
         return services;
     }

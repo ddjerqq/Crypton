@@ -1,10 +1,8 @@
-﻿// <copyright file="ConfigureServices.cs" company="PlaceholderCompany">
-// Copyright (c) PlaceholderCompany. All rights reserved.
-// </copyright>
-
-using Crypton.Application.Interfaces;
+﻿using Crypton.Application.Interfaces;
 using Crypton.Infrastructure.BackgroundServices;
+using Crypton.Infrastructure.Services;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 
 namespace Crypton.Infrastructure;
 
@@ -15,6 +13,7 @@ public static class ConfigureServices
     public static IServiceCollection AddInfrastructureServices(this IServiceCollection services)
     {
         services.AddHttpContextAccessor();
+        services.AddScoped<ICurrentUserAccessor, CurrentUserAccessor>();
 
         return services;
     }
@@ -22,10 +21,10 @@ public static class ConfigureServices
     public static IServiceCollection AddBackgroundServices(
         this IServiceCollection services)
     {
-        services.AddHostedService<BlockChainWorker>();
+        services.AddSingleton<ITransactionWorker, TransactionWorker>();
 
-        services.AddScoped<IBlockChainWorker>(sp =>
-            sp.GetRequiredService<BlockChainWorker>());
+        services.AddHostedService<TransactionWorker>(sp =>
+            (TransactionWorker)sp.GetRequiredService<ITransactionWorker>());
 
         return services;
     }

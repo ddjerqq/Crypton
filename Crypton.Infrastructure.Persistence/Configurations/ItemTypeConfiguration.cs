@@ -1,8 +1,4 @@
-﻿// <copyright file="ItemTypeConfiguration.cs" company="PlaceholderCompany">
-// Copyright (c) PlaceholderCompany. All rights reserved.
-// </copyright>
-
-using Crypton.Domain.ValueTypes;
+﻿using Crypton.Domain.ValueTypes;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 

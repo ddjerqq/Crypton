@@ -1,8 +1,4 @@
-﻿// <copyright file="ConfigureServices.cs" company="PlaceholderCompany">
-// Copyright (c) PlaceholderCompany. All rights reserved.
-// </copyright>
-
-using System.Text;
+﻿using System.Text;
 using Crypton.Domain.Entities;
 using Crypton.Infrastructure.Persistence;
 using Microsoft.AspNetCore.Authentication;

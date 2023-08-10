@@ -1,8 +1,5 @@
-﻿// <copyright file="ConfigureServices.cs" company="PlaceholderCompany">
-// Copyright (c) PlaceholderCompany. All rights reserved.
-// </copyright>
-
-using Crypton.Application.Interfaces;
+﻿using Crypton.Application.Interfaces;
+using Crypton.Infrastructure.Persistence.Interceptors;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -43,7 +40,10 @@ public static class ConfigureServices
 
     public static IServiceCollection AddPersistenceServices(this IServiceCollection services)
     {
-        services.AddDbContextPool<AppDbContext>(o =>
+        services.AddSingleton<AuditableEntitySaveChangesInterceptor>();
+        services.AddSingleton<UserMaterializationInterceptor>();
+
+        services.AddDbContext<AppDbContext>(o =>
         {
             if (Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") is "Development")
             {
@@ -55,10 +55,6 @@ public static class ConfigureServices
                 o.UseNpgsql(connectionString);
             else
                 o.UseSqlite("Data Source=C:/work/crypton/app.db;");
-
-            o.AddInterceptors(
-                AppDbContext.AuditableEntitySaveChangesInterceptor,
-                AppDbContext.UserMaterializationInterceptor);
         });
 
         // delegate the IDbContext to the EmeraldDbContext;

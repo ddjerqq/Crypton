@@ -1,9 +1,6 @@
-// <copyright file="AuthController.cs" company="PlaceholderCompany">
-// Copyright (c) PlaceholderCompany. All rights reserved.
-// </copyright>
-
 using Crypton.Application.Auth;
 using Crypton.Application.Dtos;
+using Crypton.Application.Interfaces;
 using Crypton.Domain.Entities;
 using Crypton.Infrastructure.Diamond;
 using Crypton.Infrastructure.Services;
@@ -85,9 +82,8 @@ public sealed class AuthController : ControllerBase
         return this.Ok((Rules)this.rules);
     }
 
-    [IgnoreDigitalSignature]
     [HttpGet("me")]
-    public async Task<IActionResult> Me()
+    public async Task<IActionResult> Me(IAppDbContext dbContext)
     {
         var user = await this.userManager.GetUserAsync(this.User);
 

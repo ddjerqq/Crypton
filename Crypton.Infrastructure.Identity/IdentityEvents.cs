@@ -1,11 +1,8 @@
-﻿// <copyright file="IdentityEvents.cs" company="PlaceholderCompany">
-// Copyright (c) PlaceholderCompany. All rights reserved.
-// </copyright>
-
-using Crypton.Infrastructure.Services;
+﻿using Crypton.Infrastructure.Services;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
 using MessageReceivedContext = Microsoft.AspNetCore.Authentication.JwtBearer.MessageReceivedContext;
 
 namespace Crypton.Infrastructure.Identity;
@@ -48,16 +45,8 @@ public static class IdentityEvents
     // when we have api calls, we will return 401 instead of redirecting to login
     public static Task OnRedirectToLogin(RedirectContext<CookieAuthenticationOptions> context)
     {
-        // todo use reflection to test for the controller having the [ApiController] attribute
-        if (context.Request.Path.Value?.StartsWith("/api") ?? false)
-        {
-            context.Response.Clear();
-            context.Response.StatusCode = StatusCodes.Status401Unauthorized;
-        }
-        else
-        {
-            context.Response.Redirect(context.RedirectUri);
-        }
+        context.Response.Clear();
+        context.Response.StatusCode = StatusCodes.Status401Unauthorized;
 
         return Task.CompletedTask;
     }
@@ -65,16 +54,8 @@ public static class IdentityEvents
     // when we have api calls, we will return 403 instead of redirecting to access denied
     public static Task OnRedirectToAccessDenied(RedirectContext<CookieAuthenticationOptions> context)
     {
-        // todo use reflection to test for the controller having the [ApiController] attribute
-        if (context.Request.Path.Value?.StartsWith("/api") ?? false)
-        {
-            context.Response.Clear();
-            context.Response.StatusCode = StatusCodes.Status403Forbidden;
-        }
-        else
-        {
-            context.Response.Redirect(context.RedirectUri);
-        }
+        context.Response.Clear();
+        context.Response.StatusCode = StatusCodes.Status403Forbidden;
 
         return Task.CompletedTask;
     }

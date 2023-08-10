@@ -1,8 +1,4 @@
-﻿// <copyright file="TransactionConfiguration.cs" company="PlaceholderCompany">
-// Copyright (c) PlaceholderCompany. All rights reserved.
-// </copyright>
-
-using Crypton.Domain.Entities;
+﻿using Crypton.Domain.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
@@ -13,6 +9,9 @@ public sealed class TransactionConfiguration : IEntityTypeConfiguration<Transact
     public void Configure(EntityTypeBuilder<Transaction> builder)
     {
         builder.HasDiscriminator<string>("discriminator");
+
+        builder.HasIndex(x => x.Index)
+            .IsUnique();
 
         builder.HasMany(x => x.Participants)
             .WithOne(x => x.Transaction)

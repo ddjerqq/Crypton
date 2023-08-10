@@ -1,10 +1,7 @@
-﻿// <copyright file="IAppDbContext.cs" company="PlaceholderCompany">
-// Copyright (c) PlaceholderCompany. All rights reserved.
-// </copyright>
-
-using Crypton.Domain.Entities;
+﻿using Crypton.Domain.Entities;
 using Crypton.Domain.ValueTypes;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.ChangeTracking;
 
 namespace Crypton.Application.Interfaces;
 
@@ -19,6 +16,9 @@ public interface IAppDbContext : IDisposable
     public DbSet<TransactionUser> TransactionUsers { get; }
 
     public DbSet<ItemType> ItemTypes { get; }
+
+    public EntityEntry<TEntity> Entry<TEntity>(TEntity entity)
+        where TEntity : class;
 
     public Task<int> SaveChangesAsync(CancellationToken ct = default);
 }

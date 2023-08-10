@@ -1,8 +1,4 @@
-﻿// <copyright file="UserBase.cs" company="PlaceholderCompany">
-// Copyright (c) PlaceholderCompany. All rights reserved.
-// </copyright>
-
-using System.ComponentModel.DataAnnotations.Schema;
+﻿using System.ComponentModel.DataAnnotations.Schema;
 using MediatR;
 using Microsoft.AspNetCore.Identity;
 
@@ -15,7 +11,7 @@ public abstract class UserBase : IdentityUser, IAuditableDomainEntity
 
     public DateTime Created { get; set; } = DateTime.UtcNow;
 
-    public string? CratedBy { get; set; }
+    public string? CreatedBy { get; set; }
 
     public DateTime? LastModified { get; set; } = DateTime.UtcNow;
 

@@ -1,8 +1,4 @@
-﻿// <copyright file="ItemTransaction.cs" company="PlaceholderCompany">
-// Copyright (c) PlaceholderCompany. All rights reserved.
-// </copyright>
-
-namespace Crypton.Domain.Entities;
+﻿namespace Crypton.Domain.Entities;
 
 public class ItemTransaction : Transaction
 {

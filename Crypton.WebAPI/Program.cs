@@ -1,7 +1,3 @@
-// <copyright file="Program.cs" company="PlaceholderCompany">
-// Copyright (c) PlaceholderCompany. All rights reserved.
-// </copyright>
-
 using Crypton.Application;
 using Crypton.Infrastructure;
 using Crypton.Infrastructure.Diamond;
@@ -35,5 +31,6 @@ builder.Services
 var app = builder.Build();
 
 app.MigrateDatabase()
+    .InitializeTransactions()
     .ConfigureWebApiMiddleware()
     .Run();

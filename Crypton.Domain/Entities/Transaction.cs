@@ -1,8 +1,5 @@
-﻿// <copyright file="Transaction.cs" company="PlaceholderCompany">
-// Copyright (c) PlaceholderCompany. All rights reserved.
-// </copyright>
-
-using System.ComponentModel.DataAnnotations.Schema;
+﻿using System.ComponentModel.DataAnnotations.Schema;
+using System.Diagnostics;
 using Crypton.Domain.Common.Abstractions;
 using Crypton.Domain.Common.Extensions;
 
@@ -23,36 +20,15 @@ public class Transaction : BaseDomainEntity
 
     public long Index { get; init; }
 
-    public ICollection<TransactionUser> Participants { get; init; } = null!;
+    public ICollection<TransactionUser> Participants { get; set; } = new List<TransactionUser>(2);
 
     [NotMapped]
-    public User Sender
-    {
-        get => this.Participants.First(x => x.IsSender).User;
-        init
-        {
-            var sender = this.Participants.First(x => x.IsSender);
-            sender.User = value;
-
-            // ReSharper disable once ConditionalAccessQualifierIsNonNullableAccordingToAPIContract
-            sender.UserId = value?.Id ?? "00000000-0000-0000-0000-000000000000";
-        }
-    }
+    public User Sender => this.Participants
+        .FirstOrDefault(x => x.IsSender)?.User ?? User.SystemUser();
 
     [NotMapped]
-    public User Receiver
-    {
-        get => this.Participants.First(x => x.IsReceiver).User;
-        init
-        {
-            var receiver =
-                this.Participants.First(x => x.IsReceiver);
-            receiver.User = value;
-
-            // ReSharper disable once ConditionalAccessQualifierIsNonNullableAccordingToAPIContract
-            receiver.UserId = value?.Id ?? "00000000-0000-0000-0000-000000000000";
-        }
-    }
+    public User Receiver => this.Participants
+        .FirstOrDefault(x => x.IsReceiver)?.User ?? User.SystemUser();
 
     public DateTime Timestamp { get; init; }
 
@@ -62,76 +38,108 @@ public class Transaction : BaseDomainEntity
 
     public string Hash => this.Payload.CalculateSha256HexDigest();
 
-    public bool IsValid => this.Hash[Difficulty..] == Predicate;
+    public bool IsValid => this.Hash[..Difficulty] == Predicate;
 
+    // ReSharper disable ConditionalAccessQualifierIsNonNullableAccordingToAPIContract
     protected virtual string Payload =>
-        $"{this.Id}{this.Index}{this.Sender.Id}{this.Receiver.Id}" +
-        $"{{0}}{this.Timestamp.Ticks}{this.Nonce}{this.PreviousHash}";
+        $"{this.Id}{this.Index}" +
+        $"{this.Sender?.Id ?? GuidExtensions.ZeroGuidValue}" +
+        $"{this.Receiver?.Id ?? GuidExtensions.ZeroGuidValue}" +
+        $"{{0}}{this.Timestamp.Ticks}" +
+        $"{this.Nonce}{this.PreviousHash}";
 
     public static Transaction Genesis()
     {
-        var zeroGuid = Guid.Parse("00000000-0000-0000-0000-000000000000");
-
-        var block = new Transaction
+        var transaction = new Transaction
         {
-            Id = zeroGuid,
+            Id = GuidExtensions.ZeroGuid,
             Index = 0,
-            Sender = null!,
-            Receiver = null!,
+            Participants = new TransactionUser[]
+            {
+                new(GuidExtensions.ZeroGuidValue, GuidExtensions.ZeroGuid, true),
+                new(GuidExtensions.ZeroGuidValue, GuidExtensions.ZeroGuid, false),
+            },
             Timestamp = new DateTime(2015, 1, 1),
             Nonce = 0,
             PreviousHash = new string('0', 64),
         };
 
-        block.Mine()
+        transaction.Mine()
             .ConfigureAwait(false)
             .GetAwaiter()
             .GetResult();
 
-        return block;
+        Debug.Assert(transaction.IsValid, "Genesis transaction is not valid");
+
+        return transaction;
     }
 
     public Task Mine(CancellationToken ct = default)
     {
         return Task.Run(() =>
         {
-            while (!ct.IsCancellationRequested || this.IsValid)
+            while (!ct.IsCancellationRequested)
             {
+                if (this.IsValid) break;
+
                 this.Nonce++;
             }
         }, ct);
     }
 
-    public Transaction Next(User sender, User receiver, decimal amount)
+    public Transaction Next(User? sender, User? receiver, decimal amount)
     {
+        var id = Guid.NewGuid();
+
+        var participants = new TransactionUser[]
+        {
+            new(sender ?? User.SystemUser(), id, true),
+            new(receiver ?? User.SystemUser(), id, false),
+        };
+
         return new BalanceTransaction
         {
-            Id = Guid.NewGuid(),
+            Id = id,
             Index = this.Index + 1,
-            Sender = sender,
-            Receiver = receiver,
             Timestamp = DateTime.UtcNow,
             Nonce = 0,
-            PreviousHash = this.PreviousHash,
+            PreviousHash = this.Hash,
+            Participants = participants,
 
             Amount = amount,
         };
     }
 
-    public Transaction Next(User sender, User receiver, Item item)
+    public Transaction Next(User? sender, User? receiver, Item item)
     {
+        var id = Guid.NewGuid();
+
+        var participants = new TransactionUser[]
+        {
+            new(sender?.Id ?? GuidExtensions.ZeroGuidValue, id, true),
+            new(receiver?.Id ?? GuidExtensions.ZeroGuidValue, id, false),
+        };
+
         return new ItemTransaction
         {
-            Id = Guid.NewGuid(),
+            Id = id,
             Index = this.Index + 1,
-            Sender = sender,
-            Receiver = receiver,
             Timestamp = DateTime.UtcNow,
             Nonce = 0,
             PreviousHash = this.PreviousHash,
+            Participants = participants,
 
             ItemId = item.Id,
             Item = item,
         };
+    }
+
+    public override string ToString()
+    {
+        return $"Transaction {{ " +
+               $"Id={this.Id} Index={this.Index} Sender={this.Sender} " +
+               $"Receiver={this.Receiver} Timestamp={this.Timestamp} Nonce={this.Nonce} " +
+               $"PreviousHash={this.PreviousHash} " +
+               $"Hash={this.Hash} }}";
     }
 }

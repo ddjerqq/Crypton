@@ -1,8 +1,4 @@
-﻿// <copyright file="MediatorExtensions.cs" company="PlaceholderCompany">
-// Copyright (c) PlaceholderCompany. All rights reserved.
-// </copyright>
-
-using Crypton.Domain.Common.Abstractions;
+﻿using Crypton.Domain.Common.Abstractions;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 

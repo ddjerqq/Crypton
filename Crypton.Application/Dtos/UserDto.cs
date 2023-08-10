@@ -1,8 +1,4 @@
-﻿// <copyright file="UserDto.cs" company="PlaceholderCompany">
-// Copyright (c) PlaceholderCompany. All rights reserved.
-// </copyright>
-
-using Crypton.Domain.Entities;
+﻿using Crypton.Domain.Entities;
 
 namespace Crypton.Application.Dtos;
 
@@ -18,6 +14,8 @@ public sealed class UserDto
 
     public DateTime Created { get; set; }
 
+    public IEnumerable<ItemDto> Items { get; set; } = new List<ItemDto>();
+
     public static implicit operator UserDto(User user)
     {
         return new UserDto
@@ -27,6 +25,7 @@ public sealed class UserDto
             Email = user.Email,
             Balance = user.Balance,
             Created = user.Created,
+            Items = user.Items.Select(item => (ItemDto)item),
         };
     }
 }

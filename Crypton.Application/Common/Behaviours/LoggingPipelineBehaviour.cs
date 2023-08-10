@@ -1,8 +1,4 @@
-﻿// <copyright file="LoggingPipelineBehaviour.cs" company="PlaceholderCompany">
-// Copyright (c) PlaceholderCompany. All rights reserved.
-// </copyright>
-
-using ErrorOr;
+﻿using ErrorOr;
 using MediatR;
 using Microsoft.Extensions.Logging;
 

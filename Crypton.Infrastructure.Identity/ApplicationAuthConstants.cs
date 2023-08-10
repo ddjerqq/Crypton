@@ -1,8 +1,4 @@
-﻿// <copyright file="ApplicationAuthConstants.cs" company="PlaceholderCompany">
-// Copyright (c) PlaceholderCompany. All rights reserved.
-// </copyright>
-
-namespace Crypton.Infrastructure.Identity;
+﻿namespace Crypton.Infrastructure.Identity;
 
 public static class ApplicationAuthConstants
 {
