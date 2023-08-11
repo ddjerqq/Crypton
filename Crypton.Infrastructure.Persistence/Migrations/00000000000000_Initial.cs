@@ -13,7 +13,7 @@ namespace Crypton.Infrastructure.Persistence.Migrations
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.CreateTable(
-                name: "item_types",
+                name: "item_type",
                 columns: table => new
                 {
                     id = table.Column<Guid>(type: "TEXT", nullable: false),
@@ -28,11 +28,11 @@ namespace Crypton.Infrastructure.Persistence.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("pk_item_types", x => x.id);
+                    table.PrimaryKey("pk_item_type", x => x.id);
                 });
 
             migrationBuilder.CreateTable(
-                name: "roles",
+                name: "role",
                 columns: table => new
                 {
                     id = table.Column<string>(type: "TEXT", nullable: false),
@@ -42,11 +42,11 @@ namespace Crypton.Infrastructure.Persistence.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("pk_roles", x => x.id);
+                    table.PrimaryKey("pk_role", x => x.id);
                 });
 
             migrationBuilder.CreateTable(
-                name: "users",
+                name: "user",
                 columns: table => new
                 {
                     id = table.Column<string>(type: "TEXT", nullable: false),
@@ -71,11 +71,11 @@ namespace Crypton.Infrastructure.Persistence.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("pk_users", x => x.id);
+                    table.PrimaryKey("pk_user", x => x.id);
                 });
 
             migrationBuilder.CreateTable(
-                name: "role_claims",
+                name: "role_claim",
                 columns: table => new
                 {
                     id = table.Column<int>(type: "INTEGER", nullable: false)
@@ -86,17 +86,17 @@ namespace Crypton.Infrastructure.Persistence.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("pk_role_claims", x => x.id);
+                    table.PrimaryKey("pk_role_claim", x => x.id);
                     table.ForeignKey(
-                        name: "fk_role_claims_roles_role_id",
+                        name: "fk_role_claim_role_role_id",
                         column: x => x.role_id,
-                        principalTable: "roles",
+                        principalTable: "role",
                         principalColumn: "id",
                         onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
-                name: "items",
+                name: "item",
                 columns: table => new
                 {
                     id = table.Column<Guid>(type: "TEXT", nullable: false),
@@ -105,23 +105,23 @@ namespace Crypton.Infrastructure.Persistence.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("pk_items", x => x.id);
+                    table.PrimaryKey("pk_item", x => x.id);
                     table.ForeignKey(
-                        name: "fk_items_asp_net_users_owner_id",
+                        name: "fk_item_asp_net_users_owner_id",
                         column: x => x.owner_id,
-                        principalTable: "users",
+                        principalTable: "user",
                         principalColumn: "id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "fk_items_item_types_item_type_id",
+                        name: "fk_item_item_types_item_type_id",
                         column: x => x.item_type_id,
-                        principalTable: "item_types",
+                        principalTable: "item_type",
                         principalColumn: "id",
                         onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
-                name: "user_claims",
+                name: "user_claim",
                 columns: table => new
                 {
                     id = table.Column<int>(type: "INTEGER", nullable: false)
@@ -132,17 +132,17 @@ namespace Crypton.Infrastructure.Persistence.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("pk_user_claims", x => x.id);
+                    table.PrimaryKey("pk_user_claim", x => x.id);
                     table.ForeignKey(
-                        name: "fk_user_claims_users_user_id",
+                        name: "fk_user_claim_user_user_id",
                         column: x => x.user_id,
-                        principalTable: "users",
+                        principalTable: "user",
                         principalColumn: "id",
                         onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
-                name: "user_logins",
+                name: "user_login",
                 columns: table => new
                 {
                     login_provider = table.Column<string>(type: "TEXT", nullable: false),
@@ -152,17 +152,17 @@ namespace Crypton.Infrastructure.Persistence.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("pk_user_logins", x => new { x.login_provider, x.provider_key });
+                    table.PrimaryKey("pk_user_login", x => new { x.login_provider, x.provider_key });
                     table.ForeignKey(
-                        name: "fk_user_logins_users_user_id",
+                        name: "fk_user_login_user_user_id",
                         column: x => x.user_id,
-                        principalTable: "users",
+                        principalTable: "user",
                         principalColumn: "id",
                         onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
-                name: "user_roles",
+                name: "user_role",
                 columns: table => new
                 {
                     user_id = table.Column<string>(type: "TEXT", nullable: false),
@@ -170,23 +170,23 @@ namespace Crypton.Infrastructure.Persistence.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("pk_user_roles", x => new { x.user_id, x.role_id });
+                    table.PrimaryKey("pk_user_role", x => new { x.user_id, x.role_id });
                     table.ForeignKey(
-                        name: "fk_user_roles_roles_role_id",
+                        name: "fk_user_role_role_role_id",
                         column: x => x.role_id,
-                        principalTable: "roles",
+                        principalTable: "role",
                         principalColumn: "id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "fk_user_roles_users_user_id",
+                        name: "fk_user_role_user_user_id",
                         column: x => x.user_id,
-                        principalTable: "users",
+                        principalTable: "user",
                         principalColumn: "id",
                         onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
-                name: "user_tokens",
+                name: "user_token",
                 columns: table => new
                 {
                     user_id = table.Column<string>(type: "TEXT", nullable: false),
@@ -196,17 +196,17 @@ namespace Crypton.Infrastructure.Persistence.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("pk_user_tokens", x => new { x.user_id, x.login_provider, x.name });
+                    table.PrimaryKey("pk_user_token", x => new { x.user_id, x.login_provider, x.name });
                     table.ForeignKey(
-                        name: "fk_user_tokens_users_user_id",
+                        name: "fk_user_token_user_user_id",
                         column: x => x.user_id,
-                        principalTable: "users",
+                        principalTable: "user",
                         principalColumn: "id",
                         onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
-                name: "transactions",
+                name: "transaction",
                 columns: table => new
                 {
                     id = table.Column<Guid>(type: "TEXT", nullable: false),
@@ -222,15 +222,15 @@ namespace Crypton.Infrastructure.Persistence.Migrations
                 {
                     table.PrimaryKey("pk_transactions", x => x.id);
                     table.ForeignKey(
-                        name: "fk_transactions_items_item_id",
+                        name: "fk_transaction_item_item_id",
                         column: x => x.item_id,
-                        principalTable: "items",
+                        principalTable: "item",
                         principalColumn: "id",
                         onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
-                name: "transaction_users",
+                name: "transaction_user",
                 columns: table => new
                 {
                     transaction_id = table.Column<Guid>(type: "TEXT", nullable: false),
@@ -239,138 +239,138 @@ namespace Crypton.Infrastructure.Persistence.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("pk_transaction_users", x => new { x.transaction_id, x.user_id, x.is_sender });
+                    table.PrimaryKey("pk_transaction_user", x => new { x.transaction_id, x.user_id, x.is_sender });
                     table.ForeignKey(
-                        name: "fk_transaction_users_asp_net_users_user_id",
+                        name: "fk_transaction_user_asp_net_users_user_id",
                         column: x => x.user_id,
-                        principalTable: "users",
+                        principalTable: "user",
                         principalColumn: "id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "fk_transaction_users_transactions_transaction_id",
+                        name: "fk_transaction_user_transaction_transaction_id",
                         column: x => x.transaction_id,
-                        principalTable: "transactions",
+                        principalTable: "transaction",
                         principalColumn: "id",
                         onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateIndex(
-                name: "ix_item_types_id",
-                table: "item_types",
+                name: "ix_item_item_type_id",
+                table: "item",
+                column: "item_type_id");
+
+            migrationBuilder.CreateIndex(
+                name: "ix_item_owner_id",
+                table: "item",
+                column: "owner_id");
+
+            migrationBuilder.CreateIndex(
+                name: "ix_item_type_id",
+                table: "item_type",
                 column: "id",
                 unique: true);
 
             migrationBuilder.CreateIndex(
-                name: "ix_item_types_name",
-                table: "item_types",
+                name: "ix_item_type_name",
+                table: "item_type",
                 column: "name",
                 unique: true);
 
             migrationBuilder.CreateIndex(
-                name: "ix_items_item_type_id",
-                table: "items",
-                column: "item_type_id");
-
-            migrationBuilder.CreateIndex(
-                name: "ix_items_owner_id",
-                table: "items",
-                column: "owner_id");
-
-            migrationBuilder.CreateIndex(
-                name: "ix_role_claims_role_id",
-                table: "role_claims",
-                column: "role_id");
-
-            migrationBuilder.CreateIndex(
                 name: "role_name_index",
-                table: "roles",
+                table: "role",
                 column: "normalized_name",
                 unique: true);
 
             migrationBuilder.CreateIndex(
-                name: "ix_transaction_users_user_id",
-                table: "transaction_users",
-                column: "user_id");
+                name: "ix_role_claim_role_id",
+                table: "role_claim",
+                column: "role_id");
+
+            migrationBuilder.CreateIndex(
+                name: "ix_transaction_item_id",
+                table: "transaction",
+                column: "item_id");
 
             migrationBuilder.CreateIndex(
                 name: "ix_transactions_index",
-                table: "transactions",
+                table: "transaction",
                 column: "index",
                 unique: true);
 
             migrationBuilder.CreateIndex(
-                name: "ix_transactions_item_id",
-                table: "transactions",
-                column: "item_id");
-
-            migrationBuilder.CreateIndex(
-                name: "ix_user_claims_user_id",
-                table: "user_claims",
+                name: "ix_transaction_user_user_id",
+                table: "transaction_user",
                 column: "user_id");
-
-            migrationBuilder.CreateIndex(
-                name: "ix_user_logins_user_id",
-                table: "user_logins",
-                column: "user_id");
-
-            migrationBuilder.CreateIndex(
-                name: "ix_user_roles_role_id",
-                table: "user_roles",
-                column: "role_id");
 
             migrationBuilder.CreateIndex(
                 name: "email_index",
-                table: "users",
+                table: "user",
                 column: "normalized_email");
 
             migrationBuilder.CreateIndex(
-                name: "ix_users_user_name",
-                table: "users",
+                name: "ix_user_user_name",
+                table: "user",
                 column: "user_name",
                 unique: true);
 
             migrationBuilder.CreateIndex(
                 name: "user_name_index",
-                table: "users",
+                table: "user",
                 column: "normalized_user_name",
                 unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "ix_user_claim_user_id",
+                table: "user_claim",
+                column: "user_id");
+
+            migrationBuilder.CreateIndex(
+                name: "ix_user_login_user_id",
+                table: "user_login",
+                column: "user_id");
+
+            migrationBuilder.CreateIndex(
+                name: "ix_user_role_role_id",
+                table: "user_role",
+                column: "role_id");
         }
 
         /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
-                name: "role_claims");
+                name: "role_claim");
 
             migrationBuilder.DropTable(
-                name: "transaction_users");
+                name: "transaction_user");
 
             migrationBuilder.DropTable(
-                name: "user_claims");
+                name: "user_claim");
 
             migrationBuilder.DropTable(
-                name: "user_logins");
+                name: "user_login");
 
             migrationBuilder.DropTable(
-                name: "user_roles");
+                name: "user_role");
 
             migrationBuilder.DropTable(
-                name: "user_tokens");
+                name: "user_token");
 
             migrationBuilder.DropTable(
-                name: "transactions");
+                name: "transaction");
 
             migrationBuilder.DropTable(
-                name: "roles");
+                name: "role");
 
             migrationBuilder.DropTable(
-                name: "items");
+                name: "item");
 
             migrationBuilder.DropTable(
-                name: "users");
+                name: "user");
 
             migrationBuilder.DropTable(
-                name: "item_types");
+                name: "item_type");
         }
     }
 }

@@ -34,15 +34,15 @@ namespace Crypton.Infrastructure.Persistence.Migrations
                         .HasColumnName("owner_id");
 
                     b.HasKey("Id")
-                        .HasName("pk_items");
+                        .HasName("pk_item");
 
                     b.HasIndex("ItemTypeId")
-                        .HasDatabaseName("ix_items_item_type_id");
+                        .HasDatabaseName("ix_item_item_type_id");
 
                     b.HasIndex("OwnerId")
-                        .HasDatabaseName("ix_items_owner_id");
+                        .HasDatabaseName("ix_item_owner_id");
 
-                    b.ToTable("items");
+                    b.ToTable("item");
                 });
 
             modelBuilder.Entity("Crypton.Domain.Entities.Transaction", b =>
@@ -82,7 +82,7 @@ namespace Crypton.Infrastructure.Persistence.Migrations
                         .IsUnique()
                         .HasDatabaseName("ix_transactions_index");
 
-                    b.ToTable("transactions");
+                    b.ToTable("transaction");
 
                     b.HasDiscriminator<string>("discriminator").HasValue("Transaction");
 
@@ -104,12 +104,12 @@ namespace Crypton.Infrastructure.Persistence.Migrations
                         .HasColumnName("is_sender");
 
                     b.HasKey("TransactionId", "UserId", "IsSender")
-                        .HasName("pk_transaction_users");
+                        .HasName("pk_transaction_user");
 
                     b.HasIndex("UserId")
-                        .HasDatabaseName("ix_transaction_users_user_id");
+                        .HasDatabaseName("ix_transaction_user_user_id");
 
-                    b.ToTable("transaction_users");
+                    b.ToTable("transaction_user");
                 });
 
             modelBuilder.Entity("Crypton.Domain.Entities.User", b =>
@@ -196,7 +196,7 @@ namespace Crypton.Infrastructure.Persistence.Migrations
                         .HasColumnName("user_name");
 
                     b.HasKey("Id")
-                        .HasName("pk_users");
+                        .HasName("pk_user");
 
                     b.HasIndex("NormalizedEmail")
                         .HasDatabaseName("email_index");
@@ -207,9 +207,9 @@ namespace Crypton.Infrastructure.Persistence.Migrations
 
                     b.HasIndex("UserName")
                         .IsUnique()
-                        .HasDatabaseName("ix_users_user_name");
+                        .HasDatabaseName("ix_user_user_name");
 
-                    b.ToTable("users", (string)null);
+                    b.ToTable("user", (string)null);
                 });
 
             modelBuilder.Entity("Crypton.Domain.ValueTypes.ItemType", b =>
@@ -253,17 +253,17 @@ namespace Crypton.Infrastructure.Persistence.Migrations
                         .HasColumnName("price");
 
                     b.HasKey("Id")
-                        .HasName("pk_item_types");
+                        .HasName("pk_item_type");
 
                     b.HasIndex("Id")
                         .IsUnique()
-                        .HasDatabaseName("ix_item_types_id");
+                        .HasDatabaseName("ix_item_type_id");
 
                     b.HasIndex("Name")
                         .IsUnique()
-                        .HasDatabaseName("ix_item_types_name");
+                        .HasDatabaseName("ix_item_type_name");
 
-                    b.ToTable("item_types");
+                    b.ToTable("item_type");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
@@ -288,13 +288,13 @@ namespace Crypton.Infrastructure.Persistence.Migrations
                         .HasColumnName("normalized_name");
 
                     b.HasKey("Id")
-                        .HasName("pk_roles");
+                        .HasName("pk_role");
 
                     b.HasIndex("NormalizedName")
                         .IsUnique()
                         .HasDatabaseName("role_name_index");
 
-                    b.ToTable("roles", (string)null);
+                    b.ToTable("role", (string)null);
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
@@ -318,12 +318,12 @@ namespace Crypton.Infrastructure.Persistence.Migrations
                         .HasColumnName("role_id");
 
                     b.HasKey("Id")
-                        .HasName("pk_role_claims");
+                        .HasName("pk_role_claim");
 
                     b.HasIndex("RoleId")
-                        .HasDatabaseName("ix_role_claims_role_id");
+                        .HasDatabaseName("ix_role_claim_role_id");
 
-                    b.ToTable("role_claims", (string)null);
+                    b.ToTable("role_claim", (string)null);
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserClaim<string>", b =>
@@ -347,12 +347,12 @@ namespace Crypton.Infrastructure.Persistence.Migrations
                         .HasColumnName("user_id");
 
                     b.HasKey("Id")
-                        .HasName("pk_user_claims");
+                        .HasName("pk_user_claim");
 
                     b.HasIndex("UserId")
-                        .HasDatabaseName("ix_user_claims_user_id");
+                        .HasDatabaseName("ix_user_claim_user_id");
 
-                    b.ToTable("user_claims", (string)null);
+                    b.ToTable("user_claim", (string)null);
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserLogin<string>", b =>
@@ -375,12 +375,12 @@ namespace Crypton.Infrastructure.Persistence.Migrations
                         .HasColumnName("user_id");
 
                     b.HasKey("LoginProvider", "ProviderKey")
-                        .HasName("pk_user_logins");
+                        .HasName("pk_user_login");
 
                     b.HasIndex("UserId")
-                        .HasDatabaseName("ix_user_logins_user_id");
+                        .HasDatabaseName("ix_user_login_user_id");
 
-                    b.ToTable("user_logins", (string)null);
+                    b.ToTable("user_login", (string)null);
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserRole<string>", b =>
@@ -394,12 +394,12 @@ namespace Crypton.Infrastructure.Persistence.Migrations
                         .HasColumnName("role_id");
 
                     b.HasKey("UserId", "RoleId")
-                        .HasName("pk_user_roles");
+                        .HasName("pk_user_role");
 
                     b.HasIndex("RoleId")
-                        .HasDatabaseName("ix_user_roles_role_id");
+                        .HasDatabaseName("ix_user_role_role_id");
 
-                    b.ToTable("user_roles", (string)null);
+                    b.ToTable("user_role", (string)null);
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserToken<string>", b =>
@@ -421,9 +421,9 @@ namespace Crypton.Infrastructure.Persistence.Migrations
                         .HasColumnName("value");
 
                     b.HasKey("UserId", "LoginProvider", "Name")
-                        .HasName("pk_user_tokens");
+                        .HasName("pk_user_token");
 
-                    b.ToTable("user_tokens", (string)null);
+                    b.ToTable("user_token", (string)null);
                 });
 
             modelBuilder.Entity("Crypton.Domain.Entities.BalanceTransaction", b =>
@@ -434,7 +434,7 @@ namespace Crypton.Infrastructure.Persistence.Migrations
                         .HasColumnType("TEXT")
                         .HasColumnName("amount");
 
-                    b.ToTable("transactions");
+                    b.ToTable("transaction");
 
                     b.HasDiscriminator().HasValue("BalanceTransaction");
                 });
@@ -448,9 +448,9 @@ namespace Crypton.Infrastructure.Persistence.Migrations
                         .HasColumnName("item_id");
 
                     b.HasIndex("ItemId")
-                        .HasDatabaseName("ix_transactions_item_id");
+                        .HasDatabaseName("ix_transaction_item_id");
 
-                    b.ToTable("transactions");
+                    b.ToTable("transaction");
 
                     b.HasDiscriminator().HasValue("ItemTransaction");
                 });
@@ -462,14 +462,14 @@ namespace Crypton.Infrastructure.Persistence.Migrations
                         .HasForeignKey("ItemTypeId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired()
-                        .HasConstraintName("fk_items_item_types_item_type_id");
+                        .HasConstraintName("fk_item_item_types_item_type_id");
 
                     b.HasOne("Crypton.Domain.Entities.User", "Owner")
                         .WithMany("Items")
                         .HasForeignKey("OwnerId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired()
-                        .HasConstraintName("fk_items_asp_net_users_owner_id");
+                        .HasConstraintName("fk_item_asp_net_users_owner_id");
 
                     b.Navigation("ItemType");
 
@@ -483,14 +483,14 @@ namespace Crypton.Infrastructure.Persistence.Migrations
                         .HasForeignKey("TransactionId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired()
-                        .HasConstraintName("fk_transaction_users_transactions_transaction_id");
+                        .HasConstraintName("fk_transaction_user_transaction_transaction_id");
 
                     b.HasOne("Crypton.Domain.Entities.User", "User")
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired()
-                        .HasConstraintName("fk_transaction_users_asp_net_users_user_id");
+                        .HasConstraintName("fk_transaction_user_asp_net_users_user_id");
 
                     b.Navigation("Transaction");
 
@@ -504,7 +504,7 @@ namespace Crypton.Infrastructure.Persistence.Migrations
                         .HasForeignKey("RoleId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired()
-                        .HasConstraintName("fk_role_claims_roles_role_id");
+                        .HasConstraintName("fk_role_claim_role_role_id");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserClaim<string>", b =>
@@ -514,7 +514,7 @@ namespace Crypton.Infrastructure.Persistence.Migrations
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired()
-                        .HasConstraintName("fk_user_claims_users_user_id");
+                        .HasConstraintName("fk_user_claim_user_user_id");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserLogin<string>", b =>
@@ -524,7 +524,7 @@ namespace Crypton.Infrastructure.Persistence.Migrations
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired()
-                        .HasConstraintName("fk_user_logins_users_user_id");
+                        .HasConstraintName("fk_user_login_user_user_id");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserRole<string>", b =>
@@ -534,14 +534,14 @@ namespace Crypton.Infrastructure.Persistence.Migrations
                         .HasForeignKey("RoleId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired()
-                        .HasConstraintName("fk_user_roles_roles_role_id");
+                        .HasConstraintName("fk_user_role_role_role_id");
 
                     b.HasOne("Crypton.Domain.Entities.User", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired()
-                        .HasConstraintName("fk_user_roles_users_user_id");
+                        .HasConstraintName("fk_user_role_user_user_id");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserToken<string>", b =>
@@ -551,7 +551,7 @@ namespace Crypton.Infrastructure.Persistence.Migrations
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired()
-                        .HasConstraintName("fk_user_tokens_users_user_id");
+                        .HasConstraintName("fk_user_token_user_user_id");
                 });
 
             modelBuilder.Entity("Crypton.Domain.Entities.ItemTransaction", b =>
@@ -561,7 +561,7 @@ namespace Crypton.Infrastructure.Persistence.Migrations
                         .HasForeignKey("ItemId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired()
-                        .HasConstraintName("fk_transactions_items_item_id");
+                        .HasConstraintName("fk_transaction_item_item_id");
 
                     b.Navigation("Item");
                 });

@@ -55,6 +55,7 @@ public sealed class AppDbContext : IdentityDbContext<User>, IAppDbContext
         {
             var entityTableName = entity.GetTableName()!
                 .Replace("AspNet", string.Empty)
+                .TrimEnd('s')
                 .ToSnakeCase();
 
             entity.SetTableName(entityTableName);
