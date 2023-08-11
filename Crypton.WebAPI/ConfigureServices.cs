@@ -1,4 +1,5 @@
-﻿using Crypton.Application;
+﻿using System.Text.Json.Serialization;
+using Crypton.Application;
 using Crypton.Domain;
 using Crypton.Infrastructure.Filters;
 using Crypton.Infrastructure.Policies;
@@ -32,9 +33,10 @@ public static class ConfigureServices
                 o.RespectBrowserAcceptHeader = true;
             })
             .AddXmlSerializerFormatters()
-            .AddJsonOptions(x =>
+            .AddJsonOptions(options =>
             {
-                x.JsonSerializerOptions.PropertyNamingPolicy = new SnakeCaseNamingPolicy();
+                options.JsonSerializerOptions.PropertyNamingPolicy = new SnakeCaseNamingPolicy();
+                options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
             });
 
         services.AddSignalR(o => { o.EnableDetailedErrors = env.IsDevelopment(); });

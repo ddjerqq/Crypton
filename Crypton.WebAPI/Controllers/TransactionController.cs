@@ -109,24 +109,36 @@ public sealed class TransactionController : ControllerBase
         return this.Ok();
     }
 
-    [HttpPost("send_payment")]
+    // TODO this should be a validatable command
+    [HttpPost("send_payment/{receiverId:guid}")]
     public async Task<IActionResult> CreateTransaction(
-        [FromBody] CreateTransactionCommand command,
+        Guid receiverId,
+        [FromQuery] decimal amount,
         CancellationToken ct = default)
     {
-        command.SenderId = this.currentUserAccessor.GetCurrentUserId()!;
-        command.Sender = await this.currentUserAccessor.GetCurrentUserAsync(ct);
+        var currentUser = await this.currentUserAccessor.GetCurrentUserAsync(ct);
+        var receiver = await this.dbContext
+            .Users.AsNoTracking()
+            .FirstOrDefaultAsync(x => x.Id == receiverId.ToString(), ct);
 
-        command.Receiver = await this.dbContext.Users
-            .AsNoTracking()
-            .FirstOrDefaultAsync(x => x.Id == command.ReceiverId, ct);
+        // these will need to go to MediatR
+        if (currentUser is null || receiver is null)
+            return this.BadRequest("Invalid user id");
 
-        if (command.TransactionType == TransactionType.ItemTransaction)
+        if (amount <= 0 || amount > currentUser.Balance)
+            return this.BadRequest("Invalid amount");
+
+        var command = new CreateTransactionCommand
         {
-            command.Item = await this.dbContext.Items
-                .AsNoTracking()
-                .FirstOrDefaultAsync(x => x.Id == command.ItemId, ct);
-        }
+            SenderId = currentUser.Id,
+            Sender = currentUser,
+            ReceiverId = receiver.Id,
+            Receiver = receiver,
+            TransactionType = TransactionType.BalanceTransaction,
+            Amount = amount,
+            ItemId = null,
+            Item = null,
+        };
 
         var result = await this.mediator.Send(command, ct);
         if (result.IsError)

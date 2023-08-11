@@ -56,10 +56,12 @@ public sealed class CreateTransactionCommandValidator : AbstractValidator<Create
         this.RuleLevelCascadeMode = CascadeMode.Stop;
 
         this.RuleFor(x => x.Receiver)
-            .NotEmpty();
+            .NotEmpty()
+            .When(x => !x.IsReceiverSystem);
 
         this.RuleFor(x => x.ReceiverId)
             .NotEmpty()
+            .When(x => !x.IsReceiverSystem)
             .NotEqual(x => x.SenderId)
             .WithMessage("You cannot send transactions to yourself.");
 
