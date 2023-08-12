@@ -8,6 +8,7 @@ public interface ITransactionService
 
     public Task InitializeAsync(CancellationToken ct = default);
 
+    // TODO maybe something to notify about the creation of transaction
     public Task AddTransactionAsync(Transaction transaction, CancellationToken ct = default);
 
     public decimal GetUserBalance(Guid userId);
