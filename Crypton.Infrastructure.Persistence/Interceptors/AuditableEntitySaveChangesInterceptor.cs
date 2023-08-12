@@ -1,7 +1,9 @@
-﻿using Crypton.Domain.Common.Abstractions;
+﻿using Crypton.Application.Interfaces;
+using Crypton.Domain.Common.Abstractions;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
 using Microsoft.EntityFrameworkCore.Diagnostics;
+using Microsoft.EntityFrameworkCore.Infrastructure;
 
 namespace Crypton.Infrastructure.Persistence.Interceptors;
 
@@ -9,18 +11,25 @@ public sealed class AuditableEntitySaveChangesInterceptor : SaveChangesIntercept
 {
     public static void UpdateEntities(DbContext? context)
     {
-        // TODO: have some kind of user manager get the user id who performed the action here
+        var userAccessor = (ICurrentUserAccessor?)context?.GetService(typeof(ICurrentUserAccessor));
+
         context?.ChangeTracker
             .Entries<IAuditableDomainEntity>()
             .ToList()
             .ForEach(entry =>
             {
                 if (entry.State == EntityState.Added)
+                {
+                    entry.Entity.CreatedBy = userAccessor?.GetCurrentUserId().ToString();
                     entry.Entity.Created = DateTime.UtcNow;
+                }
 
-                if (entry.State == EntityState.Added || entry.State == EntityState.Modified ||
-                    HasChangedOwnedEntities(entry))
+                if (entry.State == EntityState.Added
+                    || entry.State == EntityState.Modified || HasChangedOwnedEntities(entry))
+                {
+                    entry.Entity.LastModifiedBy = userAccessor?.GetCurrentUserId().ToString();
                     entry.Entity.LastModified = DateTime.UtcNow;
+                }
             });
     }
 
