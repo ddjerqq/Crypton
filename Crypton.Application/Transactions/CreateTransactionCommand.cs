@@ -1,10 +1,12 @@
-﻿using System.Text.Json.Serialization;
+﻿using System.ComponentModel.DataAnnotations;
+using System.Text.Json.Serialization;
 using Crypton.Application.Common.Abstractions;
 using Crypton.Application.Interfaces;
 using Crypton.Domain.Common.Extensions;
 using Crypton.Domain.Entities;
 using ErrorOr;
 using FluentValidation;
+using Microsoft.EntityFrameworkCore;
 
 namespace Crypton.Application.Transactions;
 
@@ -23,29 +25,109 @@ public enum TransactionType
 
 public sealed class CreateTransactionCommand : IResultRequest<bool>
 {
-    [JsonIgnore]
-    public string SenderId { get; set; } = string.Empty;
+    // for Json Construction
+    public CreateTransactionCommand()
+    {
+    }
+
+    public CreateTransactionCommand(User? sender, User? receiver, decimal amount)
+    {
+        sender ??= User.SystemUser();
+        receiver ??= User.SystemUser();
+
+        this.SenderId = sender.Id;
+        this.Sender = sender;
+
+        this.ReceiverId = receiver.Id;
+        this.Receiver = receiver;
+
+        this.TransactionType = TransactionType.BalanceTransaction;
+        this.Amount = amount;
+    }
+
+    public CreateTransactionCommand(User? sender, User? receiver, Item item)
+    {
+        sender ??= User.SystemUser();
+        receiver ??= User.SystemUser();
+
+        this.SenderId = sender.Id;
+        this.Sender = sender;
+
+        this.ReceiverId = receiver.Id;
+        this.Receiver = receiver;
+
+        this.TransactionType = TransactionType.ItemTransaction;
+        this.ItemId = item.Id;
+        this.Item = item;
+    }
 
     [JsonIgnore]
-    public User? Sender { get; set; }
+    public string SenderId { get; private set; } = string.Empty;
 
+    [JsonIgnore]
+    public User? Sender { get; private set; }
+
+    [JsonIgnore]
     public bool IsSenderSystem => this.Sender?.IsSystem ?? this.SenderId == GuidExtensions.ZeroGuidValue;
 
-    public string ReceiverId { get; set; } = string.Empty;
+    [JsonRequired]
+    [JsonPropertyName("receiver_id")]
+    [RegularExpression("^[0-9a-f]{8}(-[0-9a-f]{4}){3}-[0-9a-f]{12}$")]
+    public string ReceiverId { get; init; } = string.Empty;
 
     [JsonIgnore]
-    public User? Receiver { get; set; }
+    public User? Receiver { get; private set; }
 
+    [JsonIgnore]
     public bool IsReceiverSystem => this.Receiver?.IsSystem ?? this.ReceiverId == GuidExtensions.ZeroGuidValue;
 
-    public TransactionType TransactionType { get; set; }
+    [JsonRequired]
+    [JsonPropertyName("transaction_type")]
+    public TransactionType TransactionType { get; init; } = TransactionType.BalanceTransaction;
 
-    public decimal? Amount { get; set; }
+    [JsonRequired]
+    [JsonPropertyName("amount")]
+    public decimal? Amount { get; init; }
 
-    public Guid? ItemId { get; set; }
+    [JsonPropertyName("item_id")]
+    [RegularExpression("^[0-9a-f]{8}(-[0-9a-f]{4}){3}-[0-9a-f]{12}$")]
+    public Guid? ItemId { get; init; }
 
     [JsonIgnore]
-    public Item? Item { get; set; }
+    public Item? Item { get; private set; }
+
+    // Json Conversion initializer
+    public async Task<bool> InitializeAsync(
+        IAppDbContext dbContext,
+        ICurrentUserAccessor currentUserAccessor,
+        CancellationToken ct = default)
+    {
+        if (!this.IsSenderSystem && (string.IsNullOrEmpty(this.SenderId) || this.Sender is null))
+        {
+            var currentUserId = currentUserAccessor.GetCurrentUserId();
+
+            if (string.IsNullOrEmpty(currentUserId))
+                return false;
+
+            this.SenderId = currentUserId;
+            this.Sender = await dbContext.Users.AsNoTracking()
+                .FirstOrDefaultAsync(x => x.Id == this.SenderId, ct);
+        }
+
+        if (!this.IsReceiverSystem)
+        {
+            this.Receiver = await dbContext.Users.AsNoTracking()
+                .FirstOrDefaultAsync(x => x.Id == this.ReceiverId, ct);
+        }
+
+        if (this.TransactionType == TransactionType.ItemTransaction)
+        {
+            this.Item = await dbContext.Items.AsNoTracking()
+                .FirstOrDefaultAsync(x => x.Id == this.ItemId, ct);
+        }
+
+        return true;
+    }
 }
 
 public sealed class CreateTransactionCommandValidator : AbstractValidator<CreateTransactionCommand>
@@ -76,6 +158,8 @@ public sealed class CreateTransactionCommandValidator : AbstractValidator<Create
             this.When(x => !(x.Sender?.IsSystem ?? x.SenderId == GuidExtensions.ZeroGuidValue), () =>
             {
                 this.RuleFor(x => x.Amount)
+                    .GreaterThan(0)
+                    .WithMessage("Amount must be a positive integer.")
                     .Must((ctx, amount) => amount <= ctx.Sender!.Balance)
                     .WithMessage("Sender has insufficient funds.");
             });
@@ -109,20 +193,31 @@ public sealed class CreateTransactionCommandHandler : IResultRequestHandler<Crea
         this.transactionWorker = transactionWorker;
     }
 
-    public async Task<ErrorOr<bool>> Handle(CreateTransactionCommand request, CancellationToken cancellationToken)
+    public async Task<ErrorOr<bool>> Handle(CreateTransactionCommand request, CancellationToken ct)
     {
         switch (request.TransactionType)
         {
             case TransactionType.BalanceTransaction:
             {
-                await this.transactionWorker.EnqueueTransaction(request.Sender!, request.Receiver!, request.Amount!.Value, cancellationToken);
+                await this.transactionWorker.EnqueueTransaction(
+                    request.Sender!,
+                    request.Receiver!,
+                    request.Amount!.Value, ct);
+
                 break;
             }
 
             case TransactionType.ItemTransaction:
             {
-                var item = request.Sender!.Items.First(x => x.Id == request.ItemId!.Value);
-                await this.transactionWorker.EnqueueTransaction(request.Sender, request.Receiver!, item, cancellationToken);
+                var item = request.Sender!.Items
+                    .First(x => x.Id == request.ItemId!.Value);
+
+                await this.transactionWorker.EnqueueTransaction(
+                    request.Sender,
+                    request.Receiver!,
+                    item,
+                    ct);
+
                 break;
             }
 
