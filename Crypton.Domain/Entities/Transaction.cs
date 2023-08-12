@@ -9,11 +9,14 @@ public class Transaction : BaseDomainEntity
 {
     public static readonly int Difficulty;
     protected static readonly string Predicate;
+    protected static readonly string Seed;
 
     static Transaction()
     {
         Difficulty = int.Parse(Environment.GetEnvironmentVariable("BLOCKCHAIN_DIFFICULTY") ?? "4");
         Predicate = new string('0', Difficulty);
+
+        Seed = Environment.GetEnvironmentVariable("BLOCKCHAIN_SALT") ?? "salt";
     }
 
     public Guid Id { get; init; }
@@ -40,13 +43,12 @@ public class Transaction : BaseDomainEntity
 
     public bool IsValid => this.Hash[..Difficulty] == Predicate;
 
-    // ReSharper disable ConditionalAccessQualifierIsNonNullableAccordingToAPIContract
     protected virtual string Payload =>
         $"{this.Id}{this.Index}" +
-        $"{this.Sender?.Id ?? GuidExtensions.ZeroGuidValue}" +
-        $"{this.Receiver?.Id ?? GuidExtensions.ZeroGuidValue}" +
-        $"{{0}}{this.Timestamp.Ticks}" +
-        $"{this.Nonce}{this.PreviousHash}";
+        $"{this.Sender.Id}{this.Receiver.Id}" +
+        $"{{0}}" +
+        $"{this.Timestamp.ToUniversalTime():O}" +
+        $"{this.Nonce}{this.PreviousHash}{Seed}";
 
     public static Transaction Genesis()
     {
