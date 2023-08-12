@@ -4,8 +4,16 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Crypton.WebAPI;
 
+/// <summary>
+/// Configure the middleware for the web application.
+/// </summary>
 public static class ConfigureMiddleware
 {
+    /// <summary>
+    /// Apply any currently pending migrations.
+    /// </summary>
+    /// <param name="app">WebApplication.</param>
+    /// <returns>the WebApplication with the applied migrations.</returns>
     public static WebApplication MigrateDatabase(this WebApplication app)
     {
         using var scope = app.Services.CreateScope();
@@ -22,6 +30,11 @@ public static class ConfigureMiddleware
         return app;
     }
 
+    /// <summary>
+    /// Initialize the transactions. Load them from the database.
+    /// </summary>
+    /// <param name="app">WebApplication.</param>
+    /// <returns>the WebApplication with the initialized transactions.</returns>
     public static WebApplication InitializeTransactions(this WebApplication app)
     {
         using var scope = app.Services.CreateScope();
@@ -36,6 +49,11 @@ public static class ConfigureMiddleware
         return app;
     }
 
+    /// <summary>
+    /// Configure the web api middleware.
+    /// </summary>
+    /// <param name="app">WebApplication.</param>
+    /// <returns>the WebApplication with the configured web api middleware.</returns>
     public static WebApplication ConfigureWebApiMiddleware(this WebApplication app)
     {
         if (app.Environment.IsDevelopment())
@@ -63,8 +81,7 @@ public static class ConfigureMiddleware
 
         // this should be after UseRouting
         // https://stackoverflow.com/a/71951181/14860947
-        // app.UseDigitalSignature();
-
+        // TODO: re-enable for front-end app.UseDigitalSignature();
         app.UseAuthorization();
 
         app.UseCors();

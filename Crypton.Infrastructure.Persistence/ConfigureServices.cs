@@ -1,6 +1,7 @@
 ﻿using Crypton.Application.Interfaces;
 using Crypton.Infrastructure.Persistence.Interceptors;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Crypton.Infrastructure.Persistence;
@@ -38,7 +39,9 @@ public static class ConfigureServices
         return true;
     }
 
-    public static IServiceCollection AddPersistenceServices(this IServiceCollection services)
+    public static IServiceCollection AddPersistenceServices(
+        this IServiceCollection services,
+        IConfiguration configuration)
     {
         services.AddSingleton<AuditableEntitySaveChangesInterceptor>();
         services.AddSingleton<UserMaterializationInterceptor>();
@@ -51,10 +54,15 @@ public static class ConfigureServices
                 o.EnableSensitiveDataLogging();
             }
 
-            if (TryLoadConnectionString(out var connectionString))
-                o.UseNpgsql(connectionString);
+            if (TryLoadConnectionString(out var pgConnectionString))
+            {
+                o.UseNpgsql(pgConnectionString);
+            }
             else
-                o.UseSqlite("Data Source=C:/work/crypton/app.db;");
+            {
+                var connectionString = configuration.GetConnectionString("DefaultConnection");
+                o.UseSqlite(connectionString);
+            }
         });
 
         // delegate the IDbContext to the EmeraldDbContext;

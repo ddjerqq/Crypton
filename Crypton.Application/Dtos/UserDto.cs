@@ -20,7 +20,7 @@ public sealed class UserDto
     {
         return new UserDto
         {
-            Id = Guid.Parse(user.Id),
+            Id = user.Id,
             UserName = user.UserName,
             Email = user.Email,
             Balance = user.Balance,

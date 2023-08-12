@@ -57,7 +57,10 @@ public sealed class TransactionController : ControllerBase
     /// Collect daily coins.
     /// </summary>
     /// <param name="ct">CancellationToken.</param>
-    /// <returns>status code 200 if the user is eligible for the daily reward, status code 400 otherwise.</returns>
+    /// <returns>
+    /// status code 202 if the user is eligible for the daily reward,
+    /// status code 400 otherwise, along ValidationErrors.
+    /// </returns>
     [HttpPost("daily")]
     public async Task<IActionResult> CollectDaily(CancellationToken ct = default)
     {
@@ -72,7 +75,7 @@ public sealed class TransactionController : ControllerBase
         if (result.IsError)
             return this.BadRequest(result.Errors);
 
-        return this.Ok();
+        return this.StatusCode(StatusCodes.Status202Accepted);
     }
 
     /// <summary>

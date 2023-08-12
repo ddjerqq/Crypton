@@ -1,4 +1,5 @@
-﻿using Crypton.Domain.ValueTypes;
+﻿using System.ComponentModel.DataAnnotations.Schema;
+using Crypton.Domain.ValueTypes;
 
 namespace Crypton.Domain.Entities;
 
@@ -10,7 +11,9 @@ public sealed class Item
 
     public ItemType ItemType { get; init; } = null!;
 
-    public string OwnerId { get; init; } = string.Empty;
+    [NotMapped]
+    public Guid OwnerId { get; init; }
 
+    [NotMapped]
     public User Owner { get; init; } = null!;
 }

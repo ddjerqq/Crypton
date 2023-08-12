@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.Identity;
 
 namespace Crypton.Domain.Common.Abstractions;
 
-public abstract class UserBase : IdentityUser, IAuditableDomainEntity
+public abstract class UserBase : IdentityUser<Guid>, IAuditableDomainEntity
 {
     [NotMapped]
     [JsonIgnore]

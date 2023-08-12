@@ -10,7 +10,7 @@ public interface ITransactionService
 
     public Task AddTransactionAsync(Transaction transaction, CancellationToken ct = default);
 
-    public decimal GetUserBalance(string userId);
+    public decimal GetUserBalance(Guid userId);
 
-    public IEnumerable<Item> GetUserItems(string userId);
+    public IEnumerable<Item> GetUserItems(Guid userId);
 }

@@ -26,7 +26,7 @@ builder.Services
     .AddApplicationServices()
     .AddInfrastructureServices()
     .AddBackgroundServices()
-    .AddPersistenceServices()
+    .AddPersistenceServices(builder.Configuration)
     .AddWebApiServices(builder.Environment)
     .AddIdentityServices()
     .AddDigitalSignature();

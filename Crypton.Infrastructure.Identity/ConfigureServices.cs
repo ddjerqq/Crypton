@@ -18,7 +18,7 @@ public static class ConfigureServices
         services.AddAuthentication()
             .AddJwtBearer(ConfigureJwtBearerOptions);
 
-        services.AddIdentity<User, IdentityRole>(ConfigureIdentityOptions).AddEntityFrameworkStores<AppDbContext>();
+        services.AddIdentity<User, IdentityRole<Guid>>(ConfigureIdentityOptions).AddEntityFrameworkStores<AppDbContext>();
 
         services.ConfigureApplicationCookie(ConfigureApplicationCookieOptions);
 

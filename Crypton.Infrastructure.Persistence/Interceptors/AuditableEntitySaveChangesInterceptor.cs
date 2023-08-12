@@ -9,7 +9,7 @@ public sealed class AuditableEntitySaveChangesInterceptor : SaveChangesIntercept
 {
     public static void UpdateEntities(DbContext? context)
     {
-        // have some kind of user manager get the user id who performed the action here
+        // TODO: have some kind of user manager get the user id who performed the action here
         context?.ChangeTracker
             .Entries<IAuditableDomainEntity>()
             .ToList()

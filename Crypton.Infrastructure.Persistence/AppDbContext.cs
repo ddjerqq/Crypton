@@ -6,12 +6,13 @@ using Crypton.Infrastructure.Persistence.Common.Extensions;
 using Crypton.Infrastructure.Persistence.Interceptors;
 using Crypton.Infrastructure.Persistence.ValueConverters;
 using MediatR;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
 namespace Crypton.Infrastructure.Persistence;
 
-public sealed class AppDbContext : IdentityDbContext<User>, IAppDbContext
+public sealed class AppDbContext : IdentityDbContext<User, IdentityRole<Guid>, Guid>, IAppDbContext
 {
     private readonly AuditableEntitySaveChangesInterceptor auditableEntitySaveChangesInterceptor;
     private readonly UserMaterializationInterceptor userMaterializationInterceptor;

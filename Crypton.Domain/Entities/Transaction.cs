@@ -48,8 +48,6 @@ public class Transaction : BaseDomainEntity
 
     public bool IsValid => this.Hash[..Difficulty] == Predicate;
 
-    public string GetPayload() => this.Payload;
-
     protected virtual string Payload =>
         $"{this.Id}{this.Index}" +
         $"{this.Sender.Id}{this.Receiver.Id}" +
@@ -65,8 +63,8 @@ public class Transaction : BaseDomainEntity
             Index = 0,
             Participants = new TransactionUser[]
             {
-                new(GuidExtensions.ZeroGuidValue, GuidExtensions.ZeroGuid, true),
-                new(GuidExtensions.ZeroGuidValue, GuidExtensions.ZeroGuid, false),
+                new(GuidExtensions.ZeroGuid, GuidExtensions.ZeroGuid, true),
+                new(GuidExtensions.ZeroGuid, GuidExtensions.ZeroGuid, false),
             },
             Timestamp = new DateTime(2015, 1, 1, 0, 0, 0, DateTimeKind.Utc),
             Nonce = 0,
@@ -125,8 +123,8 @@ public class Transaction : BaseDomainEntity
 
         var participants = new TransactionUser[]
         {
-            new(sender?.Id ?? GuidExtensions.ZeroGuidValue, id, true),
-            new(receiver?.Id ?? GuidExtensions.ZeroGuidValue, id, false),
+            new(sender?.Id ?? GuidExtensions.ZeroGuid, id, true),
+            new(receiver?.Id ?? GuidExtensions.ZeroGuid, id, false),
         };
 
         return new ItemTransaction

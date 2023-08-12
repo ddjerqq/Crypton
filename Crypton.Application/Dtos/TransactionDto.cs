@@ -26,8 +26,6 @@ public class TransactionDto
 
     public string PreviousHash { get; init; } = string.Empty;
 
-    public string Payload { get; init; } = string.Empty;
-
     public string Hash { get; init; } = string.Empty;
 
     public static implicit operator TransactionDto(Transaction transaction)
@@ -36,9 +34,9 @@ public class TransactionDto
         {
             Id = transaction.Id,
             Index = transaction.Index,
-            SenderId = Guid.Parse(transaction.Sender.Id),
+            SenderId = transaction.Sender.Id,
             SenderUsername = transaction.Sender.UserName!,
-            ReceiverId = Guid.Parse(transaction.Receiver.Id),
+            ReceiverId = transaction.Receiver.Id,
             ReceiverUserName = transaction.Receiver.UserName!,
             Item = transaction is ItemTransaction itemTransaction ? (ItemDto)itemTransaction.Item : null,
             Amount = transaction is BalanceTransaction balanceTransaction ? balanceTransaction.Amount : null,
@@ -46,7 +44,6 @@ public class TransactionDto
             Nonce = transaction.Nonce,
             PreviousHash = transaction.PreviousHash,
             Hash = transaction.Hash,
-            Payload = transaction.GetPayload(),
         };
     }
 }

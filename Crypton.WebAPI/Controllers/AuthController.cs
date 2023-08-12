@@ -150,7 +150,7 @@ public sealed class AuthController : ControllerBase
     {
         var users = await this.dbContext.Users
             .AsNoTracking()
-            .Where(x => x.Id != GuidExtensions.ZeroGuidValue)
+            .Where(x => x.Id != GuidExtensions.ZeroGuid)
             .ToListAsync(ct);
 
         return this.Ok(users.Select(x => (UserDto)x));

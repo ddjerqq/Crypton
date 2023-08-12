@@ -12,14 +12,17 @@ public sealed class User : UserBase
     [NotMapped]
     public IReadOnlyCollection<Item> Items { get; private set; } = new List<Item>();
 
-    public bool IsSystem => this.Id == GuidExtensions.ZeroGuidValue;
+    public bool IsSystem => this.Id == GuidExtensions.ZeroGuid;
 
     public static User SystemUser()
     {
         return new User
         {
-            Id = GuidExtensions.ZeroGuidValue,
-            UserName = "System",
+            Id = GuidExtensions.ZeroGuid,
+            UserName = "system",
+            NormalizedUserName = "SYSTEM",
+            Email = "system@crypton.com",
+            NormalizedEmail = "SYSTEM@CRYPTON.COM",
         };
     }
 

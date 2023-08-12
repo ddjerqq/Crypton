@@ -62,24 +62,24 @@ public sealed class CreateTransactionCommand : IResultRequest<bool>
     }
 
     [JsonIgnore]
-    public string SenderId { get; private set; } = string.Empty;
+    public Guid SenderId { get; private set; }
 
     [JsonIgnore]
     public User? Sender { get; private set; }
 
     [JsonIgnore]
-    public bool IsSenderSystem => this.Sender?.IsSystem ?? this.SenderId == GuidExtensions.ZeroGuidValue;
+    public bool IsSenderSystem => this.Sender?.IsSystem ?? this.SenderId == GuidExtensions.ZeroGuid;
 
     [JsonRequired]
     [JsonPropertyName("receiver_id")]
     [RegularExpression("^[0-9a-f]{8}(-[0-9a-f]{4}){3}-[0-9a-f]{12}$")]
-    public string ReceiverId { get; init; } = string.Empty;
+    public Guid ReceiverId { get; init; }
 
     [JsonIgnore]
     public User? Receiver { get; private set; }
 
     [JsonIgnore]
-    public bool IsReceiverSystem => this.Receiver?.IsSystem ?? this.ReceiverId == GuidExtensions.ZeroGuidValue;
+    public bool IsReceiverSystem => this.Receiver?.IsSystem ?? this.ReceiverId == GuidExtensions.ZeroGuid;
 
     [JsonRequired]
     [JsonPropertyName("transaction_type")]
@@ -102,14 +102,14 @@ public sealed class CreateTransactionCommand : IResultRequest<bool>
         ICurrentUserAccessor currentUserAccessor,
         CancellationToken ct = default)
     {
-        if (!this.IsSenderSystem && (string.IsNullOrEmpty(this.SenderId) || this.Sender is null))
+        if (!this.IsSenderSystem && this.Sender is null)
         {
             var currentUserId = currentUserAccessor.GetCurrentUserId();
 
-            if (string.IsNullOrEmpty(currentUserId))
+            if (currentUserId is null)
                 return false;
 
-            this.SenderId = currentUserId;
+            this.SenderId = currentUserId.Value;
             this.Sender = await dbContext.Users.AsNoTracking()
                 .FirstOrDefaultAsync(x => x.Id == this.SenderId, ct);
         }
@@ -155,7 +155,7 @@ public sealed class CreateTransactionCommandValidator : AbstractValidator<Create
                 .WithMessage("Amount must be greater than 0.");
 
             // when the sender is not system, check if the sender has enough balance
-            this.When(x => !(x.Sender?.IsSystem ?? x.SenderId == GuidExtensions.ZeroGuidValue), () =>
+            this.When(x => !(x.Sender?.IsSystem ?? x.SenderId == GuidExtensions.ZeroGuid), () =>
             {
                 this.RuleFor(x => x.Amount)
                     .GreaterThan(0)
@@ -174,7 +174,7 @@ public sealed class CreateTransactionCommandValidator : AbstractValidator<Create
                 .NotEmpty();
 
             // when the sender is not system, check if the sender has enough balance
-            this.When(x => !(x.Sender?.IsSystem ?? x.SenderId == GuidExtensions.ZeroGuidValue), () =>
+            this.When(x => !(x.Sender?.IsSystem ?? x.SenderId == GuidExtensions.ZeroGuid), () =>
             {
                 this.RuleFor(x => x.ItemId)
                     .Must((ctx, itemId) => ctx.Sender!.Items.Any(x => x.Id == itemId))

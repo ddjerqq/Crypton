@@ -17,13 +17,15 @@ public sealed class CurrentUserAccessor : ICurrentUserAccessor
         this.userManager = userManager;
     }
 
-    public string? GetCurrentUserId()
+    public Guid? GetCurrentUserId()
     {
         var claimsPrincipal = this.httpContextAccessor.HttpContext?.User;
-        return claimsPrincipal?
+        var stringId = claimsPrincipal?
             .Claims
             .FirstOrDefault(x => x.Type == ClaimTypes.NameIdentifier)?
             .Value;
+
+        return Guid.TryParse(stringId, out var id) ? id : null;
     }
 
     public async Task<User?> GetCurrentUserAsync(CancellationToken ct = default)

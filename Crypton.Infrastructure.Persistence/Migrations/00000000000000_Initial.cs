@@ -35,7 +35,7 @@ namespace Crypton.Infrastructure.Persistence.Migrations
                 name: "role",
                 columns: table => new
                 {
-                    id = table.Column<string>(type: "TEXT", nullable: false),
+                    id = table.Column<Guid>(type: "TEXT", nullable: false),
                     name = table.Column<string>(type: "TEXT", maxLength: 256, nullable: true),
                     normalized_name = table.Column<string>(type: "TEXT", maxLength: 256, nullable: true),
                     concurrency_stamp = table.Column<string>(type: "TEXT", nullable: true)
@@ -49,7 +49,7 @@ namespace Crypton.Infrastructure.Persistence.Migrations
                 name: "user",
                 columns: table => new
                 {
-                    id = table.Column<string>(type: "TEXT", nullable: false),
+                    id = table.Column<Guid>(type: "TEXT", nullable: false),
                     user_name = table.Column<string>(type: "TEXT", maxLength: 256, nullable: true),
                     normalized_user_name = table.Column<string>(type: "TEXT", maxLength: 256, nullable: true),
                     email = table.Column<string>(type: "TEXT", maxLength: 256, nullable: true),
@@ -80,7 +80,7 @@ namespace Crypton.Infrastructure.Persistence.Migrations
                 {
                     id = table.Column<int>(type: "INTEGER", nullable: false)
                         .Annotation("Sqlite:Autoincrement", true),
-                    role_id = table.Column<string>(type: "TEXT", nullable: false),
+                    role_id = table.Column<Guid>(type: "TEXT", nullable: false),
                     claim_type = table.Column<string>(type: "TEXT", nullable: true),
                     claim_value = table.Column<string>(type: "TEXT", nullable: true)
                 },
@@ -101,7 +101,7 @@ namespace Crypton.Infrastructure.Persistence.Migrations
                 {
                     id = table.Column<Guid>(type: "TEXT", nullable: false),
                     item_type_id = table.Column<Guid>(type: "TEXT", nullable: false),
-                    owner_id = table.Column<string>(type: "TEXT", nullable: false)
+                    owner_id = table.Column<Guid>(type: "TEXT", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -126,7 +126,7 @@ namespace Crypton.Infrastructure.Persistence.Migrations
                 {
                     id = table.Column<int>(type: "INTEGER", nullable: false)
                         .Annotation("Sqlite:Autoincrement", true),
-                    user_id = table.Column<string>(type: "TEXT", nullable: false),
+                    user_id = table.Column<Guid>(type: "TEXT", nullable: false),
                     claim_type = table.Column<string>(type: "TEXT", nullable: true),
                     claim_value = table.Column<string>(type: "TEXT", nullable: true)
                 },
@@ -148,7 +148,7 @@ namespace Crypton.Infrastructure.Persistence.Migrations
                     login_provider = table.Column<string>(type: "TEXT", nullable: false),
                     provider_key = table.Column<string>(type: "TEXT", nullable: false),
                     provider_display_name = table.Column<string>(type: "TEXT", nullable: true),
-                    user_id = table.Column<string>(type: "TEXT", nullable: false)
+                    user_id = table.Column<Guid>(type: "TEXT", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -165,8 +165,8 @@ namespace Crypton.Infrastructure.Persistence.Migrations
                 name: "user_role",
                 columns: table => new
                 {
-                    user_id = table.Column<string>(type: "TEXT", nullable: false),
-                    role_id = table.Column<string>(type: "TEXT", nullable: false)
+                    user_id = table.Column<Guid>(type: "TEXT", nullable: false),
+                    role_id = table.Column<Guid>(type: "TEXT", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -189,7 +189,7 @@ namespace Crypton.Infrastructure.Persistence.Migrations
                 name: "user_token",
                 columns: table => new
                 {
-                    user_id = table.Column<string>(type: "TEXT", nullable: false),
+                    user_id = table.Column<Guid>(type: "TEXT", nullable: false),
                     login_provider = table.Column<string>(type: "TEXT", nullable: false),
                     name = table.Column<string>(type: "TEXT", nullable: false),
                     value = table.Column<string>(type: "TEXT", nullable: true)
@@ -234,7 +234,7 @@ namespace Crypton.Infrastructure.Persistence.Migrations
                 columns: table => new
                 {
                     transaction_id = table.Column<Guid>(type: "TEXT", nullable: false),
-                    user_id = table.Column<string>(type: "TEXT", nullable: false),
+                    user_id = table.Column<Guid>(type: "TEXT", nullable: false),
                     is_sender = table.Column<bool>(type: "INTEGER", nullable: false)
                 },
                 constraints: table =>

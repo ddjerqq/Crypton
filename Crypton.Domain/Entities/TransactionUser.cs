@@ -5,7 +5,7 @@ namespace Crypton.Domain.Entities;
 
 public sealed class TransactionUser
 {
-    public TransactionUser(string userId, Guid transactionId, bool isSender)
+    public TransactionUser(Guid userId, Guid transactionId, bool isSender)
     {
         this.TransactionId = transactionId;
         this.UserId = userId;
@@ -28,7 +28,7 @@ public sealed class TransactionUser
 
     public Transaction Transaction { get; init; } = null!;
 
-    public string UserId { get; set; }
+    public Guid UserId { get; set; }
 
     public User User { get; set; } = null!;
 
@@ -38,5 +38,5 @@ public sealed class TransactionUser
     public bool IsReceiver => !this.IsSender;
 
     [NotMapped]
-    public bool IsSystem => this.UserId == GuidExtensions.ZeroGuidValue;
+    public bool IsSystem => this.UserId == GuidExtensions.ZeroGuid;
 }

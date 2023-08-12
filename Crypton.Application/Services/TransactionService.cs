@@ -28,7 +28,7 @@ public sealed class TransactionService : ITransactionService
 
         // check system user
         var systemUserCount = await dbContext.Users
-            .CountAsync(x => x.Id == GuidExtensions.ZeroGuidValue, ct);
+            .CountAsync(x => x.Id == GuidExtensions.ZeroGuid, ct);
 
         if (systemUserCount == 0)
         {
@@ -81,7 +81,7 @@ public sealed class TransactionService : ITransactionService
             transaction.Id);
     }
 
-    public decimal GetUserBalance(string userId)
+    public decimal GetUserBalance(Guid userId)
     {
         return this.transactions
             .OfType<BalanceTransaction>()
@@ -96,7 +96,7 @@ public sealed class TransactionService : ITransactionService
             .Sum();
     }
 
-    public IEnumerable<Item> GetUserItems(string userId)
+    public IEnumerable<Item> GetUserItems(Guid userId)
     {
         var itemsReceived = this.transactions
             .OfType<ItemTransaction>()
