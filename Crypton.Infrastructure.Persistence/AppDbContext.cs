@@ -4,6 +4,7 @@ using Crypton.Domain.Entities;
 using Crypton.Domain.ValueTypes;
 using Crypton.Infrastructure.Persistence.Common.Extensions;
 using Crypton.Infrastructure.Persistence.Interceptors;
+using Crypton.Infrastructure.Persistence.ValueConverters;
 using MediatR;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
@@ -89,5 +90,14 @@ public sealed class AppDbContext : IdentityDbContext<User>, IAppDbContext
             this.userMaterializationInterceptor);
 
         base.OnConfiguring(optionsBuilder);
+    }
+
+    protected override void ConfigureConventions(ModelConfigurationBuilder builder)
+    {
+        builder
+            .Properties<DateTime>()
+            .HaveConversion<DateTimeUtcValueConverter>();
+
+        base.ConfigureConventions(builder);
     }
 }
