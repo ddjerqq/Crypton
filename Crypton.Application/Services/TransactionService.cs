@@ -29,6 +29,7 @@ public sealed class TransactionService : ITransactionService
         // check system user
         var systemUserCount = await dbContext.Users
             .CountAsync(x => x.Id == GuidExtensions.ZeroGuidValue, ct);
+
         if (systemUserCount == 0)
         {
             await dbContext.Users.AddAsync(User.SystemUser(), ct);
@@ -36,7 +37,9 @@ public sealed class TransactionService : ITransactionService
         }
 
         // check genesis block
-        var blockCount = await dbContext.Transactions.CountAsync(ct);
+        var blockCount = await dbContext.Transactions
+            .CountAsync(x => x.Id == GuidExtensions.ZeroGuid, ct);
+
         if (blockCount == 0)
         {
             var transaction = Transaction.Genesis();
@@ -51,7 +54,12 @@ public sealed class TransactionService : ITransactionService
             .ToListAsync(ct);
 
         foreach (var transaction in transactionEnumerable)
+        {
+            if (!transaction.IsValid)
+                throw new Exception($"Blockchain modified. transaction at index: {transaction.Index} is invalid");
+
             this.transactions.Add(transaction);
+        }
     }
 
     public async Task AddTransactionAsync(Transaction transaction, CancellationToken ct = default)
