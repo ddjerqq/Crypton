@@ -1,4 +1,5 @@
-﻿using System.Text.Json.Serialization;
+﻿using System.Reflection;
+using System.Text.Json.Serialization;
 using Crypton.Application;
 using Crypton.Domain;
 using Crypton.Infrastructure.Filters;
@@ -11,10 +12,19 @@ using ZymLabs.NSwag.FluentValidation;
 
 namespace Crypton.WebAPI;
 
+/// <summary>
+/// Configure services for the web api.
+/// </summary>
 public static class ConfigureServices
 {
     private static readonly string[] CompressionTypes = { "application/octet-stream" };
 
+    /// <summary>
+    /// Add web api services.
+    /// </summary>
+    /// <param name="services">ServiceCollection.</param>
+    /// <param name="env">Environment.</param>
+    /// <returns>Configured Services.</returns>
     public static IServiceCollection AddWebApiServices(this IServiceCollection services, IWebHostEnvironment env)
     {
         services.AddHttpContextAccessor();
@@ -32,7 +42,6 @@ public static class ConfigureServices
                 o.Filters.Add<FluentValidationFilter>();
                 o.RespectBrowserAcceptHeader = true;
             })
-            .AddXmlSerializerFormatters()
             .AddJsonOptions(options =>
             {
                 options.JsonSerializerOptions.PropertyNamingPolicy = new SnakeCaseNamingPolicy();
@@ -60,6 +69,8 @@ public static class ConfigureServices
             services.AddEndpointsApiExplorer();
             services.AddSwaggerGen(c =>
             {
+                c.SupportNonNullableReferenceTypes();
+
                 c.SwaggerDoc("v1", new OpenApiInfo
                 {
                     Title = "Crypton.WebAPI",
@@ -99,6 +110,11 @@ public static class ConfigureServices
                         new string[] { }
                     },
                 });
+
+                // Set the comments path for the Swagger JSON and UI.
+                var xmlFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
+                var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
+                c.IncludeXmlComments(xmlPath);
             });
         }
 
