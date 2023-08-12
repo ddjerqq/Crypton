@@ -1,6 +1,5 @@
 using Crypton.Application.Auth;
 using Crypton.Application.Dtos;
-using Crypton.Application.Interfaces;
 using Crypton.Domain.Entities;
 using Crypton.Infrastructure.Diamond;
 using Crypton.Infrastructure.Services;
@@ -27,6 +26,7 @@ public sealed class AuthController : ControllerBase
         this.userManager = userManager;
     }
 
+    // TODO limit these, so authenticated users cannot spam these endpoints
     [IgnoreDigitalSignature]
     [AllowAnonymous]
     [HttpPost("register")]
@@ -45,16 +45,21 @@ public sealed class AuthController : ControllerBase
             return this.Ok();
         }
 
-        return this.BadRequest();
+        return this.BadRequest(result.Errors);
     }
 
+    // TODO limit these, so authenticated users cannot spam these endpoints
     [IgnoreDigitalSignature]
     [AllowAnonymous]
     [HttpPost("login")]
     public async Task<IActionResult> Login([FromBody] UserLoginCommand command)
     {
         var result = await this.signInManager
-            .PasswordSignInAsync(command.Username, command.Password, command.RememberMe, true);
+            .PasswordSignInAsync(
+                command.Username,
+                command.Password,
+                command.RememberMe,
+                true);
 
         if (result.Succeeded)
         {
@@ -72,7 +77,7 @@ public sealed class AuthController : ControllerBase
             return this.StatusCode(StatusCodes.Status429TooManyRequests);
         }
 
-        return this.BadRequest();
+        return this.BadRequest("Invalid Credentials");
     }
 
     [IgnoreDigitalSignature]
@@ -83,7 +88,8 @@ public sealed class AuthController : ControllerBase
     }
 
     [HttpGet("me")]
-    public async Task<IActionResult> Me(IAppDbContext dbContext)
+    [Produces<UserDto>(Order = 0, Type = typeof(UserDto))]
+    public async Task<IActionResult> Me()
     {
         var user = await this.userManager.GetUserAsync(this.User);
 
