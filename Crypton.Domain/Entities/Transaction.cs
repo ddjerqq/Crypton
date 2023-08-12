@@ -16,7 +16,9 @@ public class Transaction : BaseDomainEntity
         Difficulty = int.Parse(Environment.GetEnvironmentVariable("BLOCKCHAIN_DIFFICULTY") ?? "4");
         Predicate = new string('0', Difficulty);
 
-        Seed = Environment.GetEnvironmentVariable("BLOCKCHAIN_SALT") ?? "salt";
+
+        Seed = Environment.GetEnvironmentVariable("BLOCKCHAIN_SALT") ??
+               throw new ArgumentException("BLOCKCHAIN_SALT is not present in the environment");
     }
 
     public Guid Id { get; init; }
