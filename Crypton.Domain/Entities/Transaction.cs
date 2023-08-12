@@ -9,16 +9,11 @@ public class Transaction : BaseDomainEntity
 {
     public static readonly int Difficulty;
     protected static readonly string Predicate;
-    protected static readonly string Seed;
 
     static Transaction()
     {
         Difficulty = int.Parse(Environment.GetEnvironmentVariable("BLOCKCHAIN_DIFFICULTY") ?? "4");
         Predicate = new string('0', Difficulty);
-
-
-        Seed = Environment.GetEnvironmentVariable("BLOCKCHAIN_SALT") ??
-               throw new ArgumentException("BLOCKCHAIN_SALT is not present in the environment");
     }
 
     public Guid Id { get; init; }
@@ -44,6 +39,10 @@ public class Transaction : BaseDomainEntity
     public string Hash => this.Payload.CalculateSha256HexDigest();
 
     public bool IsValid => this.Hash[..Difficulty] == Predicate;
+
+    protected static string Seed =>
+        Environment.GetEnvironmentVariable("BLOCKCHAIN_SALT") ??
+        throw new ArgumentException("BLOCKCHAIN_SALT is not present in the environment");
 
     protected virtual string Payload =>
         $"{this.Id}{this.Index}" +
