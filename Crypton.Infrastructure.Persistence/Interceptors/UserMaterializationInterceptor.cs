@@ -1,7 +1,6 @@
 ﻿using Crypton.Application.Interfaces;
 using Crypton.Domain.Entities;
 using Microsoft.EntityFrameworkCore.Diagnostics;
-using Microsoft.EntityFrameworkCore.Infrastructure;
 
 namespace Crypton.Infrastructure.Persistence.Interceptors;
 

@@ -1,5 +1,4 @@
 ﻿using Crypton.Application.Interfaces;
-using Crypton.Infrastructure.Diamond;
 using Crypton.Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
 
