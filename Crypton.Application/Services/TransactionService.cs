@@ -7,6 +7,8 @@ using Microsoft.Extensions.Logging;
 
 namespace Crypton.Application.Services;
 
+// TODO: turn this into a scoped service, with no
+// in-memory cache of the blocks
 public sealed class TransactionService : ITransactionService
 {
     private readonly IServiceProvider services;
@@ -67,7 +69,7 @@ public sealed class TransactionService : ITransactionService
         await dbContext.SaveChangesAsync(ct);
 
         logger.LogInformation(
-            "Transaction with id: {TransactionId} has been successfully minted on the obama blockchain",
+            "Transaction with id: {TransactionId} has been successfully minted on the blockchain",
             transaction.Id);
     }
 
