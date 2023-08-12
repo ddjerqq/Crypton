@@ -1,20 +1,25 @@
 ﻿using Crypton.Domain.Entities;
-using Crypton.Domain.ValueTypes;
 
 namespace Crypton.Application.Dtos;
 
 public sealed class ItemDto
 {
-    public Guid Id { get; set; }
+    public Guid Id { get; init; }
 
-    public ItemType ItemType { get; set; } = null!;
+    public Guid TypeId { get; init; }
+
+    public string TypeName { get; init; } = string.Empty;
+
+    public decimal Price { get; init; }
 
     public static implicit operator ItemDto(Item item)
     {
         return new ItemDto
         {
             Id = item.Id,
-            ItemType = item.ItemType,
+            TypeId = item.ItemType.Id,
+            TypeName = item.ItemType.Name,
+            Price = item.ItemType.Price,
         };
     }
 }
