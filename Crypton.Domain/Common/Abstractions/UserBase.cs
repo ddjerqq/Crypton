@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations.Schema;
+using System.Text.Json.Serialization;
 using MediatR;
 using Microsoft.AspNetCore.Identity;
 
@@ -7,6 +8,7 @@ namespace Crypton.Domain.Common.Abstractions;
 public abstract class UserBase : IdentityUser, IAuditableDomainEntity
 {
     [NotMapped]
+    [JsonIgnore]
     public ICollection<INotification> ProtectedDomainEvents { get; set; } = new List<INotification>();
 
     public DateTime Created { get; set; } = DateTime.UtcNow;
