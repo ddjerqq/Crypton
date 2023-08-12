@@ -1,9 +1,13 @@
-﻿using System.Reflection;
+﻿using System.Globalization;
+using System.Reflection;
+using System.Security.Claims;
 using System.Text.Json.Serialization;
+using System.Threading.RateLimiting;
 using Crypton.Application;
 using Crypton.Domain;
 using Crypton.Infrastructure.Filters;
 using Crypton.Infrastructure.Policies;
+using Crypton.Infrastructure.Services.RateLimiting;
 using FluentValidation;
 using FluentValidation.AspNetCore;
 using Microsoft.AspNetCore.ResponseCompression;
@@ -127,6 +131,74 @@ public static class ConfigureServices
             o.Providers.Add<GzipCompressionProvider>();
             o.Providers.Add<BrotliCompressionProvider>();
         });
+        return services;
+    }
+
+    /// <summary>
+    /// Add rate limiting middleware.
+    /// </summary>
+    /// <param name="services">ServiceCollection.</param>
+    /// <param name="configuration">Configuration.</param>
+    /// <returns>Configured Services.</returns>
+    public static IServiceCollection AddRateLimiting(this IServiceCollection services, IConfiguration configuration)
+    {
+        TokenBucketRateLimitOptions tokenBucketRateLimitOptions = new();
+        configuration
+            .GetSection(TokenBucketRateLimitOptions.RateLimitConfigSection)
+            .Bind(tokenBucketRateLimitOptions);
+
+        services.AddRateLimiter(rateLimitOptions =>
+        {
+            rateLimitOptions.RejectionStatusCode = 429;
+
+            rateLimitOptions.OnRejected = (ctx, _) =>
+            {
+                if (ctx.Lease.TryGetMetadata(MetadataName.RetryAfter, out var retryAfter))
+                {
+                    ctx.HttpContext.Response.Headers.RetryAfter = ((int)retryAfter.TotalSeconds)
+                        .ToString(NumberFormatInfo.InvariantInfo);
+                }
+
+                return ValueTask.CompletedTask;
+            };
+
+            // authenticated policy name
+            rateLimitOptions.AddPolicy(TokenBucketRateLimitOptions.PolicyName, ctx =>
+            {
+                var userIdentifier = ctx.User
+                    .Claims
+                    .FirstOrDefault(x => x.Type == ClaimTypes.NameIdentifier)?
+                    .Value;
+
+                if (!string.IsNullOrEmpty(userIdentifier))
+                {
+                    // TODO: different configuration for authenticated users here
+                    return RateLimitPartition.GetTokenBucketLimiter(userIdentifier, _ =>
+                        new TokenBucketRateLimiterOptions
+                        {
+                            TokenLimit = tokenBucketRateLimitOptions.TokenLimit,
+                            QueueProcessingOrder = QueueProcessingOrder.OldestFirst,
+                            QueueLimit = tokenBucketRateLimitOptions.QueueLimit,
+                            ReplenishmentPeriod = TimeSpan.FromSeconds(tokenBucketRateLimitOptions.ReplenishmentPeriod),
+                            TokensPerPeriod = tokenBucketRateLimitOptions.TokensPerPeriod,
+                            AutoReplenishment = tokenBucketRateLimitOptions.AutoReplenishment,
+                        });
+                }
+
+                // TODO: and different configuration for non-authenticated users.
+                return RateLimitPartition.GetTokenBucketLimiter("anonymous", _ =>
+                    new TokenBucketRateLimiterOptions
+                    {
+                        TokenLimit = tokenBucketRateLimitOptions.TokenLimit,
+                        QueueProcessingOrder = QueueProcessingOrder.OldestFirst,
+                        QueueLimit = tokenBucketRateLimitOptions.QueueLimit,
+                        ReplenishmentPeriod = TimeSpan.FromSeconds(tokenBucketRateLimitOptions.ReplenishmentPeriod),
+                        TokensPerPeriod = tokenBucketRateLimitOptions.TokensPerPeriod,
+                        AutoReplenishment = true,
+                    });
+            });
+        });
+
         return services;
     }
 }

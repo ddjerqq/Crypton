@@ -82,6 +82,7 @@ public static class ConfigureMiddleware
         // this should be after UseRouting
         // https://stackoverflow.com/a/71951181/14860947
         // TODO: re-enable for front-end app.UseDigitalSignature();
+        app.UseRateLimiter();
         app.UseAuthorization();
 
         app.UseCors();

@@ -27,6 +27,7 @@ builder.Services
     .AddInfrastructureServices()
     .AddBackgroundServices()
     .AddPersistenceServices(builder.Configuration)
+    .AddRateLimiting(builder.Configuration)
     .AddWebApiServices(builder.Environment)
     .AddIdentityServices()
     .AddDigitalSignature();
