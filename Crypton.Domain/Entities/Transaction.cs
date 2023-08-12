@@ -2,18 +2,26 @@
 using System.Diagnostics;
 using Crypton.Domain.Common.Abstractions;
 using Crypton.Domain.Common.Extensions;
+using dotenv.net;
 
 namespace Crypton.Domain.Entities;
 
 public class Transaction : BaseDomainEntity
 {
     public static readonly int Difficulty;
+    protected static readonly string Seed;
     protected static readonly string Predicate;
 
     static Transaction()
     {
+        DotEnv.Fluent()
+            .WithEnvFiles("./../.env")
+            .Load();
+
         Difficulty = int.Parse(Environment.GetEnvironmentVariable("BLOCKCHAIN_DIFFICULTY") ?? "4");
         Predicate = new string('0', Difficulty);
+        Seed = Environment.GetEnvironmentVariable("BLOCKCHAIN__SEED") ??
+               throw new ArgumentException("BLOCKCHAIN__SEED is not present in the environment");
     }
 
     public Guid Id { get; init; }
@@ -40,15 +48,13 @@ public class Transaction : BaseDomainEntity
 
     public bool IsValid => this.Hash[..Difficulty] == Predicate;
 
-    protected static string Seed =>
-        Environment.GetEnvironmentVariable("BLOCKCHAIN_SALT") ??
-        throw new ArgumentException("BLOCKCHAIN_SALT is not present in the environment");
+    public string GetPayload() => this.Payload;
 
     protected virtual string Payload =>
         $"{this.Id}{this.Index}" +
         $"{this.Sender.Id}{this.Receiver.Id}" +
         $"{{0}}" +
-        $"{this.Timestamp.ToUniversalTime():O}" +
+        $"|{this.Timestamp:s}|" +
         $"{this.Nonce}{this.PreviousHash}{Seed}";
 
     public static Transaction Genesis()
@@ -62,7 +68,7 @@ public class Transaction : BaseDomainEntity
                 new(GuidExtensions.ZeroGuidValue, GuidExtensions.ZeroGuid, true),
                 new(GuidExtensions.ZeroGuidValue, GuidExtensions.ZeroGuid, false),
             },
-            Timestamp = new DateTime(2015, 1, 1),
+            Timestamp = new DateTime(2015, 1, 1, 0, 0, 0, DateTimeKind.Utc),
             Nonce = 0,
             PreviousHash = new string('0', 64),
         };
