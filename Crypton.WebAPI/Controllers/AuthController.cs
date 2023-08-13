@@ -4,6 +4,7 @@ using Crypton.Application.Interfaces;
 using Crypton.Domain.Common.Extensions;
 using Crypton.Domain.Entities;
 using Crypton.Infrastructure.Diamond;
+using Crypton.Infrastructure.Idempotency;
 using Crypton.Infrastructure.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
@@ -51,6 +52,7 @@ public sealed class AuthController : ControllerBase
     /// <param name="command">the register command.</param>
     /// <returns>status code 201 if the registration was successful, otherwise status code 400 and IdentityErrors.</returns>
     [AllowAnonymous]
+    [RequireIdempotency]
     [HttpPost("register")]
     public async Task<IActionResult> Register([FromBody] UserRegisterCommand command)
     {
@@ -77,7 +79,7 @@ public sealed class AuthController : ControllerBase
     /// <returns>status code 200 and string jwt token if the login was successful, otherwise status code 400.</returns>
     /// <exception cref="NotImplementedException">raised if identity needs 2 factor authentication.</exception>
     [AllowAnonymous]
-    [Produces<string>]
+    [RequireIdempotency]
     [HttpPost("login")]
     public async Task<IActionResult> Login([FromBody] UserLoginCommand command)
     {

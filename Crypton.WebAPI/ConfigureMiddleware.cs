@@ -1,4 +1,5 @@
 ﻿using Crypton.Application.Interfaces;
+using Crypton.Infrastructure.Idempotency;
 using Crypton.Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
 
@@ -86,6 +87,8 @@ public static class ConfigureMiddleware
         // TODO: re-enable for front-end
         // app.UseDigitalSignature();
         app.UseAuthorization();
+
+        app.UseIdempotency();
 
         app.UseCors();
 

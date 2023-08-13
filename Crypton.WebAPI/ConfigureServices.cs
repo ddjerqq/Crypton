@@ -120,6 +120,9 @@ public static class ConfigureServices
                 var xmlFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
                 var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
                 c.IncludeXmlComments(xmlPath);
+
+                // for idempotency keys
+                c.OperationFilter<IdempotencyKeyOperationFilter>();
             });
         }
 

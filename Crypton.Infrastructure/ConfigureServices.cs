@@ -1,5 +1,6 @@
 ﻿using Crypton.Application.Interfaces;
 using Crypton.Infrastructure.BackgroundServices;
+using Crypton.Infrastructure.Idempotency;
 using Crypton.Infrastructure.ModelBinders;
 using Crypton.Infrastructure.Services;
 using Microsoft.Extensions.DependencyInjection;
@@ -8,17 +9,14 @@ namespace Crypton.Infrastructure;
 
 public static class ConfigureServices
 {
-    public const string CookieName = "authorization";
-
     public static IServiceCollection AddInfrastructureServices(this IServiceCollection services)
     {
         services.AddHttpContextAccessor();
         services.AddScoped<ICurrentUserAccessor, CurrentUserAccessor>();
 
-        services.AddMvc(o =>
-        {
-            o.ModelBinderProviders.Insert(0, new ModelBinderProvider());
-        });
+        services.AddMvc(o => { o.ModelBinderProviders.Insert(0, new ModelBinderProvider()); });
+
+        services.AddIdempotency();
 
         return services;
     }

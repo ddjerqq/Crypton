@@ -1,6 +1,7 @@
 ﻿using Crypton.Application.Dtos;
 using Crypton.Application.Interfaces;
 using Crypton.Application.Transactions;
+using Crypton.Infrastructure.Idempotency;
 using Crypton.Infrastructure.ModelBinders;
 using Crypton.Infrastructure.RateLimiting;
 using MediatR;
@@ -64,12 +65,14 @@ public sealed class TransactionController : ControllerBase
     /// status code 400 otherwise, along ValidationErrors.
     /// </returns>
     // TODO implement daily
+    [RequireIdempotency]
     [EnableRateLimiting(RateLimitConstants.TransactionPolicyName)]
     [HttpPost("daily")]
     public async Task<IActionResult> CollectDaily(CancellationToken ct = default)
     {
         var currentUser = await this.currentUserAccessor.GetCurrentUserAsync(ct);
 
+        // is this required?
         if (currentUser is null)
             return this.Unauthorized();
 
@@ -87,11 +90,16 @@ public sealed class TransactionController : ControllerBase
     /// </summary>
     /// <param name="command">The transaction creation command, either amount or itemId must be supplied.</param>
     /// <param name="ct">CancellationToken.</param>
-    /// <returns>status code 202 if the command if valid, status code 400 otherwise, along ValidationErrors.</returns>
+    /// <response code="201">Success</response>
+    /// <response code="400">Bad Request</response>
+    /// <response code="401">Unauthorized</response>
+    /// <response code="429">Rate Limited, or not ready for daily</response>
+    /// <response code="500">Internal Server Error</response>
+    [RequireIdempotency]
     [EnableRateLimiting(RateLimitConstants.TransactionPolicyName)]
     [HttpPost("create")]
     public async Task<IActionResult> CreateTransaction(
-        [FromBody] [ModelBinder(BinderType = typeof(CreateTransactionCommandModelBinder))]
+        [FromBody, BindRequired] [ModelBinder(BinderType = typeof(CreateTransactionCommandModelBinder))]
         CreateTransactionCommand command,
         CancellationToken ct = default)
     {
