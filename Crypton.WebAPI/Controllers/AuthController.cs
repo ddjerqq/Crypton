@@ -50,8 +50,6 @@ public sealed class AuthController : ControllerBase
     /// </summary>
     /// <param name="command">the register command.</param>
     /// <returns>status code 201 if the registration was successful, otherwise status code 400 and IdentityErrors.</returns>
-    // TODO limit these, so authenticated users cannot spam these endpoints
-    [IgnoreDigitalSignature]
     [AllowAnonymous]
     [HttpPost("register")]
     public async Task<IActionResult> Register([FromBody] UserRegisterCommand command)
@@ -78,8 +76,6 @@ public sealed class AuthController : ControllerBase
     /// <param name="command">login command.</param>
     /// <returns>status code 200 and string jwt token if the login was successful, otherwise status code 400.</returns>
     /// <exception cref="NotImplementedException">raised if identity needs 2 factor authentication.</exception>
-    // TODO limit these, so authenticated users cannot spam these endpoints
-    [IgnoreDigitalSignature]
     [AllowAnonymous]
     [Produces<string>]
     [HttpPost("login")]
@@ -115,6 +111,8 @@ public sealed class AuthController : ControllerBase
     /// Get current digital signature rules.
     /// </summary>
     /// <returns><see cref="Rules"/> digital signature rules.</returns>
+    // TODO some way to deliver these rules to the client, but in secret.
+    [AllowAnonymous]
     [IgnoreDigitalSignature]
     [Produces<Rules>]
     [HttpGet("rules")]

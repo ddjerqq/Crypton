@@ -4,6 +4,7 @@ using Crypton.Infrastructure.Persistence;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.DependencyInjection;
@@ -18,7 +19,8 @@ public static class ConfigureServices
         services.AddAuthentication()
             .AddJwtBearer(ConfigureJwtBearerOptions);
 
-        services.AddIdentity<User, IdentityRole<Guid>>(ConfigureIdentityOptions).AddEntityFrameworkStores<AppDbContext>();
+        services.AddIdentity<User, IdentityRole<Guid>>(ConfigureIdentityOptions)
+            .AddEntityFrameworkStores<AppDbContext>();
 
         services.ConfigureApplicationCookie(ConfigureApplicationCookieOptions);
 
@@ -28,9 +30,31 @@ public static class ConfigureServices
             IdentityConstants.ApplicationScheme,
             ConfigureCookieAuthenticationOptions);
 
-        services.AddAuthorization();
+        services.AddAuthorization(ConfigureAuthorization);
 
         return services;
+    }
+
+    private static void ConfigureAuthorization(AuthorizationOptions options)
+    {
+        options.DefaultPolicy = new AuthorizationPolicyBuilder()
+            .RequireAuthenticatedUser()
+            .Build();
+
+        options.AddPolicy(ApplicationAuthConstants.Administrator, policy =>
+        {
+            policy.RequireRole(ApplicationAuthConstants.Administrator);
+        });
+
+        options.AddPolicy(ApplicationAuthConstants.Moderator, policy =>
+        {
+            policy.RequireRole(ApplicationAuthConstants.Moderator);
+        });
+
+        options.AddPolicy(ApplicationAuthConstants.User, policy =>
+        {
+            policy.RequireRole(ApplicationAuthConstants.User);
+        });
     }
 
     private static void ConfigureAuthenticationSchemas(AuthenticationOptions options)
