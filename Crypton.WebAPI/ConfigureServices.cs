@@ -51,6 +51,12 @@ public static class ConfigureServices
             {
                 options.JsonSerializerOptions.PropertyNamingPolicy = new SnakeCaseNamingPolicy();
                 options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
+            })
+            .ConfigureApiBehaviorOptions(options =>
+            {
+                // suppress swagger from showing annoying client error data
+                // source: https://stackoverflow.com/a/71965274/14860947
+                options.SuppressMapClientErrors = true;
             });
 
         services.AddSignalR(o => { o.EnableDetailedErrors = env.IsDevelopment(); });
@@ -173,11 +179,13 @@ public static class ConfigureServices
             // transaction policy
             rateLimitOptions.AddPolicy(transactionPolicy.PolicyName, ctx =>
             {
+                // TODO use IPAddress instead of the user identifier if it is missing
                 var userIdentifier = ctx.User
                     .Claims
                     .FirstOrDefault(x => x.Type == ClaimTypes.NameIdentifier)?
                     .Value;
 
+                // TODO this needs to be like 1000x smaller
                 if (!string.IsNullOrEmpty(userIdentifier))
                     return RateLimitPartition.GetTokenBucketLimiter(userIdentifier, _ => transactionPolicy);
 

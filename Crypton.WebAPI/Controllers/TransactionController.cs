@@ -7,6 +7,7 @@ using Crypton.Infrastructure.RateLimiting;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.AspNetCore.RateLimiting;
 
 namespace Crypton.WebAPI.Controllers;
@@ -43,9 +44,15 @@ public sealed class TransactionController : ControllerBase
     /// <summary>
     /// Get all transactions.
     /// </summary>
-    /// <returns>a list of transaction dtos.</returns>
-    [Produces<IEnumerable<TransactionDto>>]
+    /// <response code="200">Success and <see cref="TransactionDto">transactions</see></response>
+    /// <response code="401">Unauthorized</response>
+    /// <response code="429">Rate Limit</response>
+    /// <response code="500">Internal Server Error</response>
     [HttpGet("all")]
+    [ProducesResponseType<IEnumerable<TransactionDto>>(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status429TooManyRequests)]
+    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     public IActionResult AllTransactions()
     {
         var orderedTransactions = this.transactionService.Transactions
@@ -60,14 +67,20 @@ public sealed class TransactionController : ControllerBase
     /// Collect daily coins.
     /// </summary>
     /// <param name="ct">CancellationToken.</param>
-    /// <returns>
-    /// status code 202 if the user is eligible for the daily reward,
-    /// status code 400 otherwise, along ValidationErrors.
-    /// </returns>
+    /// <response code="201">Success</response>
+    /// <response code="400">Bad Request</response>
+    /// <response code="401">Unauthorized</response>
+    /// <response code="429">Rate Limited, or not ready for daily</response>
+    /// <response code="500">Internal Server Error</response>
     // TODO implement daily
     [RequireIdempotency]
     [EnableRateLimiting(RateLimitConstants.TransactionPolicyName)]
     [HttpPost("daily")]
+    [ProducesResponseType(201)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status429TooManyRequests)]
+    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     public async Task<IActionResult> CollectDaily(CancellationToken ct = default)
     {
         var currentUser = await this.currentUserAccessor.GetCurrentUserAsync(ct);
@@ -98,6 +111,11 @@ public sealed class TransactionController : ControllerBase
     [RequireIdempotency]
     [EnableRateLimiting(RateLimitConstants.TransactionPolicyName)]
     [HttpPost("create")]
+    [ProducesResponseType(201)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status429TooManyRequests)]
+    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     public async Task<IActionResult> CreateTransaction(
         [FromBody, BindRequired] [ModelBinder(BinderType = typeof(CreateTransactionCommandModelBinder))]
         CreateTransactionCommand command,
