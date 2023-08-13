@@ -2,7 +2,7 @@
 using Crypton.Application.Interfaces;
 using Crypton.Application.Transactions;
 using Crypton.Infrastructure.ModelBinders;
-using Crypton.Infrastructure.Services.RateLimiting;
+using Crypton.Infrastructure.RateLimiting;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -63,7 +63,8 @@ public sealed class TransactionController : ControllerBase
     /// status code 202 if the user is eligible for the daily reward,
     /// status code 400 otherwise, along ValidationErrors.
     /// </returns>
-    [EnableRateLimiting(TokenBucketRateLimitOptions.PolicyName)]
+    // TODO implement daily
+    [EnableRateLimiting(RateLimitConstants.TransactionPolicyName)]
     [HttpPost("daily")]
     public async Task<IActionResult> CollectDaily(CancellationToken ct = default)
     {
@@ -87,7 +88,7 @@ public sealed class TransactionController : ControllerBase
     /// <param name="command">The transaction creation command, either amount or itemId must be supplied.</param>
     /// <param name="ct">CancellationToken.</param>
     /// <returns>status code 202 if the command if valid, status code 400 otherwise, along ValidationErrors.</returns>
-    [EnableRateLimiting(TokenBucketRateLimitOptions.PolicyName)]
+    [EnableRateLimiting(RateLimitConstants.TransactionPolicyName)]
     [HttpPost("create")]
     public async Task<IActionResult> CreateTransaction(
         [FromBody] [ModelBinder(BinderType = typeof(CreateTransactionCommandModelBinder))]

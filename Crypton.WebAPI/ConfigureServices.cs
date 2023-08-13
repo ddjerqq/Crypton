@@ -1,4 +1,5 @@
 ﻿using System.Globalization;
+using System.Net;
 using System.Reflection;
 using System.Security.Claims;
 using System.Text.Json.Serialization;
@@ -7,7 +8,7 @@ using Crypton.Application;
 using Crypton.Domain;
 using Crypton.Infrastructure.Filters;
 using Crypton.Infrastructure.Policies;
-using Crypton.Infrastructure.Services.RateLimiting;
+using Crypton.Infrastructure.RateLimiting;
 using FluentValidation;
 using FluentValidation.AspNetCore;
 using Microsoft.AspNetCore.ResponseCompression;
@@ -142,10 +143,14 @@ public static class ConfigureServices
     /// <returns>Configured Services.</returns>
     public static IServiceCollection AddRateLimiting(this IServiceCollection services, IConfiguration configuration)
     {
-        TokenBucketRateLimitOptions tokenBucketRateLimitOptions = new();
-        configuration
-            .GetSection(TokenBucketRateLimitOptions.RateLimitConfigSection)
-            .Bind(tokenBucketRateLimitOptions);
+        var policies = RateLimitConstants.LoadRateLimitOptions(configuration)
+            .ToList();
+
+        var globalPolicy = policies
+            .First(x => x.PolicyName == RateLimitConstants.GlobalPolicyName);
+
+        var transactionPolicy = policies
+            .First(x => x.PolicyName == RateLimitConstants.TransactionPolicyName);
 
         services.AddRateLimiter(rateLimitOptions =>
         {
@@ -162,8 +167,8 @@ public static class ConfigureServices
                 return ValueTask.CompletedTask;
             };
 
-            // authenticated policy name
-            rateLimitOptions.AddPolicy(TokenBucketRateLimitOptions.PolicyName, ctx =>
+            // transaction policy
+            rateLimitOptions.AddPolicy(transactionPolicy.PolicyName, ctx =>
             {
                 var userIdentifier = ctx.User
                     .Claims
@@ -171,31 +176,24 @@ public static class ConfigureServices
                     .Value;
 
                 if (!string.IsNullOrEmpty(userIdentifier))
+                    return RateLimitPartition.GetTokenBucketLimiter(userIdentifier, _ => transactionPolicy);
+
+                return RateLimitPartition.GetTokenBucketLimiter("anonymous", _ => transactionPolicy);
+            });
+
+            // global rate limit IP address specific
+            rateLimitOptions.GlobalLimiter = PartitionedRateLimiter.Create<HttpContext, IPAddress>(context =>
+            {
+                // TODO: which one to use?
+                // userIdentifiers or IPAddresses?
+                var remoteIpAddress = context.Connection.RemoteIpAddress;
+
+                if (!IPAddress.IsLoopback(remoteIpAddress!))
                 {
-                    // TODO: different configuration for authenticated users here
-                    return RateLimitPartition.GetTokenBucketLimiter(userIdentifier, _ =>
-                        new TokenBucketRateLimiterOptions
-                        {
-                            TokenLimit = tokenBucketRateLimitOptions.TokenLimit,
-                            QueueProcessingOrder = QueueProcessingOrder.OldestFirst,
-                            QueueLimit = tokenBucketRateLimitOptions.QueueLimit,
-                            ReplenishmentPeriod = TimeSpan.FromSeconds(tokenBucketRateLimitOptions.ReplenishmentPeriod),
-                            TokensPerPeriod = tokenBucketRateLimitOptions.TokensPerPeriod,
-                            AutoReplenishment = tokenBucketRateLimitOptions.AutoReplenishment,
-                        });
+                    return RateLimitPartition.GetTokenBucketLimiter(remoteIpAddress!, _ => globalPolicy);
                 }
 
-                // TODO: and different configuration for non-authenticated users.
-                return RateLimitPartition.GetTokenBucketLimiter("anonymous", _ =>
-                    new TokenBucketRateLimiterOptions
-                    {
-                        TokenLimit = tokenBucketRateLimitOptions.TokenLimit,
-                        QueueProcessingOrder = QueueProcessingOrder.OldestFirst,
-                        QueueLimit = tokenBucketRateLimitOptions.QueueLimit,
-                        ReplenishmentPeriod = TimeSpan.FromSeconds(tokenBucketRateLimitOptions.ReplenishmentPeriod),
-                        TokensPerPeriod = tokenBucketRateLimitOptions.TokensPerPeriod,
-                        AutoReplenishment = true,
-                    });
+                return RateLimitPartition.GetNoLimiter(IPAddress.Loopback);
             });
         });
 
