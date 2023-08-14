@@ -1,4 +1,5 @@
 ﻿using Crypton.Application.Dtos;
+using Crypton.Application.Economy;
 using Crypton.Application.Interfaces;
 using Crypton.Application.Transactions;
 using Crypton.Infrastructure.Idempotency;
@@ -9,8 +10,13 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.AspNetCore.RateLimiting;
+using Microsoft.Net.Http.Headers;
 
 namespace Crypton.WebAPI.Controllers;
+
+// TODO implement an abstract ApiController class
+// with injected IMediator and ICurrentUserAccessor
+// and HandleRequest<TRequest, TResponse> method.
 
 /// <summary>
 /// Transaction controller for handling the creation and mining of transactions.
@@ -22,6 +28,7 @@ namespace Crypton.WebAPI.Controllers;
 public sealed class TransactionController : ControllerBase
 {
     private readonly IMediator mediator;
+    private readonly IAppDbContext dbContext;
     private readonly ITransactionService transactionService;
     private readonly ICurrentUserAccessor currentUserAccessor;
 
@@ -29,14 +36,17 @@ public sealed class TransactionController : ControllerBase
     /// Initializes a new instance of the <see cref="TransactionController"/> class.
     /// </summary>
     /// <param name="mediator">Mediator.</param>
+    /// <param name="dbContext">DbContext.</param>
     /// <param name="transactionService">TransactionService.</param>
     /// <param name="currentUserAccessor">CurrentUserAccessor.</param>
     public TransactionController(
         IMediator mediator,
+        IAppDbContext dbContext,
         ITransactionService transactionService,
         ICurrentUserAccessor currentUserAccessor)
     {
         this.mediator = mediator;
+        this.dbContext = dbContext;
         this.transactionService = transactionService;
         this.currentUserAccessor = currentUserAccessor;
     }
@@ -72,7 +82,6 @@ public sealed class TransactionController : ControllerBase
     /// <response code="401">Unauthorized</response>
     /// <response code="429">Rate Limited, or not ready for daily</response>
     /// <response code="500">Internal Server Error</response>
-    // TODO implement daily
     [RequireIdempotency]
     [EnableRateLimiting(RateLimitConstants.TransactionPolicyName)]
     [HttpPost("daily")]
@@ -83,17 +92,19 @@ public sealed class TransactionController : ControllerBase
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     public async Task<IActionResult> CollectDaily(CancellationToken ct = default)
     {
-        var currentUser = await this.currentUserAccessor.GetCurrentUserAsync(ct);
-
-        // is this required?
-        if (currentUser is null)
-            return this.Unauthorized();
-
-        var command = new CreateTransactionCommand(null, currentUser, 100);
+        var command = new CollectDailyCommand();
 
         var result = await this.mediator.Send(command, ct);
+
         if (result.IsError)
             return this.BadRequest(result.Errors);
+
+        if (result.Value is CollectDailyResult.NotReadyYet { CollectAt: var collectAt })
+        {
+            var retryAfter = collectAt.AddDays(1).ToString("R");
+            this.HttpContext.Response.Headers[HeaderNames.RetryAfter] = retryAfter;
+            return this.StatusCode(StatusCodes.Status429TooManyRequests, retryAfter);
+        }
 
         return this.StatusCode(StatusCodes.Status202Accepted);
     }
