@@ -1,5 +1,4 @@
-﻿using Crypton.Application.Interfaces;
-using Crypton.Infrastructure.Idempotency;
+﻿using Crypton.Infrastructure.Idempotency;
 using Crypton.Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
 

@@ -1,8 +1,8 @@
-﻿using Crypton.Domain.ValueTypes;
+﻿using Crypton.Domain.ValueObjects;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
-namespace Crypton.Infrastructure.Persistence.Configurations;
+namespace Crypton.Infrastructure.Persistence.EntityTypeConfigurations;
 
 public class ItemTypeConfiguration : IEntityTypeConfiguration<ItemType>
 {

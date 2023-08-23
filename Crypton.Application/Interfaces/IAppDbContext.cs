@@ -1,5 +1,5 @@
 ﻿using Crypton.Domain.Entities;
-using Crypton.Domain.ValueTypes;
+using Crypton.Domain.ValueObjects;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
 
@@ -10,10 +10,6 @@ public interface IAppDbContext : IDisposable
     public DbSet<User> Users { get; }
 
     public DbSet<Item> Items { get; }
-
-    public DbSet<Transaction> Transactions { get; }
-
-    public DbSet<TransactionUser> TransactionUsers { get; }
 
     public DbSet<ItemType> ItemTypes { get; }
 

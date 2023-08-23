@@ -12,7 +12,7 @@ public sealed class UserDto
 
     public decimal Balance { get; set; }
 
-    public DateTime Created { get; set; }
+    public DateTime? Created { get; set; }
 
     public IEnumerable<ItemDto> Items { get; set; } = new List<ItemDto>();
 
@@ -23,9 +23,9 @@ public sealed class UserDto
             Id = user.Id,
             UserName = user.UserName,
             Email = user.Email,
-            Balance = user.Balance,
+            Balance = user.Wallet.Balance,
             Created = user.Created,
-            Items = user.Items.Select(item => (ItemDto)item),
+            Items = user.Inventory.Select(item => (ItemDto)item),
         };
     }
 }

@@ -4,15 +4,13 @@ using MediatR;
 
 namespace Crypton.Domain.Common.Abstractions;
 
-public interface IDomainEntity
+public interface IEntity
 {
-    [NotMapped]
     [JsonIgnore]
     protected ICollection<INotification> ProtectedDomainEvents { get; set; }
 
-    [NotMapped]
     [JsonIgnore]
-    public IReadOnlyCollection<INotification> DomainEvents => this.ProtectedDomainEvents.ToList().AsReadOnly();
+    public IEnumerable<INotification> DomainEvents => this.ProtectedDomainEvents;
 
     public void AddDomainEvent(INotification domainEvent)
     {
@@ -28,4 +26,11 @@ public interface IDomainEntity
     {
         this.ProtectedDomainEvents.Clear();
     }
+}
+
+public abstract class EntityBase
+{
+    [NotMapped]
+    [JsonIgnore]
+    public ICollection<INotification> ProtectedDomainEvents { get; set; } = new List<INotification>();
 }

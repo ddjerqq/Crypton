@@ -1,11 +1,11 @@
 ﻿using System.ComponentModel.DataAnnotations;
-using Crypton.Application.Common.Abstractions;
 using FluentValidation;
+using MediatR;
 using Microsoft.AspNetCore.Identity;
 
 namespace Crypton.Application.Auth;
 
-public sealed class UserLoginCommand : IResultRequest<SignInResult>
+public sealed class UserLoginCommand : IRequest<SignInResult>
 {
     [Required]
     [Length(3, 16)]

@@ -1,7 +1,7 @@
 ﻿using Crypton.Application.Interfaces;
 using Crypton.Domain.Common.Extensions;
 using Crypton.Domain.Entities;
-using Crypton.Domain.ValueTypes;
+using Crypton.Domain.ValueObjects;
 using Crypton.Infrastructure.Persistence.Common.Extensions;
 using Crypton.Infrastructure.Persistence.Interceptors;
 using Crypton.Infrastructure.Persistence.ValueConverters;
@@ -15,27 +15,20 @@ namespace Crypton.Infrastructure.Persistence;
 public sealed class AppDbContext : IdentityDbContext<User, IdentityRole<Guid>, Guid>, IAppDbContext
 {
     private readonly AuditableEntitySaveChangesInterceptor auditableEntitySaveChangesInterceptor;
-    private readonly UserMaterializationInterceptor userMaterializationInterceptor;
 
     private readonly IMediator mediator;
 
     public AppDbContext(
         DbContextOptions<AppDbContext> options,
         IMediator mediator,
-        AuditableEntitySaveChangesInterceptor auditableEntitySaveChangesInterceptor,
-        UserMaterializationInterceptor userMaterializationInterceptor)
+        AuditableEntitySaveChangesInterceptor auditableEntitySaveChangesInterceptor)
         : base(options)
     {
         this.mediator = mediator;
         this.auditableEntitySaveChangesInterceptor = auditableEntitySaveChangesInterceptor;
-        this.userMaterializationInterceptor = userMaterializationInterceptor;
     }
 
     public DbSet<Item> Items => this.Set<Item>();
-
-    public DbSet<Transaction> Transactions => this.Set<Transaction>();
-
-    public DbSet<TransactionUser> TransactionUsers => this.Set<TransactionUser>();
 
     public DbSet<ItemType> ItemTypes => this.Set<ItemType>();
 
@@ -47,8 +40,6 @@ public sealed class AppDbContext : IdentityDbContext<User, IdentityRole<Guid>, G
 
     protected override void OnModelCreating(ModelBuilder builder)
     {
-        builder.Entity<BalanceTransaction>();
-        builder.Entity<ItemTransaction>();
         builder.ApplyConfigurationsFromAssembly(typeof(AppDbContext).Assembly);
 
         base.OnModelCreating(builder);
@@ -86,10 +77,7 @@ public sealed class AppDbContext : IdentityDbContext<User, IdentityRole<Guid>, G
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
-        optionsBuilder.AddInterceptors(
-            this.auditableEntitySaveChangesInterceptor,
-            this.userMaterializationInterceptor);
-
+        optionsBuilder.AddInterceptors(this.auditableEntitySaveChangesInterceptor);
         base.OnConfiguring(optionsBuilder);
     }
 

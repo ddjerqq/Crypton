@@ -6,6 +6,7 @@
         <Nullable>enable</Nullable>
         <Company>Crypton</Company>
         <Product>Crypton.Application</Product>
+        <OutputType>Library</OutputType>
     </PropertyGroup>
 
     <ItemGroup>

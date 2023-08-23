@@ -6,6 +6,8 @@ using Crypton.Domain.Entities;
 using Crypton.Infrastructure.Diamond;
 using Crypton.Infrastructure.Idempotency;
 using Crypton.Infrastructure.Services;
+using Crypton.WebAPI.Common;
+using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -21,7 +23,7 @@ namespace Crypton.WebAPI.Controllers;
 [ApiController]
 [Produces("application/json")]
 [Route("/api/v1/[controller]")]
-public sealed class AuthController : ControllerBase
+public sealed class AuthController : ApiController
 {
     private readonly IRules rules;
     private readonly IAppDbContext dbContext;
@@ -31,15 +33,14 @@ public sealed class AuthController : ControllerBase
     /// <summary>
     /// Initializes a new instance of the <see cref="AuthController"/> class.
     /// </summary>
-    /// <param name="rules">DigitalSignatureRules.</param>
-    /// <param name="dbContext">AppDatabaseContext.</param>
-    /// <param name="signInManager">Identity.SignInManager.</param>
-    /// <param name="userManager">Identity.UserManager.</param>
     public AuthController(
         IRules rules,
         IAppDbContext dbContext,
         SignInManager<User> signInManager,
-        UserManager<User> userManager)
+        UserManager<User> userManager,
+        ILogger<AuthController> logger,
+        IMediator mediator)
+        : base(logger, mediator)
     {
         this.rules = rules;
         this.signInManager = signInManager;
@@ -182,7 +183,6 @@ public sealed class AuthController : ControllerBase
     public async Task<IActionResult> AllUsers(CancellationToken ct = default)
     {
         var users = await this.dbContext.Users
-            .AsNoTracking()
             .Where(x => x.Id != GuidExtensions.ZeroGuid)
             .ToListAsync(ct);
 

@@ -44,7 +44,6 @@ public static class ConfigureServices
         IConfiguration configuration)
     {
         services.AddSingleton<AuditableEntitySaveChangesInterceptor>();
-        services.AddSingleton<UserMaterializationInterceptor>();
 
         services.AddDbContext<AppDbContext>(o =>
         {

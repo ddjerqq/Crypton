@@ -14,7 +14,7 @@ public sealed class AuditableEntitySaveChangesInterceptor : SaveChangesIntercept
         var userAccessor = (ICurrentUserAccessor?)context?.GetService(typeof(ICurrentUserAccessor));
 
         context?.ChangeTracker
-            .Entries<IAuditableDomainEntity>()
+            .Entries<IAuditableEntity>()
             .ToList()
             .ForEach(entry =>
             {
@@ -25,10 +25,17 @@ public sealed class AuditableEntitySaveChangesInterceptor : SaveChangesIntercept
                 }
 
                 if (entry.State == EntityState.Added
-                    || entry.State == EntityState.Modified || HasChangedOwnedEntities(entry))
+                    || entry.State == EntityState.Modified
+                    || HasChangedOwnedEntities(entry))
                 {
                     entry.Entity.LastModifiedBy = userAccessor?.GetCurrentUserId().ToString();
                     entry.Entity.LastModified = DateTime.UtcNow;
+                }
+
+                if (entry.State == EntityState.Deleted)
+                {
+                    entry.Entity.DeletedBy = userAccessor?.GetCurrentUserId().ToString();
+                    entry.Entity.Deleted = DateTime.UtcNow;
                 }
             });
     }

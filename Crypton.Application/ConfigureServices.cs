@@ -1,7 +1,5 @@
 ﻿using System.Reflection;
 using Crypton.Application.Common.Behaviours;
-using Crypton.Application.Interfaces;
-using Crypton.Application.Services;
 using Crypton.Domain;
 using FluentValidation;
 using MediatR;
@@ -24,11 +22,8 @@ public static class ConfigureServices
             // if the request is deemed invalid, we will not allow it from even executing
             // this is why it is added first
             cfg.AddBehavior(typeof(IPipelineBehavior<,>), typeof(RequestValidationBehaviour<,>));
-            cfg.AddBehavior(typeof(IPipelineBehavior<,>), typeof(ErrorOrBehaviour<,>));
             cfg.AddBehavior(typeof(IPipelineBehavior<,>), typeof(LoggingPipelineBehaviour<,>));
         });
-
-        services.AddSingleton<ITransactionService, TransactionService>(sp => new TransactionService(sp));
 
         return services;
     }

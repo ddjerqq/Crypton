@@ -45,7 +45,7 @@ public class CreateTransactionCommandModelBinder : IModelBinder
         var dbContext = scope.ServiceProvider.GetRequiredService<IAppDbContext>();
         var currentUserAccessor = scope.ServiceProvider.GetRequiredService<ICurrentUserAccessor>();
 
-        var success = await command.InitializeAsync(dbContext, currentUserAccessor);
+        var success = await command.BindAsync(dbContext, currentUserAccessor);
         if (!success)
         {
             bindingContext.Result = ModelBindingResult.Failed();

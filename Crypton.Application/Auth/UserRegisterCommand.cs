@@ -1,9 +1,10 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using FluentValidation;
+using MediatR;
 
 namespace Crypton.Application.Auth;
 
-public sealed class UserRegisterCommand
+public sealed class UserRegisterCommand : IRequest
 {
     [Required]
     [Length(3, 16)]

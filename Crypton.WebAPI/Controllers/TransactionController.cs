@@ -1,10 +1,10 @@
-﻿using Crypton.Application.Dtos;
-using Crypton.Application.Economy;
+﻿using Crypton.Application.Economy;
 using Crypton.Application.Interfaces;
 using Crypton.Application.Transactions;
 using Crypton.Infrastructure.Idempotency;
 using Crypton.Infrastructure.ModelBinders;
 using Crypton.Infrastructure.RateLimiting;
+using Crypton.WebAPI.Common;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -22,55 +22,14 @@ namespace Crypton.WebAPI.Controllers;
 /// Transaction controller for handling the creation and mining of transactions.
 /// </summary>
 [Authorize]
-[ApiController]
-[Route("/api/v1/[controller]")]
-[Produces("application/json")]
-public sealed class TransactionController : ControllerBase
+public sealed class TransactionController : ApiController
 {
-    private readonly IMediator mediator;
-    private readonly IAppDbContext dbContext;
-    private readonly ITransactionService transactionService;
-    private readonly ICurrentUserAccessor currentUserAccessor;
-
     /// <summary>
     /// Initializes a new instance of the <see cref="TransactionController"/> class.
     /// </summary>
-    /// <param name="mediator">Mediator.</param>
-    /// <param name="dbContext">DbContext.</param>
-    /// <param name="transactionService">TransactionService.</param>
-    /// <param name="currentUserAccessor">CurrentUserAccessor.</param>
-    public TransactionController(
-        IMediator mediator,
-        IAppDbContext dbContext,
-        ITransactionService transactionService,
-        ICurrentUserAccessor currentUserAccessor)
+    public TransactionController(ILogger<TransactionController> logger, IMediator mediator)
+        : base(logger, mediator)
     {
-        this.mediator = mediator;
-        this.dbContext = dbContext;
-        this.transactionService = transactionService;
-        this.currentUserAccessor = currentUserAccessor;
-    }
-
-    /// <summary>
-    /// Get all transactions.
-    /// </summary>
-    /// <response code="200">Success and <see cref="TransactionDto">transactions</see></response>
-    /// <response code="401">Unauthorized</response>
-    /// <response code="429">Rate Limit</response>
-    /// <response code="500">Internal Server Error</response>
-    [HttpGet("all")]
-    [ProducesResponseType<IEnumerable<TransactionDto>>(StatusCodes.Status200OK)]
-    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-    [ProducesResponseType(StatusCodes.Status429TooManyRequests)]
-    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-    public IActionResult AllTransactions()
-    {
-        var orderedTransactions = this.transactionService.Transactions
-            .OrderBy(x => x.Index)
-            .Select(x => (TransactionDto)x)
-            .ToList();
-
-        return this.Ok(orderedTransactions);
     }
 
     /// <summary>
@@ -94,7 +53,9 @@ public sealed class TransactionController : ControllerBase
     {
         var command = new CollectDailyCommand();
 
-        var result = await this.mediator.Send(command, ct);
+        await this.TryHandleCommandAsync<CollectDailyCommand>(command, ct);
+
+        var result = await this.Mediator.Send(command, ct);
 
         if (result.IsError)
             return this.BadRequest(result.Errors);

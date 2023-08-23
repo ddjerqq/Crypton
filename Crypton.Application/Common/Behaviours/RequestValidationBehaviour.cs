@@ -1,5 +1,4 @@
-﻿using ErrorOr;
-using FluentValidation;
+﻿using FluentValidation;
 using MediatR;
 using Microsoft.Extensions.Logging;
 
@@ -8,7 +7,6 @@ namespace Crypton.Application.Common.Behaviours;
 public sealed class RequestValidationBehaviour<TRequest, TResponse>
     : IPipelineBehavior<TRequest, TResponse>
     where TRequest : IRequest<TResponse>
-    where TResponse : IErrorOr
 {
     private readonly ILogger<RequestValidationBehaviour<TRequest, TResponse>> logger;
     private readonly IEnumerable<IValidator<TRequest>> validators;
@@ -31,14 +29,18 @@ public sealed class RequestValidationBehaviour<TRequest, TResponse>
         var validationResults = await Task
             .WhenAll(this.validators
                 .Select(v => v.ValidateAsync(context, ct)));
-        var failures = validationResults.SelectMany(r => r.Errors).Where(f => f != null).ToList();
+
+        var failures = validationResults
+            .SelectMany(r => r.Errors)
+            .Where(f => f != null)
+            .ToList();
 
         if (failures.Count != 0)
         {
-            string errors = string.Join(',', failures.Select(x => x.ErrorMessage));
+            var errors = string.Join(',', failures.Select(x => x.ErrorMessage));
             this.logger.LogError("Validation errors - {Errors}", errors);
 
-            return (dynamic)ErrorOr.ErrorOr.From(failures);
+            throw new ValidationException("validation error", failures, true);
         }
 
         return await next();

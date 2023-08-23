@@ -6,7 +6,7 @@ public sealed class ItemDto
 {
     public Guid Id { get; init; }
 
-    public Guid TypeId { get; init; }
+    public string TypeId { get; init; } = string.Empty;
 
     public string TypeName { get; init; } = string.Empty;
 

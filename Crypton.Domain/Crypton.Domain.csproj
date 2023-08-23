@@ -19,11 +19,5 @@
       <PackageReference Include="System.Threading.Channels" Version="8.0.0-preview.7.23375.6" />
     </ItemGroup>
 
-    <ItemGroup>
-      <Folder Include="Aggregates\" />
-      <Folder Include="Builders\" />
-      <Folder Include="Enums\" />
-      <Folder Include="Events\" />
-    </ItemGroup>
 
 </Project>

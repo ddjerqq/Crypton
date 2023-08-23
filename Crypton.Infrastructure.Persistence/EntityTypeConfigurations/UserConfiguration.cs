@@ -2,7 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
-namespace Crypton.Infrastructure.Persistence.Configurations;
+namespace Crypton.Infrastructure.Persistence.EntityTypeConfigurations;
 
 public sealed class UserConfiguration : IEntityTypeConfiguration<User>
 {
@@ -11,7 +11,7 @@ public sealed class UserConfiguration : IEntityTypeConfiguration<User>
         builder.HasIndex(e => e.UserName)
             .IsUnique();
 
-        builder.HasMany(e => e.Items)
+        builder.HasMany(e => e.Inventory)
             .WithOne(x => x.Owner)
             .HasForeignKey(x => x.OwnerId);
     }

@@ -1,5 +1,4 @@
 ﻿using Crypton.Application.Interfaces;
-using ErrorOr;
 using MediatR;
 using Microsoft.Extensions.Logging;
 
@@ -8,7 +7,6 @@ namespace Crypton.Application.Common.Behaviours;
 public sealed class LoggingPipelineBehaviour<TRequest, TResponse>
     : IPipelineBehavior<TRequest, TResponse>
     where TRequest : IRequest<TResponse>
-    where TResponse : IErrorOr
 {
     private readonly ILogger<LoggingPipelineBehaviour<TRequest, TResponse>> logger;
     private readonly ICurrentUserAccessor currentUserAccessor;
@@ -42,17 +40,6 @@ public sealed class LoggingPipelineBehaviour<TRequest, TResponse>
             user?.UserName,
             typeof(TRequest).Name,
             request, end);
-
-        // if result returned an error explicitly, and didnt throw an error, we will log it
-        if (result.IsError)
-        {
-            this.logger.LogError(
-                "{@UserId} {UserName} request {@RequestName} {@Request} returned errors {@Error}",
-                user?.Id,
-                user?.UserName,
-                typeof(TRequest).Name,
-                request, result.Errors);
-        }
 
         return result;
     }

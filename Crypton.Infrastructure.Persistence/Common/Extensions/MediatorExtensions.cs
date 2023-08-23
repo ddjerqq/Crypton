@@ -10,7 +10,7 @@ public static class MediatorExtensions
     {
         var entities = context
             .ChangeTracker
-            .Entries<IDomainEntity>()
+            .Entries<IEntity>()
             .Where(e => e.Entity.DomainEvents.Any())
             .Select(e => e.Entity)
             .ToList();
@@ -21,7 +21,7 @@ public static class MediatorExtensions
 
         entities.ForEach(e => e.ClearDomainEvents());
 
-        foreach (var domainEvent in domainEvents)
-            await mediator.Publish(domainEvent);
+        var futures = domainEvents.Select(ev => mediator.Publish(ev));
+        await Task.WhenAll(futures);
     }
 }
