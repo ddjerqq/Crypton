@@ -31,25 +31,6 @@ public static class ConfigureMiddleware
     }
 
     /// <summary>
-    /// Initialize the transactions. Load them from the database.
-    /// </summary>
-    /// <param name="app">WebApplication.</param>
-    /// <returns>the WebApplication with the initialized transactions.</returns>
-    public static WebApplication InitializeTransactions(this WebApplication app)
-    {
-        using var scope = app.Services.CreateScope();
-
-        var transactions = scope.ServiceProvider.GetRequiredService<ITransactionService>();
-
-        transactions.InitializeAsync()
-            .ConfigureAwait(false)
-            .GetAwaiter()
-            .GetResult();
-
-        return app;
-    }
-
-    /// <summary>
     /// Configure the web api middleware.
     /// </summary>
     /// <param name="app">WebApplication.</param>

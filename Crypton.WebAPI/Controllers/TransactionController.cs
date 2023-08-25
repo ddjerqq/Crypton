@@ -57,9 +57,6 @@ public sealed class TransactionController : ApiController
 
         var result = await this.Mediator.Send(command, ct);
 
-        if (result.IsError)
-            return this.BadRequest(result.Errors);
-
         if (result.Value is CollectDailyResult.NotReadyYet { CollectAt: var collectAt })
         {
             var retryAfter = collectAt.AddDays(1).ToString("R");

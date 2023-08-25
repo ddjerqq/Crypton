@@ -28,6 +28,14 @@ public abstract class ApiController : ControllerBase
         CancellationToken ct = default)
         where TRequest : IRequest
     {
+        try
+        {
+            await this.Mediator.Send(command, ct);
+        }
+        catch (Exception ex)
+        {
+            this.Logger.LogError(ex, "Error handling command {Command}", command);
+        }
     }
 
     /// <summary>

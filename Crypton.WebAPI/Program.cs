@@ -35,6 +35,5 @@ builder.Services
 var app = builder.Build();
 
 app.MigrateDatabase()
-    .InitializeTransactions()
     .ConfigureWebApiMiddleware()
     .Run();
