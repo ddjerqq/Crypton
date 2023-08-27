@@ -42,15 +42,9 @@ public sealed class AuthController : ControllerBase
     /// </summary>
     /// <response code="201">Success</response>
     /// <response code="400">Username / email / password issues</response>
-    /// <response code="429">Rate Limit</response>
-    /// <response code="500">Internal Server Error</response>
     [AllowAnonymous]
     [RequireIdempotency]
     [HttpPost("register")]
-    [ProducesResponseType(StatusCodes.Status201Created)]
-    [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    [ProducesResponseType(StatusCodes.Status429TooManyRequests)]
-    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     public async Task<IActionResult> Register([FromBody, BindRequired] UserRegisterCommand command)
     {
         var user = new User
@@ -72,18 +66,13 @@ public sealed class AuthController : ControllerBase
     /// <summary>
     /// Login a user.
     /// </summary>
-    /// <exception cref="NotImplementedException">raised if identity needs 2 factor authentication.</exception>
     /// <response code="200">Success and JWT</response>
     /// <response code="400">Invalid Credentials</response>
     /// <response code="429">Rate Limit or Lockout</response>
-    /// <response code="500">Internal Server Error</response>
     [AllowAnonymous]
     [RequireIdempotency]
     [HttpPost("login")]
     [ProducesResponseType<string>(StatusCodes.Status200OK)]
-    [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    [ProducesResponseType(StatusCodes.Status429TooManyRequests)]
-    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     public async Task<IActionResult> Login([FromBody, BindRequired] UserLoginCommand command)
     {
         var result = await this._signInManager
@@ -116,17 +105,11 @@ public sealed class AuthController : ControllerBase
     /// Get current digital signature rules.
     /// </summary>
     /// <response code="200">Success and <see cref="Rules">Rules</see></response>
-    /// <response code="401">Unauthorized</response>
-    /// <response code="429">Rate Limit</response>
-    /// <response code="500">Internal Server Error</response>
     // TODO some way to deliver these rules to the client, but in secret.
     [AllowAnonymous]
     [IgnoreDigitalSignature]
     [HttpGet("rules")]
     [ProducesResponseType<Rules>(StatusCodes.Status200OK)]
-    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-    [ProducesResponseType(StatusCodes.Status429TooManyRequests)]
-    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     public IActionResult Rules()
     {
         return this.Ok((Rules)this._rules);
@@ -136,14 +119,8 @@ public sealed class AuthController : ControllerBase
     /// get currently authenticated user's information.
     /// </summary>
     /// <response code="200">Success and <see cref="UserDto">user info</see></response>
-    /// <response code="401">Unauthorized</response>
-    /// <response code="429">Rate Limit</response>
-    /// <response code="500">Internal Server Error</response>
     [HttpGet("me")]
     [ProducesResponseType<UserDto>(StatusCodes.Status200OK)]
-    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-    [ProducesResponseType(StatusCodes.Status429TooManyRequests)]
-    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     public async Task<IActionResult> Me()
     {
         var user = await this._userManager.GetUserAsync(this.User);
@@ -158,14 +135,8 @@ public sealed class AuthController : ControllerBase
     /// get all users.
     /// </summary>
     /// <response code="200">Success and <see cref="UserDto">all users' info</see></response>
-    /// <response code="401">Unauthorized</response>
-    /// <response code="429">Rate Limit</response>
-    /// <response code="500">Internal Server Error</response>
     [HttpGet("users")]
     [ProducesResponseType<IEnumerable<UserDto>>(StatusCodes.Status200OK)]
-    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-    [ProducesResponseType(StatusCodes.Status429TooManyRequests)]
-    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     public async Task<IActionResult> AllUsers(CancellationToken ct = default)
     {
         var users = await this._dbContext.Users

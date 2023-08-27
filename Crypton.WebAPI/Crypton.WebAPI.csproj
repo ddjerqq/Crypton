@@ -84,9 +84,7 @@
     </ItemGroup>
 
 
-    <ItemGroup>
-      <Folder Include="Common\" />
-    </ItemGroup>
+
 
     <PropertyGroup>
         <GenerateDocumentationFile>true</GenerateDocumentationFile>

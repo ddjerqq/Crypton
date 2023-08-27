@@ -35,11 +35,7 @@ public sealed class TransactionController : ControllerBase
     [RequireIdempotency]
     [EnableRateLimiting(RateLimitConstants.TransactionPolicyName)]
     [HttpPost("daily")]
-    [ProducesResponseType(201)]
-    [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-    [ProducesResponseType(StatusCodes.Status429TooManyRequests)]
-    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+    [ProducesResponseType(StatusCodes.Status201Created)]
     public async Task<IActionResult> CollectDaily(CancellationToken ct = default)
     {
         var command = new CollectDailyCommand();
@@ -69,11 +65,7 @@ public sealed class TransactionController : ControllerBase
     [RequireIdempotency]
     [EnableRateLimiting(RateLimitConstants.TransactionPolicyName)]
     [HttpPost("create")]
-    [ProducesResponseType(201)]
-    [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-    [ProducesResponseType(StatusCodes.Status429TooManyRequests)]
-    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+    [ProducesResponseType(StatusCodes.Status201Created)]
     public async Task<IActionResult> CreateTransaction(
         [FromBody] [BindRequired] [ModelBinder(BinderType = typeof(CreateTransactionCommandModelBinder))]
         CreateTransactionCommand command,

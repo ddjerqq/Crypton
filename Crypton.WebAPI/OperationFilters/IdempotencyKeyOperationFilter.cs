@@ -3,7 +3,7 @@ using Microsoft.OpenApi.Any;
 using Microsoft.OpenApi.Models;
 using Swashbuckle.AspNetCore.SwaggerGen;
 
-namespace Crypton.Infrastructure.Filters;
+namespace Crypton.WebAPI.OperationFilters;
 
 /// <summary>
 /// Adds the X-Idempotency-Key header to the swagger documentation

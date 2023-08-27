@@ -9,6 +9,7 @@ using Crypton.Domain;
 using Crypton.Infrastructure.Filters;
 using Crypton.Infrastructure.Policies;
 using Crypton.Infrastructure.RateLimiting;
+using Crypton.WebAPI.OperationFilters;
 using FluentValidation;
 using FluentValidation.AspNetCore;
 using Microsoft.AspNetCore.ResponseCompression;
@@ -120,6 +121,9 @@ public static class ConfigureServices
 
                 // for idempotency keys
                 c.OperationFilter<IdempotencyKeyOperationFilter>();
+
+                // for default responses
+                c.OperationFilter<DefaultResponseOperationFilter>();
             });
         }
 
