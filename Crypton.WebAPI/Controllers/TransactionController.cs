@@ -1,10 +1,7 @@
 ﻿using Crypton.Application.Economy;
-using Crypton.Application.Interfaces;
-using Crypton.Application.Transactions;
 using Crypton.Infrastructure.Idempotency;
 using Crypton.Infrastructure.ModelBinders;
 using Crypton.Infrastructure.RateLimiting;
-using Crypton.WebAPI.Common;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -14,28 +11,22 @@ using Microsoft.Net.Http.Headers;
 
 namespace Crypton.WebAPI.Controllers;
 
-// TODO implement an abstract ApiController class
-// with injected IMediator and ICurrentUserAccessor
-// and HandleRequest<TRequest, TResponse> method.
-
-/// <summary>
-/// Transaction controller for handling the creation and mining of transactions.
-/// </summary>
 [Authorize]
-public sealed class TransactionController : ApiController
+[ApiController]
+[Produces("application/json")]
+[Route("/api/v1/[controller]")]
+public sealed class TransactionController : ControllerBase
 {
-    /// <summary>
-    /// Initializes a new instance of the <see cref="TransactionController"/> class.
-    /// </summary>
-    public TransactionController(ILogger<TransactionController> logger, IMediator mediator)
-        : base(logger, mediator)
+    private readonly IMediator _mediator;
+
+    public TransactionController(IMediator mediator)
     {
+        this._mediator = mediator;
     }
 
     /// <summary>
     /// Collect daily coins.
     /// </summary>
-    /// <param name="ct">CancellationToken.</param>
     /// <response code="201">Success</response>
     /// <response code="400">Bad Request</response>
     /// <response code="401">Unauthorized</response>
@@ -53,11 +44,9 @@ public sealed class TransactionController : ApiController
     {
         var command = new CollectDailyCommand();
 
-        await this.TryHandleCommandAsync<CollectDailyCommand>(command, ct);
+        var result = await this._mediator.Send(command, ct);
 
-        var result = await this.Mediator.Send(command, ct);
-
-        if (result.Value is CollectDailyResult.NotReadyYet { CollectAt: var collectAt })
+        if (result is CollectDailyResult.NotReadyYet { CollectAt: var collectAt })
         {
             var retryAfter = collectAt.AddDays(1).ToString("R");
             this.HttpContext.Response.Headers[HeaderNames.RetryAfter] = retryAfter;
@@ -86,14 +75,14 @@ public sealed class TransactionController : ApiController
     [ProducesResponseType(StatusCodes.Status429TooManyRequests)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     public async Task<IActionResult> CreateTransaction(
-        [FromBody, BindRequired] [ModelBinder(BinderType = typeof(CreateTransactionCommandModelBinder))]
+        [FromBody] [BindRequired] [ModelBinder(BinderType = typeof(CreateTransactionCommandModelBinder))]
         CreateTransactionCommand command,
         CancellationToken ct = default)
     {
-        var result = await this.mediator.Send(command, ct);
+        var result = await this._mediator.Send(command, ct);
 
-        if (result.IsError)
-            return this.BadRequest(result.Errors);
+        if (result is CreateTransactionResult.InsufficientFunds or CreateTransactionResult.InvalidItem)
+            return this.BadRequest("Insufficient funds or invalid item.");
 
         return this.StatusCode(StatusCodes.Status202Accepted);
     }
