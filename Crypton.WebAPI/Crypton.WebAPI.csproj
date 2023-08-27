@@ -9,12 +9,14 @@
         <RootNamespace>Crypton.WebAPI</RootNamespace>
         <Company>Crypton</Company>
         <Product>Crypton.WebAPI</Product>
+        <CodeAnalysisRuleSet>$(SolutionDir)StyleCop.ruleset</CodeAnalysisRuleSet>
     </PropertyGroup>
 
     <ItemGroup>
         <PackageReference Include="dotenv.net" Version="3.1.2"/>
+        <PackageReference Include="FluentValidation" Version="11.7.1"/>
         <PackageReference Include="FluentValidation.AspNetCore" Version="11.3.0"/>
-        <PackageReference Include="FluentValidation.DependencyInjectionExtensions" Version="11.6.0"/>
+        <PackageReference Include="FluentValidation.DependencyInjectionExtensions" Version="11.7.1"/>
         <PackageReference Include="Microsoft.AspNetCore.Diagnostics.EntityFrameworkCore" Version="8.0.0-preview.7.23375.9"/>
         <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="8.0.0-preview.7.23375.9"/>
         <PackageReference Include="Microsoft.AspNetCore.Identity.UI" Version="8.0.0-preview.7.23375.9"/>
@@ -81,6 +83,10 @@
         <_ContentIncludedByDefault Remove="wwwroot\lib\jquery\LICENSE.txt"/>
     </ItemGroup>
 
+
+    <ItemGroup>
+      <Folder Include="Common\" />
+    </ItemGroup>
 
     <PropertyGroup>
         <GenerateDocumentationFile>true</GenerateDocumentationFile>
