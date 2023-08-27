@@ -1,12 +1,14 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.Text.Json.Serialization;
+using Crypton.Application.Common.Extensions;
 using Crypton.Application.Interfaces;
 using Crypton.Domain.Entities;
+using Crypton.Domain.ValueObjects;
 using FluentValidation;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 
-namespace Crypton.Application.Transactions;
+namespace Crypton.Application.Economy;
 
 public enum TransactionType
 {
@@ -37,24 +39,24 @@ public sealed class CreateTransactionCommand : IRequest<CreateTransactionResult>
     {
     }
 
-    public CreateTransactionCommand(User sender, User receiver, decimal amount)
+    public CreateTransactionCommand(User? sender, User? receiver, decimal amount)
     {
-        this.SenderId = sender.Id;
+        this.SenderId = sender?.Id;
         this.Sender = sender;
 
-        this.ReceiverId = receiver.Id;
+        this.ReceiverId = receiver?.Id;
         this.Receiver = receiver;
 
         this.TransactionType = TransactionType.BalanceTransaction;
         this.Amount = amount;
     }
 
-    public CreateTransactionCommand(User sender, User receiver, Item item)
+    public CreateTransactionCommand(User? sender, User? receiver, Item item)
     {
-        this.SenderId = sender.Id;
+        this.SenderId = sender?.Id;
         this.Sender = sender;
 
-        this.ReceiverId = receiver.Id;
+        this.ReceiverId = receiver?.Id;
         this.Receiver = receiver;
 
         this.TransactionType = TransactionType.ItemTransaction;
@@ -63,14 +65,14 @@ public sealed class CreateTransactionCommand : IRequest<CreateTransactionResult>
     }
 
     [JsonIgnore]
-    public Guid SenderId { get; private set; }
+    public Guid? SenderId { get; private set; }
 
     [JsonIgnore]
     public User? Sender { get; private set; }
 
     [JsonRequired]
     [RegularExpression("^[0-9a-f]{8}(-[0-9a-f]{4}){3}-[0-9a-f]{12}$")]
-    public Guid ReceiverId { get; init; }
+    public Guid? ReceiverId { get; init; }
 
     [JsonIgnore]
     public User? Receiver { get; private set; }
@@ -125,13 +127,10 @@ public sealed class CreateTransactionCommandValidator : AbstractValidator<Create
         this.ClassLevelCascadeMode = CascadeMode.Stop;
         this.RuleLevelCascadeMode = CascadeMode.Stop;
 
-        this.RuleFor(x => x.Sender)
-            .NotEmpty();
-
         this.RuleFor(x => x.SenderId)
-            .NotEmpty()
             .NotEqual(x => x.ReceiverId)
-            .WithMessage("You cannot send transactions to yourself.");
+            .WithMessage("Sender and Receiver are the same user.")
+            .When(x => x.SenderId.HasValue);
 
         this.RuleFor(x => x.Receiver)
             .NotEmpty();
@@ -139,7 +138,7 @@ public sealed class CreateTransactionCommandValidator : AbstractValidator<Create
         this.RuleFor(x => x.ReceiverId)
             .NotEmpty()
             .NotEqual(x => x.SenderId)
-            .WithMessage("You cannot send transactions to yourself.");
+            .WithMessage("Sender and Receiver are the same user.");
 
         this.When(x => x.TransactionType == TransactionType.BalanceTransaction, () =>
         {
@@ -147,7 +146,7 @@ public sealed class CreateTransactionCommandValidator : AbstractValidator<Create
                 .NotEmpty()
                 .GreaterThan(0)
                 .WithMessage("Amount must be a positive integer.")
-                .Must((ctx, amount) => ctx.Sender?.Wallet.HasBalance(amount!.Value) ?? false)
+                .Must((ctx, amount) => ctx.Sender?.Wallet.HasBalance(amount!.Value) ?? true)
                 .WithMessage("Sender has insufficient funds.");
         });
 
@@ -155,8 +154,8 @@ public sealed class CreateTransactionCommandValidator : AbstractValidator<Create
         {
             this.RuleFor(x => x.ItemId)
                 .NotEmpty()
-                .Must((ctx, itemId) => ctx.Sender?.Inventory.HasItemWithId(itemId!.Value) ?? false)
-                .WithMessage("You do not own this item.");
+                .Must((ctx, itemId) => ctx.Sender?.Inventory.HasItemWithId(itemId!.Value) ?? true)
+                .WithMessage("Sender does not own the item.");
 
             this.RuleFor(x => x.Item)
                 .NotEmpty();
@@ -166,11 +165,11 @@ public sealed class CreateTransactionCommandValidator : AbstractValidator<Create
 
 public sealed class CreateTransactionCommandHandler : IRequestHandler<CreateTransactionCommand, CreateTransactionResult>
 {
-    private readonly IAppDbContext dbContext;
+    private readonly IAppDbContext _dbContext;
 
     public CreateTransactionCommandHandler(IAppDbContext dbContext)
     {
-        this.dbContext = dbContext;
+        this._dbContext = dbContext;
     }
 
     public async Task<CreateTransactionResult> Handle(CreateTransactionCommand request, CancellationToken ct)
@@ -187,14 +186,19 @@ public sealed class CreateTransactionCommandHandler : IRequestHandler<CreateTran
         CreateTransactionCommand request,
         CancellationToken ct)
     {
-        if (!request.Sender!.Wallet.HasBalance(request.Amount!.Value))
+        // either use the sender's wallet, or create a new wallet with infinite balance
+        Wallet wallet = request.Sender is { Wallet: var senderWallet }
+            ? senderWallet
+            : new Wallet(decimal.MaxValue);
+
+        if (!wallet.HasBalance(request.Amount!.Value))
             return new CreateTransactionResult.InsufficientFunds();
 
-        request.Sender.Wallet.Transfer(request.Receiver!.Wallet, request.Amount!.Value);
+        wallet.Transfer(request.Receiver!.Wallet, request.Amount!.Value);
 
-        this.dbContext.Users.Update(request.Sender);
-        this.dbContext.Users.Update(request.Receiver);
-        await this.dbContext.SaveChangesAsync(ct);
+        this._dbContext.Users.TryUpdateIfNotNull(request.Sender);
+        this._dbContext.Users.TryUpdateIfNotNull(request.Receiver);
+        await this._dbContext.SaveChangesAsync(ct);
 
         return new CreateTransactionResult.Success();
     }
@@ -203,14 +207,21 @@ public sealed class CreateTransactionCommandHandler : IRequestHandler<CreateTran
         CreateTransactionCommand request,
         CancellationToken ct)
     {
-        if (!request.Sender!.Inventory.HasItemWithId(request.ItemId!.Value))
+        // TODO: i dont know what to do here, so we will not do anything for now
+        throw new NotImplementedException();
+
+        Inventory inventory = request.Sender is { Inventory: var senderInventory }
+            ? senderInventory
+            : new Inventory();
+
+        if (!inventory.HasItemWithId(request.ItemId!.Value))
             return new CreateTransactionResult.InvalidItem();
 
-        request.Sender.Inventory.Transfer(request.Receiver!.Inventory, request.ItemId!.Value);
+        inventory.Transfer(request.Receiver!.Inventory, request.ItemId!.Value);
 
-        this.dbContext.Users.Update(request.Sender);
-        this.dbContext.Users.Update(request.Receiver);
-        await this.dbContext.SaveChangesAsync(ct);
+        this._dbContext.Users.TryUpdateIfNotNull(request.Sender);
+        this._dbContext.Users.TryUpdateIfNotNull(request.Receiver);
+        await this._dbContext.SaveChangesAsync(ct);
 
         return new CreateTransactionResult.Success();
     }

@@ -1,5 +1,4 @@
 ﻿using Crypton.Application.Interfaces;
-using Crypton.Application.Transactions;
 using MediatR;
 
 namespace Crypton.Application.Economy;
@@ -7,8 +6,6 @@ namespace Crypton.Application.Economy;
 public abstract record CollectDailyResult
 {
     public sealed record Success(decimal AmountCollected) : CollectDailyResult;
-
-    public sealed record Unauthenticated : CollectDailyResult;
 
     public sealed record NotReadyYet(DateTime CollectAt) : CollectDailyResult;
 }
@@ -19,40 +16,38 @@ public sealed class CollectDailyCommand : IRequest<CollectDailyResult>
 
 public sealed class CollectDailyCommandHandler : IRequestHandler<CollectDailyCommand, CollectDailyResult>
 {
-    private readonly IMediator mediator;
-    private readonly IAppDbContext dbContext;
-    private readonly ICurrentUserAccessor currentUserAccessor;
+    private readonly IMediator _mediator;
+    private readonly IAppDbContext _dbContext;
+    private readonly ICurrentUserAccessor _currentUserAccessor;
 
     public CollectDailyCommandHandler(
         IMediator mediator,
         IAppDbContext dbContext,
         ICurrentUserAccessor currentUserAccessor)
     {
-        this.mediator = mediator;
-        this.dbContext = dbContext;
-        this.currentUserAccessor = currentUserAccessor;
+        this._mediator = mediator;
+        this._dbContext = dbContext;
+        this._currentUserAccessor = currentUserAccessor;
     }
 
     public async Task<CollectDailyResult> Handle(CollectDailyCommand request, CancellationToken ct)
     {
-        var currentUser = await this.currentUserAccessor.GetCurrentUserAsync(ct);
-
-        if (currentUser is null) return new CollectDailyResult.Unauthenticated();
+        var currentUser = await this._currentUserAccessor.GetCurrentUserAsync(ct);
 
         // daily collected
-        if (!currentUser.DailyStreak.IsEligibleForDaily())
+        if (!(currentUser?.DailyStreak.IsEligibleForDaily() ?? false))
         {
-            return new CollectDailyResult.NotReadyYet(currentUser.DailyStreak.CollectNextDailyAt);
+            return new CollectDailyResult.NotReadyYet(currentUser?.DailyStreak.CollectNextDailyAt ?? DateTime.MaxValue);
         }
 
         currentUser.DailyStreak.CollectDaily();
-        this.dbContext.Users.Update(currentUser);
-        await this.dbContext.SaveChangesAsync(ct);
+        this._dbContext.Users.Update(currentUser);
+        await this._dbContext.SaveChangesAsync(ct);
 
         var amount = currentUser.DailyStreak.Streak * 100;
 
-        // TODO transaction here
         var command = new CreateTransactionCommand(null, currentUser, amount);
+        await this._mediator.Send(command, ct);
 
         return new CollectDailyResult.Success(amount);
     }
