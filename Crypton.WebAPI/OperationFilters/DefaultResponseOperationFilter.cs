@@ -24,6 +24,8 @@ public sealed class DefaultResponseOperationFilter : IOperationFilter
 
         if (!HasAttribute<IgnoreDigitalSignatureAttribute>(context))
             operation.Responses.TryAdd("400", new OpenApiResponse { Description = "Digital Signature rules issue" });
+        else
+            operation.Responses.TryAdd("400", new OpenApiResponse { Description = "Validation error" });
 
         if (HasAttribute<EnableRateLimitingAttribute>(context) && !HasAttribute<DisableRateLimitingAttribute>(context))
             operation.Responses.TryAdd("429", new OpenApiResponse { Description = "Rate limit" });
