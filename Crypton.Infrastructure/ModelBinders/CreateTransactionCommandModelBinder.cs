@@ -1,7 +1,7 @@
 ﻿using System.Text.Json;
 using System.Text.Json.Serialization;
+using Crypton.Application.Economy;
 using Crypton.Application.Interfaces;
-using Crypton.Application.Transactions;
 using Crypton.Infrastructure.Policies;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.Extensions.DependencyInjection;
@@ -19,7 +19,7 @@ public class CreateTransactionCommandModelBinder : IModelBinder
         {
             var options = new JsonSerializerOptions
             {
-                PropertyNamingPolicy = new SnakeCaseNamingPolicy(),
+                PropertyNamingPolicy = new SnakeCaseJsonNamingPolicy(),
             };
             options.Converters.Add(new JsonStringEnumConverter());
 

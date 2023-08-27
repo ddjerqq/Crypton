@@ -1,4 +1,4 @@
-﻿using Crypton.Application.Transactions;
+﻿using Crypton.Application.Economy;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 
 namespace Crypton.Infrastructure.ModelBinders;
