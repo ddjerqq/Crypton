@@ -1,6 +1,6 @@
 ﻿namespace Crypton.Domain.Common.Abstractions;
 
-public interface IAuditableEntity
+public interface IAuditableEntity : IEntity
 {
     public DateTime? Created { get; set; }
 
@@ -15,7 +15,7 @@ public interface IAuditableEntity
     public string? DeletedBy { get; set; }
 }
 
-public abstract class AuditableEntityBase
+public abstract class AuditableEntityBase : EntityBase, IAuditableEntity
 {
     public DateTime? Created { get; set; }
 

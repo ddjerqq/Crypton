@@ -6,11 +6,24 @@ namespace Crypton.Domain.Common.Abstractions;
 
 public interface IEntity
 {
+    [NotMapped]
     [JsonIgnore]
-    protected ICollection<INotification> ProtectedDomainEvents { get; set; }
+    public IEnumerable<INotification> DomainEvents { get; }
 
-    [JsonIgnore]
+    public void AddDomainEvent(INotification domainEvent);
+
+    public void RemoveDomainEvent(INotification domainEvent);
+
+    public void ClearDomainEvents();
+}
+
+public abstract class EntityBase
+{
     public IEnumerable<INotification> DomainEvents => this.ProtectedDomainEvents;
+
+    [NotMapped]
+    [JsonIgnore]
+    protected ICollection<INotification> ProtectedDomainEvents { get; } = new List<INotification>();
 
     public void AddDomainEvent(INotification domainEvent)
     {
@@ -26,11 +39,4 @@ public interface IEntity
     {
         this.ProtectedDomainEvents.Clear();
     }
-}
-
-public abstract class EntityBase
-{
-    [NotMapped]
-    [JsonIgnore]
-    public ICollection<INotification> ProtectedDomainEvents { get; set; } = new List<INotification>();
 }

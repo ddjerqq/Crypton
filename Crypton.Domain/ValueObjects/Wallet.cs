@@ -2,9 +2,9 @@
 
 namespace Crypton.Domain.ValueObjects;
 
-public sealed record Wallet : ValueObjectBase
+public sealed record Wallet(decimal Balance = default) : ValueObjectBase
 {
-    public decimal Balance { get; private set; }
+    public decimal Balance { get; private set; } = Balance;
 
     public bool HasBalance(decimal amount)
     {
