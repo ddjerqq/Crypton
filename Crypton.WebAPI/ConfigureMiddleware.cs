@@ -4,16 +4,8 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Crypton.WebAPI;
 
-/// <summary>
-/// Configure the middleware for the web application.
-/// </summary>
 public static class ConfigureMiddleware
 {
-    /// <summary>
-    /// Apply any currently pending migrations.
-    /// </summary>
-    /// <param name="app">WebApplication.</param>
-    /// <returns>the WebApplication with the applied migrations.</returns>
     public static WebApplication MigrateDatabase(this WebApplication app)
     {
         using var scope = app.Services.CreateScope();
@@ -30,11 +22,6 @@ public static class ConfigureMiddleware
         return app;
     }
 
-    /// <summary>
-    /// Configure the web api middleware.
-    /// </summary>
-    /// <param name="app">WebApplication.</param>
-    /// <returns>the WebApplication with the configured web api middleware.</returns>
     public static WebApplication ConfigureWebApiMiddleware(this WebApplication app)
     {
         if (app.Environment.IsDevelopment())

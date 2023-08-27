@@ -17,19 +17,10 @@ using ZymLabs.NSwag.FluentValidation;
 
 namespace Crypton.WebAPI;
 
-/// <summary>
-/// Configure services for the web api.
-/// </summary>
 public static class ConfigureServices
 {
     private static readonly string[] CompressionTypes = { "application/octet-stream" };
 
-    /// <summary>
-    /// Add web api services.
-    /// </summary>
-    /// <param name="services">ServiceCollection.</param>
-    /// <param name="env">Environment.</param>
-    /// <returns>Configured Services.</returns>
     public static IServiceCollection AddWebApiServices(this IServiceCollection services, IWebHostEnvironment env)
     {
         services.AddHttpContextAccessor();
@@ -49,7 +40,7 @@ public static class ConfigureServices
             })
             .AddJsonOptions(options =>
             {
-                options.JsonSerializerOptions.PropertyNamingPolicy = new SnakeCaseNamingPolicy();
+                options.JsonSerializerOptions.PropertyNamingPolicy = new SnakeCaseJsonNamingPolicy();
                 options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
             })
             .ConfigureApiBehaviorOptions(options =>
@@ -144,12 +135,6 @@ public static class ConfigureServices
         return services;
     }
 
-    /// <summary>
-    /// Add rate limiting middleware.
-    /// </summary>
-    /// <param name="services">ServiceCollection.</param>
-    /// <param name="configuration">Configuration.</param>
-    /// <returns>Configured Services.</returns>
     public static IServiceCollection AddRateLimiting(this IServiceCollection services, IConfiguration configuration)
     {
         var policies = RateLimitConstants.LoadRateLimitOptions(configuration)
