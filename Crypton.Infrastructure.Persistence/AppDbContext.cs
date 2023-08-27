@@ -14,9 +14,8 @@ namespace Crypton.Infrastructure.Persistence;
 
 public sealed class AppDbContext : IdentityDbContext<User, IdentityRole<Guid>, Guid>, IAppDbContext
 {
-    private readonly AuditableEntitySaveChangesInterceptor auditableEntitySaveChangesInterceptor;
-
-    private readonly IMediator mediator;
+    private readonly IMediator _mediator;
+    private readonly AuditableEntitySaveChangesInterceptor _auditableEntitySaveChangesInterceptor;
 
     public AppDbContext(
         DbContextOptions<AppDbContext> options,
@@ -24,8 +23,8 @@ public sealed class AppDbContext : IdentityDbContext<User, IdentityRole<Guid>, G
         AuditableEntitySaveChangesInterceptor auditableEntitySaveChangesInterceptor)
         : base(options)
     {
-        this.mediator = mediator;
-        this.auditableEntitySaveChangesInterceptor = auditableEntitySaveChangesInterceptor;
+        this._mediator = mediator;
+        this._auditableEntitySaveChangesInterceptor = auditableEntitySaveChangesInterceptor;
     }
 
     public DbSet<Item> Items => this.Set<Item>();
@@ -34,7 +33,7 @@ public sealed class AppDbContext : IdentityDbContext<User, IdentityRole<Guid>, G
 
     public override async Task<int> SaveChangesAsync(CancellationToken ct = default)
     {
-        await this.mediator.DispatchDomainEvents(this);
+        await this._mediator.DispatchDomainEvents(this);
         return await base.SaveChangesAsync(ct);
     }
 
@@ -44,13 +43,32 @@ public sealed class AppDbContext : IdentityDbContext<User, IdentityRole<Guid>, G
 
         base.OnModelCreating(builder);
 
+        SnakeCaseRename(builder);
+    }
+
+    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+    {
+        optionsBuilder.AddInterceptors(this._auditableEntitySaveChangesInterceptor);
+        base.OnConfiguring(optionsBuilder);
+    }
+
+    protected override void ConfigureConventions(ModelConfigurationBuilder builder)
+    {
+        builder
+            .Properties<DateTime>()
+            .HaveConversion<DateTimeUtcValueConverter>();
+
+        base.ConfigureConventions(builder);
+    }
+
+    private static void SnakeCaseRename(ModelBuilder builder)
+    {
         foreach (var entity in builder.Model.GetEntityTypes())
         {
             var entityTableName = entity.GetTableName()!
                 .Replace("AspNet", string.Empty)
                 .TrimEnd('s')
                 .ToSnakeCase();
-
             entity.SetTableName(entityTableName);
 
             foreach (var property in entity.GetProperties())
@@ -75,18 +93,18 @@ public sealed class AppDbContext : IdentityDbContext<User, IdentityRole<Guid>, G
         }
     }
 
-    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+    private static void SeedData(ModelBuilder builder)
     {
-        optionsBuilder.AddInterceptors(this.auditableEntitySaveChangesInterceptor);
-        base.OnConfiguring(optionsBuilder);
-    }
+        builder.Entity<User>()
+            .HasData(new List<User>
+            { });
 
-    protected override void ConfigureConventions(ModelConfigurationBuilder builder)
-    {
-        builder
-            .Properties<DateTime>()
-            .HaveConversion<DateTimeUtcValueConverter>();
+        builder.Entity<ItemType>()
+            .HasData(new List<ItemType>
+            { });
 
-        base.ConfigureConventions(builder);
+        builder.Entity<Item>()
+            .HasData(new List<Item>
+            { });
     }
 }

@@ -14,6 +14,6 @@ public class ItemConfiguration : IEntityTypeConfiguration<Item>
 
         builder.HasOne(e => e.ItemType)
             .WithMany()
-            .HasForeignKey(e => e.ItemTypeId);
+            .HasForeignKey(x => x.ItemTypeId);
     }
 }

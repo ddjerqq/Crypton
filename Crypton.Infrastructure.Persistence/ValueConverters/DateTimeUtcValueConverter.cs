@@ -6,7 +6,7 @@ public sealed class DateTimeUtcValueConverter : ValueConverter<DateTime, DateTim
 {
     public DateTimeUtcValueConverter()
         : base(
-            v => v,
+            v => v.ToUniversalTime(),
             v => DateTime.SpecifyKind(v, DateTimeKind.Utc))
     {
     }
