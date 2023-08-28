@@ -24,16 +24,15 @@ public static class ConfigureMiddleware
 
     public static WebApplication ConfigureWebApiMiddleware(this WebApplication app)
     {
+        app.UseExceptionHandler("/error");
+
         if (app.Environment.IsDevelopment())
         {
-            app.UseDeveloperExceptionPage();
-
             app.UseSwagger();
             app.UseSwaggerUI();
         }
         else
         {
-            app.UseExceptionHandler("/Error");
             app.UseHsts();
         }
 

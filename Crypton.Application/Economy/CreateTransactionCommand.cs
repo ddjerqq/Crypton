@@ -210,9 +210,9 @@ public sealed class CreateTransactionCommandHandler : IRequestHandler<CreateTran
         // TODO: i dont know what to do here, so we will not do anything for now
         throw new NotImplementedException();
 
-        Inventory inventory = request.Sender is { Inventory: var senderInventory }
+        Domain.ValueObjects.Inventory inventory = request.Sender is { Inventory: var senderInventory }
             ? senderInventory
-            : new Inventory();
+            : new Domain.ValueObjects.Inventory();
 
         if (!inventory.HasItemWithId(request.ItemId!.Value))
             return new CreateTransactionResult.InvalidItem();
