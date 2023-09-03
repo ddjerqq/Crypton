@@ -1,5 +1,6 @@
 ﻿using Crypton.Application.Common.Interfaces;
 using Crypton.Application.Dtos;
+using Crypton.Application.Economy.Commands;
 using Crypton.Application.Inventory.Commands;
 using Crypton.Domain.Entities;
 using Crypton.Domain.ValueObjects;
@@ -38,7 +39,9 @@ public sealed class InventoryController : ApiController
     [RequireIdempotency]
     [HttpPost("buy")]
     [ProducesResponseType<ItemDto>(StatusCodes.Status200OK)]
-    public async Task<IActionResult> Buy([FromBody, BindRequired] BuyItemCommand command, CancellationToken ct)
+    public async Task<IActionResult> Buy(
+        [FromBody, BindRequired] BuyItemCommand command,
+        CancellationToken ct)
     {
         var item = await this.HandleCommandAsync<BuyItemCommand, Item>(command, ct);
         return this.Ok((ItemDto)item);
@@ -49,24 +52,13 @@ public sealed class InventoryController : ApiController
     /// </summary>
     [RequireIdempotency]
     [HttpPost("send")]
-    public async Task<IActionResult> SendToUser([FromBody, BindRequired] SendItemCommand command, CancellationToken ct)
+    public async Task<IActionResult> SendToUser(
+        [FromBody, BindRequired] CreateItemTransactionCommand transactionCommand,
+        CancellationToken ct)
     {
-        await this.HandleCommandAsync(command, ct);
+        await this.HandleCommandAsync(transactionCommand, ct);
         return this.Ok();
     }
-
-    // /// <summary>
-    // /// Use an item
-    // /// </summary>
-    // [AllowAnonymous]
-    // [RequireIdempotency]
-    // [HttpPost("use")]
-    // public async Task<IActionResult> Use([FromBody, BindRequired] UseItemCommand command)
-    // {
-    //     // return this.Created();
-    //     // return this.BadRequest(result.Errors);
-    //     throw new NotImplementedException();
-    // }
 
     // /// <summary>
     // /// Sell item
@@ -78,20 +70,6 @@ public sealed class InventoryController : ApiController
     // {
     //     // return this.Created();
     //     // return this.BadRequest(result.Errors);
-    //     throw new NotImplementedException();
-    // }
-
-    // /// <summary>
-    // /// Sell all junk
-    // /// </summary>
-    // [AllowAnonymous]
-    // [RequireIdempotency]
-    // [HttpPost("sell_junk")]
-    // public async Task<IActionResult> SellJunk()
-    // {
-    //     // return this.Created();
-    //     // return this.BadRequest(result.Errors);
-    //     var command = new SellJunkItemsCommand();
     //     throw new NotImplementedException();
     // }
 }

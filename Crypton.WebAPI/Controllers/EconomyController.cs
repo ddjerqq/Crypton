@@ -5,6 +5,7 @@ using Crypton.Infrastructure.RateLimiting;
 using Crypton.WebAPI.Common.Abstractions;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
 
 namespace Crypton.WebAPI.Controllers;
 
@@ -30,7 +31,9 @@ public sealed class EconomyController : ApiController
     [RequireIdempotency]
     [Cooldown(1, 5)]
     [HttpPost("create_balance")]
-    public async Task<IActionResult> CreateBalanceTransaction(CreateBalanceTransactionCommand command, CancellationToken ct)
+    public async Task<IActionResult> CreateBalanceTransaction(
+        [FromBody, BindRequired] CreateBalanceTransactionCommand command,
+        CancellationToken ct)
     {
         await this.HandleCommandAsync(command, ct);
         return this.Ok();
