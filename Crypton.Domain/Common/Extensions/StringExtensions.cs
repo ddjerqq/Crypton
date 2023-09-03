@@ -17,15 +17,6 @@ public static partial class StringExtensions
         return startUnderscores + CamelCase().Replace(input, "$1_$2").ToLower();
     }
 
-    // TODO optimize this
-    public static string CalculateSha256HexDigest(this string input)
-    {
-        var bytes = Encoding.UTF8.GetBytes(input);
-        var hash = SHA256.HashData(bytes);
-        var digest = BitConverter.ToString(hash);
-        return digest.Replace("-", string.Empty).ToLower();
-    }
-
     /// <summary>
     /// regex for words
     /// </summary>

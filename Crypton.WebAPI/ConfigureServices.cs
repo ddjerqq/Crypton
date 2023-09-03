@@ -140,6 +140,7 @@ public static class ConfigureServices
         return services;
     }
 
+    // TODO add a rate limiting option, to limit how often users can perform actions.
     public static IServiceCollection AddRateLimiting(this IServiceCollection services, IConfiguration configuration)
     {
         var policies = RateLimitConstants.LoadRateLimitOptions(configuration)

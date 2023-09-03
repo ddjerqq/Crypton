@@ -19,7 +19,6 @@ builder.WebHost.UseStaticWebAssets();
 
 builder.Services.AddSingleton(builder.Configuration);
 
-// TODO test if null signature tokens are allowed which could be a major security flaw
 builder.Services
     .AddApplicationServices()
     .AddInfrastructureServices()
