@@ -6,6 +6,8 @@ public sealed class ItemDto
 {
     public Guid Id { get; init; }
 
+    public float Rarity { get; set; }
+
     public string TypeId { get; init; } = string.Empty;
 
     public string TypeName { get; init; } = string.Empty;
@@ -17,6 +19,7 @@ public sealed class ItemDto
         return new ItemDto
         {
             Id = item.Id,
+            Rarity = item.Rarity.Value,
             TypeId = item.ItemType.Id,
             TypeName = item.ItemType.Name,
             Price = item.ItemType.Price,

@@ -7,6 +7,8 @@ public sealed class Item : EntityBase
 {
     public Guid Id { get; set; }
 
+    public Rarity Rarity { get; set; } = new Rarity(-1);
+
     public string ItemTypeId { get; set; } = string.Empty;
 
     public ItemType ItemType { get; init; } = null!;

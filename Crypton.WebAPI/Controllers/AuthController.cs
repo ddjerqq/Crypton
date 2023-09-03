@@ -92,9 +92,15 @@ public sealed class AuthController : ApiController
     [Authorize]
     [HttpGet("user")]
     [ProducesResponseType<UserDto>(StatusCodes.Status200OK)]
-    public async Task<IActionResult> GetUser()
+    public async Task<IActionResult> GetUser(CancellationToken ct)
     {
-        var user = await this._userManager.GetUserAsync(this.User);
+        var userId = Guid.Parse(this._userManager.GetUserId(this.User)!);
+
+        var user = await this._dbContext.Set<User>()
+            .Include(x => x.Inventory)
+            .ThenInclude(x => x.ItemType)
+            .FirstOrDefaultAsync(x => x.Id == userId, ct);
+
         return this.Ok((UserDto)user!);
     }
 

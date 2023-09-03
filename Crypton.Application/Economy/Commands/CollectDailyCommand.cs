@@ -4,7 +4,7 @@ using Crypton.Domain.Entities;
 using ErrorOr;
 using MediatR;
 
-namespace Crypton.Application.Economy;
+namespace Crypton.Application.Economy.Commands;
 
 public sealed class CollectDailyCommand : IRequest<ErrorOr<decimal>>
 {

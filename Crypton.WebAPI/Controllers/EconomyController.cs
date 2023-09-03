@@ -1,4 +1,5 @@
 ﻿using Crypton.Application.Economy;
+using Crypton.Application.Economy.Commands;
 using Crypton.Infrastructure.Idempotency;
 using Crypton.Infrastructure.RateLimiting;
 using Crypton.WebAPI.Common.Abstractions;
@@ -7,12 +8,12 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace Crypton.WebAPI.Controllers;
 
+[Authorize]
 public sealed class EconomyController : ApiController
 {
     /// <summary>
     /// Collect daily coins.
     /// </summary>
-    [Authorize]
     [RequireIdempotency]
     [Cooldown(1, 86400)]
     [HttpPost("daily")]
@@ -26,7 +27,6 @@ public sealed class EconomyController : ApiController
     /// <summary>
     /// Create a balance transaction.
     /// </summary>
-    [Authorize]
     [RequireIdempotency]
     [Cooldown(1, 5)]
     [HttpPost("create_balance")]

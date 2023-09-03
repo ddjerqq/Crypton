@@ -1,4 +1,5 @@
-﻿using ErrorOr;
+﻿using Crypton.Domain.Common.Errors;
+using ErrorOr;
 using MediatR;
 
 namespace Crypton.Application.Common.Behaviours;
@@ -24,7 +25,7 @@ public sealed class ErrorHandlingBehaviour<TRequest, TResponse>
         catch (Exception ex)
         {
             this._logger.LogError(ex, "Error handling request {@Request}", request);
-            return (dynamic)Error.Unexpected("unhandled_exception", ex.Message);
+            return (dynamic)Errors.From(Error.Unexpected("unhandled_exception", ex.Message));
         }
     }
 }

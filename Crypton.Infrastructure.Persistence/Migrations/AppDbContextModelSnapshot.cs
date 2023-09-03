@@ -17,6 +17,41 @@ namespace Crypton.Infrastructure.Persistence.Migrations
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "8.0.0-preview.7.23375.4");
 
+            modelBuilder.Entity("Crypton.Application.Common.OutboxMessage", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("TEXT")
+                        .HasColumnName("id");
+
+                    b.Property<string>("Content")
+                        .IsRequired()
+                        .HasColumnType("TEXT")
+                        .HasColumnName("content");
+
+                    b.Property<string>("Error")
+                        .HasColumnType("TEXT")
+                        .HasColumnName("error");
+
+                    b.Property<DateTime>("OccuredOnUtc")
+                        .HasColumnType("TEXT")
+                        .HasColumnName("occured_on_utc");
+
+                    b.Property<DateTime?>("ProcessedOnUtc")
+                        .HasColumnType("TEXT")
+                        .HasColumnName("processed_on_utc");
+
+                    b.Property<string>("Type")
+                        .IsRequired()
+                        .HasColumnType("TEXT")
+                        .HasColumnName("type");
+
+                    b.HasKey("Id")
+                        .HasName("pk_outbox_message");
+
+                    b.ToTable("outbox_message");
+                });
+
             modelBuilder.Entity("Crypton.Domain.Entities.Item", b =>
                 {
                     b.Property<Guid>("Id")
@@ -377,41 +412,6 @@ namespace Crypton.Infrastructure.Persistence.Migrations
                         });
                 });
 
-            modelBuilder.Entity("Crypton.Infrastructure.Persistence.Common.OutboxMessage", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("TEXT")
-                        .HasColumnName("id");
-
-                    b.Property<string>("Content")
-                        .IsRequired()
-                        .HasColumnType("TEXT")
-                        .HasColumnName("content");
-
-                    b.Property<string>("Error")
-                        .HasColumnType("TEXT")
-                        .HasColumnName("error");
-
-                    b.Property<DateTime>("OccuredOnUtc")
-                        .HasColumnType("TEXT")
-                        .HasColumnName("occured_on_utc");
-
-                    b.Property<DateTime?>("ProcessedOnUtc")
-                        .HasColumnType("TEXT")
-                        .HasColumnName("processed_on_utc");
-
-                    b.Property<string>("Type")
-                        .IsRequired()
-                        .HasColumnType("TEXT")
-                        .HasColumnName("type");
-
-                    b.HasKey("Id")
-                        .HasName("pk_outbox_message");
-
-                    b.ToTable("outbox_message");
-                });
-
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole<System.Guid>", b =>
                 {
                     b.Property<Guid>("Id")
@@ -586,9 +586,32 @@ namespace Crypton.Infrastructure.Persistence.Migrations
                         .IsRequired()
                         .HasConstraintName("fk_item_asp_net_users_owner_id");
 
+                    b.OwnsOne("Crypton.Domain.ValueObjects.Rarity", "Rarity", b1 =>
+                        {
+                            b1.Property<Guid>("id")
+                                .HasColumnType("TEXT")
+                                .HasColumnName("id");
+
+                            b1.Property<float>("Value")
+                                .HasColumnType("REAL")
+                                .HasColumnName("rarity");
+
+                            b1.HasKey("id")
+                                .HasName("pk_item");
+
+                            b1.ToTable("item");
+
+                            b1.WithOwner()
+                                .HasForeignKey("id")
+                                .HasConstraintName("fk_item_item_id");
+                        });
+
                     b.Navigation("ItemType");
 
                     b.Navigation("Owner");
+
+                    b.Navigation("Rarity")
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("Crypton.Domain.Entities.User", b =>

@@ -4,6 +4,8 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
+#pragma warning disable CA1814 // Prefer jagged arrays over multidimensional
+
 namespace Crypton.Infrastructure.Persistence.Migrations
 {
     /// <inheritdoc />
@@ -25,6 +27,22 @@ namespace Crypton.Infrastructure.Persistence.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("pk_item_type", x => x.id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "outbox_message",
+                columns: table => new
+                {
+                    id = table.Column<Guid>(type: "TEXT", nullable: false),
+                    type = table.Column<string>(type: "TEXT", nullable: false),
+                    content = table.Column<string>(type: "TEXT", nullable: false),
+                    occured_on_utc = table.Column<DateTime>(type: "TEXT", nullable: false),
+                    processed_on_utc = table.Column<DateTime>(type: "TEXT", nullable: true),
+                    error = table.Column<string>(type: "TEXT", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("pk_outbox_message", x => x.id);
                 });
 
             migrationBuilder.CreateTable(
@@ -101,6 +119,7 @@ namespace Crypton.Infrastructure.Persistence.Migrations
                 columns: table => new
                 {
                     id = table.Column<Guid>(type: "TEXT", nullable: false),
+                    rarity = table.Column<float>(type: "REAL", nullable: false),
                     item_type_id = table.Column<string>(type: "TEXT", nullable: false),
                     owner_id = table.Column<Guid>(type: "TEXT", nullable: false)
                 },
@@ -206,6 +225,36 @@ namespace Crypton.Infrastructure.Persistence.Migrations
                         onDelete: ReferentialAction.Cascade);
                 });
 
+            migrationBuilder.InsertData(
+                table: "item_type",
+                columns: new[] { "id", "max_rarity", "min_rarity", "name", "price" },
+                values: new object[,]
+                {
+                    { "AMETHYST", 0.9f, 0.1f, "Amethyst 🔴", 40m },
+                    { "BEAR", 0.9f, 0.1f, "Bear 🦌", 20m },
+                    { "COMMON_FISH", 0.9f, 0.1f, "Common Fish 🐟", 5m },
+                    { "COPPER_COIN", 0.9f, 0.1f, "Copper Coin 🐘", 1m },
+                    { "DEER", 0.9f, 0.1f, "Deer 🐷", 10m },
+                    { "DIAMOND", 0.9f, 0.1f, "Diamond 💎", 50m },
+                    { "ELEPHANT", 0.9f, 0.1f, "Elephant 🐯", 60m },
+                    { "EMERALD", 0.9f, 0.1f, "Emerald 👛", 10m },
+                    { "FISHING_ROD", 0.9f, 0.1f, "Fishing rod 🎣", 75m },
+                    { "GOLDEN_FISH", 0.9f, 0.1f, "Golden Fish 🦈", 50m },
+                    { "HUNTING_RIFLE", 0.9f, 0.1f, "Hunting Rifle 🔫", 75m },
+                    { "KNIFE", 0.9f, 0.1f, "Knife 🔪", 50m },
+                    { "LION", 0.9f, 0.1f, "Lion 🦁", 50m },
+                    { "PIG", 0.9f, 0.1f, "Pig 🥇🐟", 5m },
+                    { "RARE_FISH", 0.9f, 0.1f, "Rare Fish 🐡", 10m },
+                    { "RUBY", 0.9f, 0.1f, "Ruby 🔶", 20m },
+                    { "SAPPHIRE", 0.9f, 0.1f, "Sapphire 🔷", 30m },
+                    { "SHARK", 0.9f, 0.1f, "Shark 🐠", 40m },
+                    { "SHOVEL", 0.9f, 0.1f, "Shovel 🪣", 75m },
+                    { "TIGER", 0.9f, 0.1f, "Tiger 🐻", 40m },
+                    { "TROPICAL_FISH", 0.9f, 0.1f, "Tropical Fish 🐯", 20m },
+                    { "WEDDING_RING", 0.9f, 0.1f, "Wedding Ring 💍", 1000m },
+                    { "WOLF", 0.9f, 0.1f, "Wolf 🐺", 30m }
+                });
+
             migrationBuilder.CreateIndex(
                 name: "ix_item_item_type_id",
                 table: "item",
@@ -271,6 +320,9 @@ namespace Crypton.Infrastructure.Persistence.Migrations
         {
             migrationBuilder.DropTable(
                 name: "item");
+
+            migrationBuilder.DropTable(
+                name: "outbox_message");
 
             migrationBuilder.DropTable(
                 name: "role_claim");

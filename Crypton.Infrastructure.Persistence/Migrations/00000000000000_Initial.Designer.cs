@@ -20,6 +20,41 @@ namespace Crypton.Infrastructure.Persistence.Migrations
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "8.0.0-preview.7.23375.4");
 
+            modelBuilder.Entity("Crypton.Application.Common.OutboxMessage", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("TEXT")
+                        .HasColumnName("id");
+
+                    b.Property<string>("Content")
+                        .IsRequired()
+                        .HasColumnType("TEXT")
+                        .HasColumnName("content");
+
+                    b.Property<string>("Error")
+                        .HasColumnType("TEXT")
+                        .HasColumnName("error");
+
+                    b.Property<DateTime>("OccuredOnUtc")
+                        .HasColumnType("TEXT")
+                        .HasColumnName("occured_on_utc");
+
+                    b.Property<DateTime?>("ProcessedOnUtc")
+                        .HasColumnType("TEXT")
+                        .HasColumnName("processed_on_utc");
+
+                    b.Property<string>("Type")
+                        .IsRequired()
+                        .HasColumnType("TEXT")
+                        .HasColumnName("type");
+
+                    b.HasKey("Id")
+                        .HasName("pk_outbox_message");
+
+                    b.ToTable("outbox_message");
+                });
+
             modelBuilder.Entity("Crypton.Domain.Entities.Item", b =>
                 {
                     b.Property<Guid>("Id")
@@ -192,6 +227,192 @@ namespace Crypton.Infrastructure.Persistence.Migrations
                         .HasDatabaseName("ix_item_type_name");
 
                     b.ToTable("item_type");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = "FISHING_ROD",
+                            MaxRarity = 0.9f,
+                            MinRarity = 0.1f,
+                            Name = "Fishing rod 🎣",
+                            Price = 75m
+                        },
+                        new
+                        {
+                            Id = "HUNTING_RIFLE",
+                            MaxRarity = 0.9f,
+                            MinRarity = 0.1f,
+                            Name = "Hunting Rifle 🔫",
+                            Price = 75m
+                        },
+                        new
+                        {
+                            Id = "SHOVEL",
+                            MaxRarity = 0.9f,
+                            MinRarity = 0.1f,
+                            Name = "Shovel 🪣",
+                            Price = 75m
+                        },
+                        new
+                        {
+                            Id = "COMMON_FISH",
+                            MaxRarity = 0.9f,
+                            MinRarity = 0.1f,
+                            Name = "Common Fish 🐟",
+                            Price = 5m
+                        },
+                        new
+                        {
+                            Id = "RARE_FISH",
+                            MaxRarity = 0.9f,
+                            MinRarity = 0.1f,
+                            Name = "Rare Fish 🐡",
+                            Price = 10m
+                        },
+                        new
+                        {
+                            Id = "TROPICAL_FISH",
+                            MaxRarity = 0.9f,
+                            MinRarity = 0.1f,
+                            Name = "Tropical Fish 🐯",
+                            Price = 20m
+                        },
+                        new
+                        {
+                            Id = "SHARK",
+                            MaxRarity = 0.9f,
+                            MinRarity = 0.1f,
+                            Name = "Shark 🐠",
+                            Price = 40m
+                        },
+                        new
+                        {
+                            Id = "GOLDEN_FISH",
+                            MaxRarity = 0.9f,
+                            MinRarity = 0.1f,
+                            Name = "Golden Fish 🦈",
+                            Price = 50m
+                        },
+                        new
+                        {
+                            Id = "PIG",
+                            MaxRarity = 0.9f,
+                            MinRarity = 0.1f,
+                            Name = "Pig 🥇🐟",
+                            Price = 5m
+                        },
+                        new
+                        {
+                            Id = "DEER",
+                            MaxRarity = 0.9f,
+                            MinRarity = 0.1f,
+                            Name = "Deer 🐷",
+                            Price = 10m
+                        },
+                        new
+                        {
+                            Id = "BEAR",
+                            MaxRarity = 0.9f,
+                            MinRarity = 0.1f,
+                            Name = "Bear 🦌",
+                            Price = 20m
+                        },
+                        new
+                        {
+                            Id = "WOLF",
+                            MaxRarity = 0.9f,
+                            MinRarity = 0.1f,
+                            Name = "Wolf 🐺",
+                            Price = 30m
+                        },
+                        new
+                        {
+                            Id = "TIGER",
+                            MaxRarity = 0.9f,
+                            MinRarity = 0.1f,
+                            Name = "Tiger 🐻",
+                            Price = 40m
+                        },
+                        new
+                        {
+                            Id = "LION",
+                            MaxRarity = 0.9f,
+                            MinRarity = 0.1f,
+                            Name = "Lion 🦁",
+                            Price = 50m
+                        },
+                        new
+                        {
+                            Id = "ELEPHANT",
+                            MaxRarity = 0.9f,
+                            MinRarity = 0.1f,
+                            Name = "Elephant 🐯",
+                            Price = 60m
+                        },
+                        new
+                        {
+                            Id = "COPPER_COIN",
+                            MaxRarity = 0.9f,
+                            MinRarity = 0.1f,
+                            Name = "Copper Coin 🐘",
+                            Price = 1m
+                        },
+                        new
+                        {
+                            Id = "EMERALD",
+                            MaxRarity = 0.9f,
+                            MinRarity = 0.1f,
+                            Name = "Emerald 👛",
+                            Price = 10m
+                        },
+                        new
+                        {
+                            Id = "RUBY",
+                            MaxRarity = 0.9f,
+                            MinRarity = 0.1f,
+                            Name = "Ruby 🔶",
+                            Price = 20m
+                        },
+                        new
+                        {
+                            Id = "SAPPHIRE",
+                            MaxRarity = 0.9f,
+                            MinRarity = 0.1f,
+                            Name = "Sapphire 🔷",
+                            Price = 30m
+                        },
+                        new
+                        {
+                            Id = "AMETHYST",
+                            MaxRarity = 0.9f,
+                            MinRarity = 0.1f,
+                            Name = "Amethyst 🔴",
+                            Price = 40m
+                        },
+                        new
+                        {
+                            Id = "DIAMOND",
+                            MaxRarity = 0.9f,
+                            MinRarity = 0.1f,
+                            Name = "Diamond 💎",
+                            Price = 50m
+                        },
+                        new
+                        {
+                            Id = "KNIFE",
+                            MaxRarity = 0.9f,
+                            MinRarity = 0.1f,
+                            Name = "Knife 🔪",
+                            Price = 50m
+                        },
+                        new
+                        {
+                            Id = "WEDDING_RING",
+                            MaxRarity = 0.9f,
+                            MinRarity = 0.1f,
+                            Name = "Wedding Ring 💍",
+                            Price = 1000m
+                        });
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole<System.Guid>", b =>
@@ -368,9 +589,32 @@ namespace Crypton.Infrastructure.Persistence.Migrations
                         .IsRequired()
                         .HasConstraintName("fk_item_asp_net_users_owner_id");
 
+                    b.OwnsOne("Crypton.Domain.ValueObjects.Rarity", "Rarity", b1 =>
+                        {
+                            b1.Property<Guid>("id")
+                                .HasColumnType("TEXT")
+                                .HasColumnName("id");
+
+                            b1.Property<float>("Value")
+                                .HasColumnType("REAL")
+                                .HasColumnName("rarity");
+
+                            b1.HasKey("id")
+                                .HasName("pk_item");
+
+                            b1.ToTable("item");
+
+                            b1.WithOwner()
+                                .HasForeignKey("id")
+                                .HasConstraintName("fk_item_item_id");
+                        });
+
                     b.Navigation("ItemType");
 
                     b.Navigation("Owner");
+
+                    b.Navigation("Rarity")
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("Crypton.Domain.Entities.User", b =>

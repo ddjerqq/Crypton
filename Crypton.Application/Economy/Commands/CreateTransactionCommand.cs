@@ -2,12 +2,13 @@
 using Crypton.Application.Common.Interfaces;
 using Crypton.Domain.Common.Errors;
 using Crypton.Domain.Entities;
+using Crypton.Domain.Events;
 using Crypton.Domain.ValueObjects;
 using ErrorOr;
 using FluentValidation;
 using MediatR;
 
-namespace Crypton.Application.Economy;
+namespace Crypton.Application.Economy.Commands;
 
 public enum TransactionType
 {
@@ -22,7 +23,7 @@ public enum TransactionType
     ItemTransaction,
 }
 
-public sealed class CreateTransactionCommand : IRequest<IErrorOr>
+internal sealed class CreateTransactionCommand : IRequest<IErrorOr>
 {
     public CreateTransactionCommand(User? sender, User? receiver, decimal amount)
     {
@@ -66,7 +67,7 @@ public sealed class CreateTransactionCommand : IRequest<IErrorOr>
     public Item? Item { get; init; }
 }
 
-public sealed class CreateTransactionValidator : AbstractValidator<CreateTransactionCommand>
+internal sealed class CreateTransactionValidator : AbstractValidator<CreateTransactionCommand>
 {
     public CreateTransactionValidator()
     {
@@ -105,7 +106,7 @@ public sealed class CreateTransactionValidator : AbstractValidator<CreateTransac
     }
 }
 
-public sealed class CreateTransactionHandler : IRequestHandler<CreateTransactionCommand, IErrorOr>
+internal sealed class CreateTransactionHandler : IRequestHandler<CreateTransactionCommand, IErrorOr>
 {
     private readonly IAppDbContext _dbContext;
 
@@ -129,14 +130,19 @@ public sealed class CreateTransactionHandler : IRequestHandler<CreateTransaction
         CancellationToken ct)
     {
         // either use the sender's wallet, or create a new wallet with infinite balance
-        Wallet wallet = request.Sender is { Wallet: var senderWallet }
-            ? senderWallet
+        Wallet senderWallet = request.Sender is { Wallet: var sWallet }
+            ? sWallet
             : new Wallet(decimal.MaxValue);
 
-        if (!wallet.HasBalance(request.Amount!.Value))
+        // either use the receiver's wallet, or create a new wallet with infinite balance
+        Wallet receiverWallet = request.Receiver is { Wallet: var rWallet }
+            ? rWallet
+            : new Wallet();
+
+        if (!senderWallet.HasBalance(request.Amount!.Value))
             return Errors.From(Errors.Economy.InsufficientFunds);
 
-        wallet.Transfer(request.Receiver!.Wallet, request.Amount!.Value);
+        senderWallet.Transfer(receiverWallet, request.Amount!.Value);
 
         this._dbContext.Set<User>().TryUpdateIfNotNull(request.Sender);
         this._dbContext.Set<User>().TryUpdateIfNotNull(request.Receiver);
@@ -149,17 +155,25 @@ public sealed class CreateTransactionHandler : IRequestHandler<CreateTransaction
         CreateTransactionCommand request,
         CancellationToken ct)
     {
-        // TODO: i dont know what to do here, so we will not do anything for now
-        throw new NotImplementedException();
+        // if sender is not null
+        if (request.Sender is not null)
+        {
+            // transfer items between inventories
+            if (!request.Sender.Inventory.HasItemWithId(request.ItemId!.Value))
+                return Errors.From(Errors.Economy.InvalidItem);
 
-        Domain.ValueObjects.Inventory inventory = request.Sender is { Inventory: var senderInventory }
-            ? senderInventory
-            : new Domain.ValueObjects.Inventory();
+            request.Sender.Inventory.Transfer(request.Receiver!.Inventory, request.ItemId!.Value);
+        }
+        else
+        {
+            // add the item to the receiver's inventory
+            await this._dbContext.Set<Item>()
+                .AddAsync(request.Item!, ct);
 
-        if (!inventory.HasItemWithId(request.ItemId!.Value))
-            return Errors.From(Errors.Economy.InvalidItem);
+            request.Receiver!.Inventory.Add(request.Item!);
+        }
 
-        inventory.Transfer(request.Receiver!.Inventory, request.ItemId!.Value);
+        request.Receiver?.AddDomainEvent(new ItemReceivedEvent(request.ItemId!.Value));
 
         this._dbContext.Set<User>().TryUpdateIfNotNull(request.Sender);
         this._dbContext.Set<User>().TryUpdateIfNotNull(request.Receiver);

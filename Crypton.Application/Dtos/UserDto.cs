@@ -25,7 +25,7 @@ public sealed class UserDto
             Email = user.Email,
             Balance = user.Wallet.Balance,
             Created = user.Created,
-            Items = user.Inventory.Select(item => (ItemDto)item),
+            Items = user.Inventory.Select(item => (ItemDto)item).ToList(),
         };
     }
 }

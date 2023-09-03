@@ -6,7 +6,7 @@ using FluentValidation;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 
-namespace Crypton.Application.Economy;
+namespace Crypton.Application.Economy.Commands;
 
 public sealed class CreateBalanceTransactionCommand : IRequest<IErrorOr>
 {
