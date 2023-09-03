@@ -162,7 +162,12 @@ internal sealed class CreateTransactionHandler : IRequestHandler<CreateTransacti
             if (!request.Sender.Inventory.HasItemWithId(request.ItemId!.Value))
                 return Errors.From(Errors.Economy.InvalidItem);
 
-            request.Sender.Inventory.Transfer(request.Receiver!.Inventory, request.ItemId!.Value);
+            // we assume that the receiver is never null, because items
+            // should not be destroyed, only transferred between inventories
+            request.Sender.Inventory.Transfer(
+                request.Receiver!.Inventory,
+                request.ItemId!.Value,
+                request.Receiver);
         }
         else
         {

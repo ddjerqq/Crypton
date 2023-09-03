@@ -114,6 +114,8 @@ public sealed class AuthController : ApiController
     public async Task<IActionResult> AllUsers(CancellationToken ct)
     {
         var users = await this._dbContext.Set<User>()
+            .Include(x => x.Inventory)
+            .ThenInclude(x => x.ItemType)
             .ToListAsync(ct);
 
         return this.Ok(users.Select(x => (UserDto)x));

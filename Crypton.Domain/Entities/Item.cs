@@ -15,5 +15,5 @@ public sealed class Item : EntityBase
 
     public Guid OwnerId { get; set; }
 
-    public User Owner { get; init; } = null!;
+    public User Owner { get; set; } = null!;
 }

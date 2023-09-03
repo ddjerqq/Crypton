@@ -4,26 +4,15 @@ using Crypton.Domain.Common.Errors;
 using Crypton.Domain.Entities;
 using Crypton.Domain.ValueObjects;
 using ErrorOr;
-using FluentValidation;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 
 namespace Crypton.Application.Inventory.Commands;
 
-public sealed class BuyItemCommand : IRequest<ErrorOr<Item>>
+// TODO to records
+public sealed record BuyItemCommand : IRequest<ErrorOr<Item>>
 {
     public string ItemTypeId { get; set; } = string.Empty;
-}
-
-public sealed class BuyItemValidator : AbstractValidator<BuyItemCommand>
-{
-    public BuyItemValidator(IAppDbContext dbContext)
-    {
-        this.RuleFor(x => x.ItemTypeId)
-            .Must(id => dbContext
-                .Set<ItemType>()
-                .Any(itemType => itemType.Id == id));
-    }
 }
 
 public sealed class BuyItemHandler : IRequestHandler<BuyItemCommand, ErrorOr<Item>>
@@ -47,6 +36,8 @@ public sealed class BuyItemHandler : IRequestHandler<BuyItemCommand, ErrorOr<Ite
 
         var itemType = await this._dbContext.Set<ItemType>()
             .FirstOrDefaultAsync(x => x.Id == request.ItemTypeId, ct);
+        if (itemType is null)
+            return Errors.Economy.InvalidItemType;
 
         // pay for the item
         var payCommand = new CreateTransactionCommand(currentUser, null, itemType!.Price);

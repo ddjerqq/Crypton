@@ -1,6 +1,5 @@
 ﻿using Crypton.Application.Common.Interfaces;
 using Crypton.Application.Dtos;
-using Crypton.Application.Inventory;
 using Crypton.Application.Inventory.Commands;
 using Crypton.Domain.Entities;
 using Crypton.Domain.ValueObjects;
@@ -43,6 +42,17 @@ public sealed class InventoryController : ApiController
     {
         var item = await this.HandleCommandAsync<BuyItemCommand, Item>(command, ct);
         return this.Ok((ItemDto)item);
+    }
+
+    /// <summary>
+    /// Send an item to another user
+    /// </summary>
+    [RequireIdempotency]
+    [HttpPost("send")]
+    public async Task<IActionResult> SendToUser([FromBody, BindRequired] SendItemCommand command, CancellationToken ct)
+    {
+        await this.HandleCommandAsync(command, ct);
+        return this.Ok();
     }
 
     // /// <summary>

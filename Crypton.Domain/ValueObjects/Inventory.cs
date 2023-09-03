@@ -10,13 +10,17 @@ public sealed class Inventory : List<Item>, IValueObject
         return this.Any(x => x.Id == itemId);
     }
 
-    public void Transfer(Inventory other, Guid itemId)
+    public void Transfer(Inventory other, Guid itemId, User newOwner)
     {
         if (!this.HasItemWithId(itemId))
             throw new InvalidOperationException("Invalid item.");
 
         var item = this.Single(x => x.Id == itemId);
+
         this.Remove(item);
         other.Add(item);
+
+        item.OwnerId = newOwner.Id;
+        item.Owner = newOwner;
     }
 }
