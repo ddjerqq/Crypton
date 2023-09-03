@@ -9,13 +9,13 @@ public sealed class CollectDailyCommand : IRequest<ErrorOr<decimal>>
 {
 }
 
-public sealed class CollectDailyCommandHandler : IRequestHandler<CollectDailyCommand, ErrorOr<decimal>>
+public sealed class CollectDailyHandler : IRequestHandler<CollectDailyCommand, ErrorOr<decimal>>
 {
     private readonly IMediator _mediator;
     private readonly IAppDbContext _dbContext;
     private readonly ICurrentUserAccessor _currentUserAccessor;
 
-    public CollectDailyCommandHandler(
+    public CollectDailyHandler(
         IMediator mediator,
         IAppDbContext dbContext,
         ICurrentUserAccessor currentUserAccessor)

@@ -7,7 +7,7 @@ using Microsoft.AspNetCore.RateLimiting;
 
 namespace Crypton.WebAPI.Controllers;
 
-public sealed class TransactionController : ApiController
+public sealed class EconomyController : ApiController
 {
     /// <summary>
     /// Collect daily coins.
@@ -15,22 +15,22 @@ public sealed class TransactionController : ApiController
     [RequireIdempotency]
     [EnableRateLimiting(RateLimitConstants.TransactionPolicyName)]
     [HttpPost("daily")]
-    public async Task<IActionResult> CollectDaily(CancellationToken ct = default)
+    public async Task<IActionResult> CollectDaily(CancellationToken ct)
     {
         var command = new CollectDailyCommand();
         var collected = await this.HandleCommandAsync<CollectDailyCommand, decimal>(command, ct);
         return this.Ok(collected);
     }
 
-    // /// <summary>
-    // /// Create a transaction.
-    // /// </summary>
-    // [RequireIdempotency]
-    // [EnableRateLimiting(RateLimitConstants.TransactionPolicyName)]
-    // [HttpPost("create")]
-    // public async Task<IActionResult> CreateTransaction(CreateTransactionCommand command, CancellationToken ct = default)
-    // {
-    //     await this.HandleCommandAsync(command, ct);
-    //     return this.Ok();
-    // }
+    /// <summary>
+    /// Create a balance transaction.
+    /// </summary>
+    [RequireIdempotency]
+    [EnableRateLimiting(RateLimitConstants.TransactionPolicyName)]
+    [HttpPost("create_balance")]
+    public async Task<IActionResult> CreateBalanceTransaction(CreateBalanceTransactionCommand command, CancellationToken ct)
+    {
+        await this.HandleCommandAsync(command, ct);
+        return this.Ok();
+    }
 }

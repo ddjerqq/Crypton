@@ -49,13 +49,13 @@ public sealed class CreateTransactionCommand : IRequest<IErrorOr>
         this.Item = item;
     }
 
-    public Guid? SenderId { get; private set; }
+    public Guid? SenderId { get; init; }
 
-    public User? Sender { get; private set; }
+    public User? Sender { get; init; }
 
     public Guid? ReceiverId { get; init; }
 
-    public User? Receiver { get; private set; }
+    public User? Receiver { get; init; }
 
     public TransactionType TransactionType { get; init; }
 
@@ -63,14 +63,13 @@ public sealed class CreateTransactionCommand : IRequest<IErrorOr>
 
     public Guid? ItemId { get; init; }
 
-    public Item? Item { get; private set; }
+    public Item? Item { get; init; }
 }
 
-public sealed class CreateTransactionCommandValidator : AbstractValidator<CreateTransactionCommand>
+public sealed class CreateTransactionValidator : AbstractValidator<CreateTransactionCommand>
 {
-    public CreateTransactionCommandValidator()
+    public CreateTransactionValidator()
     {
-        this.ClassLevelCascadeMode = CascadeMode.Stop;
         this.RuleLevelCascadeMode = CascadeMode.Stop;
 
         this.RuleFor(x => x.SenderId)
@@ -90,10 +89,7 @@ public sealed class CreateTransactionCommandValidator : AbstractValidator<Create
         {
             this.RuleFor(x => x.Amount)
                 .NotEmpty()
-                .GreaterThan(0)
-                .WithMessage("Amount must be a positive integer.")
-                .Must((ctx, amount) => ctx.Sender?.Wallet.HasBalance(amount!.Value) ?? true)
-                .WithMessage("Sender has insufficient funds.");
+                .GreaterThan(0);
         });
 
         this.When(x => x.TransactionType == TransactionType.ItemTransaction, () =>
@@ -109,11 +105,11 @@ public sealed class CreateTransactionCommandValidator : AbstractValidator<Create
     }
 }
 
-public sealed class CreateTransactionCommandHandler : IRequestHandler<CreateTransactionCommand, IErrorOr>
+public sealed class CreateTransactionHandler : IRequestHandler<CreateTransactionCommand, IErrorOr>
 {
     private readonly IAppDbContext _dbContext;
 
-    public CreateTransactionCommandHandler(IAppDbContext dbContext)
+    public CreateTransactionHandler(IAppDbContext dbContext)
     {
         this._dbContext = dbContext;
     }
