@@ -1,6 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations.Schema;
 using System.Text.Json.Serialization;
-using MediatR;
 using Microsoft.AspNetCore.Identity;
 
 namespace Crypton.Domain.Common.Abstractions;

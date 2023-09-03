@@ -1,6 +1,4 @@
-﻿using Crypton.Domain.Entities;
-using Crypton.Domain.ValueObjects;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
 
 namespace Crypton.Application.Common.Interfaces;

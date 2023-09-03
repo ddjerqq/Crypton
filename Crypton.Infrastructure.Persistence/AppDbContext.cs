@@ -5,7 +5,6 @@ using Crypton.Domain.Entities;
 using Crypton.Domain.ValueObjects;
 using Crypton.Infrastructure.Persistence.Interceptors;
 using Crypton.Infrastructure.Persistence.ValueConverters;
-using MediatR;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;

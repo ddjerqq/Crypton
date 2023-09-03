@@ -1,4 +1,5 @@
-﻿using Crypton.Infrastructure.Persistence;
+﻿using Crypton.Infrastructure.Idempotency;
+using Crypton.Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
 
 namespace Crypton.WebAPI;
@@ -47,14 +48,12 @@ public static class ConfigureMiddleware
 
         app.UseRateLimiter();
 
-        // this should be after UseRouting
-        // https://stackoverflow.com/a/71951181/14860947
         // TODO: re-enable for front-end
         // app.UseDigitalSignature();
+
         app.UseAuthorization();
 
-        // TODO: re enable when testing idempotency
-        // app.UseIdempotency();
+        app.UseIdempotency();
         app.UseCors();
 
         app.MapHealthChecks("/health");

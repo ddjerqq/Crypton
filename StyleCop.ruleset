@@ -154,7 +154,7 @@
         <Rule Id="SA1509" Action="Warning"/>          <!-- Opening braces should not be preceded by blank line -->
         <Rule Id="SA1510" Action="Warning"/>          <!-- Chained statement blocks should not be preceded by blank line -->
         <Rule Id="SA1511" Action="Warning"/>          <!-- While-do footer should not be preceded by blank line -->
-        <Rule Id="SA1512" Action="Warning"/>          <!-- Single-line comments should not be followed by blank line -->
+        <Rule Id="SA1512" Action="None"/>             <!-- Single-line comments should not be followed by blank line -->
         <Rule Id="SA1513" Action="Warning"/>          <!-- Closing brace should be followed by blank line -->
         <Rule Id="SA1514" Action="Warning"/>          <!-- Element documentation header should be preceded by blank line -->
         <Rule Id="SA1515" Action="Warning"/>          <!-- Single-line comment should be preceded by blank line -->

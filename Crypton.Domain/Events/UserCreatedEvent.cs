@@ -1,5 +1,4 @@
 ﻿using Crypton.Domain.Common.Abstractions;
-using Crypton.Domain.Common.Errors;
 
 namespace Crypton.Domain.Events;
 
