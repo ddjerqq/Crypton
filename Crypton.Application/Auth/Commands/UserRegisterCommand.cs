@@ -1,13 +1,15 @@
 ﻿using System.Text.Json.Serialization;
+using Crypton.Application.Common.Interfaces;
 using Crypton.Domain.Common.Errors;
 using Crypton.Domain.Common.Extensions;
 using Crypton.Domain.Entities;
+using Crypton.Domain.Events;
 using ErrorOr;
 using FluentValidation;
 using MediatR;
 using Microsoft.AspNetCore.Identity;
 
-namespace Crypton.Application.Auth;
+namespace Crypton.Application.Auth.Commands;
 
 public sealed class UserRegisterCommand : IRequest<IErrorOr>
 {
@@ -20,6 +22,7 @@ public sealed class UserRegisterCommand : IRequest<IErrorOr>
     [JsonIgnore]
     public User User => new User
     {
+        Id = Guid.NewGuid(),
         UserName = this.Username,
         Email = this.Email,
     };
@@ -52,19 +55,26 @@ public sealed class UserRegisterValidator : AbstractValidator<UserRegisterComman
 
 public sealed class UserRegisterHandler : IRequestHandler<UserRegisterCommand, IErrorOr>
 {
+    private readonly IAppDbContext _dbContext;
     private readonly UserManager<User> _userManager;
 
-    public UserRegisterHandler(UserManager<User> userManager)
+    public UserRegisterHandler(UserManager<User> userManager, IAppDbContext dbContext)
     {
         this._userManager = userManager;
+        this._dbContext = dbContext;
     }
 
     public async Task<IErrorOr> Handle(UserRegisterCommand request, CancellationToken ct)
     {
-        var res = await this._userManager.CreateAsync(request.User, request.Password);
+        var user = request.User;
+        var res = await this._userManager.CreateAsync(user, request.Password);
 
         if (res.Succeeded)
+        {
+            user.AddDomainEvent(new UserCreatedEvent(user.Id));
+            await this._dbContext.SaveChangesAsync(ct);
             return Errors.Success;
+        }
 
         var errors = res.Errors
             .Select(x => Error.Failure(x.Code.ToSnakeCase(), x.Description))

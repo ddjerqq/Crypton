@@ -1,8 +1,8 @@
-﻿using Crypton.Application.Common.Interfaces;
+﻿using Crypton.Application.Common;
+using Crypton.Application.Common.Interfaces;
 using Crypton.Domain.Common.Extensions;
 using Crypton.Domain.Entities;
 using Crypton.Domain.ValueObjects;
-using Crypton.Infrastructure.Persistence.Common.Extensions;
 using Crypton.Infrastructure.Persistence.Interceptors;
 using Crypton.Infrastructure.Persistence.ValueConverters;
 using MediatR;
@@ -14,28 +14,24 @@ namespace Crypton.Infrastructure.Persistence;
 
 public sealed class AppDbContext : IdentityDbContext<User, IdentityRole<Guid>, Guid>, IAppDbContext
 {
-    private readonly IMediator _mediator;
     private readonly AuditableEntitySaveChangesInterceptor _auditableEntitySaveChangesInterceptor;
+    private readonly ConvertDomainEventsToOutboxMessagesInterceptor _convertDomainEventsToOutboxMessagesInterceptor;
 
     public AppDbContext(
         DbContextOptions<AppDbContext> options,
-        IMediator mediator,
-        AuditableEntitySaveChangesInterceptor auditableEntitySaveChangesInterceptor)
+        AuditableEntitySaveChangesInterceptor auditableEntitySaveChangesInterceptor,
+        ConvertDomainEventsToOutboxMessagesInterceptor convertDomainEventsToOutboxMessagesInterceptor)
         : base(options)
     {
-        this._mediator = mediator;
         this._auditableEntitySaveChangesInterceptor = auditableEntitySaveChangesInterceptor;
+        this._convertDomainEventsToOutboxMessagesInterceptor = convertDomainEventsToOutboxMessagesInterceptor;
     }
 
     public DbSet<Item> Items => this.Set<Item>();
 
     public DbSet<ItemType> ItemTypes => this.Set<ItemType>();
 
-    public override async Task<int> SaveChangesAsync(CancellationToken ct = default)
-    {
-        await this._mediator.DispatchDomainEvents(this);
-        return await base.SaveChangesAsync(ct);
-    }
+    public DbSet<OutboxMessage> OutboxMessages => this.Set<OutboxMessage>();
 
     protected override void OnModelCreating(ModelBuilder builder)
     {
@@ -49,6 +45,7 @@ public sealed class AppDbContext : IdentityDbContext<User, IdentityRole<Guid>, G
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
         optionsBuilder.AddInterceptors(this._auditableEntitySaveChangesInterceptor);
+        optionsBuilder.AddInterceptors(this._convertDomainEventsToOutboxMessagesInterceptor);
         base.OnConfiguring(optionsBuilder);
     }
 
@@ -91,20 +88,5 @@ public sealed class AppDbContext : IdentityDbContext<User, IdentityRole<Guid>, G
                 index.SetDatabaseName(index.GetDatabaseName()!.ToSnakeCase());
             }
         }
-    }
-
-    private static void SeedData(ModelBuilder builder)
-    {
-        builder.Entity<User>()
-            .HasData(new List<User>
-            { });
-
-        builder.Entity<ItemType>()
-            .HasData(new List<ItemType>
-            { });
-
-        builder.Entity<Item>()
-            .HasData(new List<Item>
-            { });
     }
 }

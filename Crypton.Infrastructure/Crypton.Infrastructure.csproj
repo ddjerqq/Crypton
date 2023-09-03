@@ -17,6 +17,8 @@
       <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="8.0.0-preview.7.23375.9" />
       <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="8.0.0-preview.7.23375.6" />
       <PackageReference Include="Microsoft.OpenApi" Version="1.6.6" />
+      <PackageReference Include="Quartz" Version="3.7.0" />
+      <PackageReference Include="Quartz.Extensions.Hosting" Version="3.7.0" />
       <PackageReference Include="StyleCop.Analyzers" Version="1.2.0-beta.507">
         <PrivateAssets>all</PrivateAssets>
         <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
@@ -27,6 +29,7 @@
     <ItemGroup>
       <ProjectReference Include="..\Crypton.Application\Crypton.Application.csproj" />
       <ProjectReference Include="..\Crypton.Domain\Crypton.Domain.csproj" />
+
 
 
 

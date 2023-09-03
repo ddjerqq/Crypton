@@ -5,8 +5,12 @@ using Microsoft.AspNetCore.Identity;
 
 namespace Crypton.Domain.Common.Abstractions;
 
-public class UserBase : IdentityUser<Guid>, IAuditableEntity
+public class UserBase : IdentityUser<Guid>, IAggregateRoot, IAuditableEntity
 {
+    [NotMapped]
+    [JsonIgnore]
+    private readonly List<IDomainEvent> _domainEvents = new List<IDomainEvent>();
+
     public DateTime? Created { get; set; }
 
     public string? CreatedBy { get; set; }
@@ -19,26 +23,15 @@ public class UserBase : IdentityUser<Guid>, IAuditableEntity
 
     public string? DeletedBy { get; set; }
 
-    [NotMapped]
-    [JsonIgnore]
-    public IEnumerable<INotification> DomainEvents => this.ProtectedDomainEvents;
+    public IEnumerable<IDomainEvent> DomainEvents => this._domainEvents;
 
-    [NotMapped]
-    [JsonIgnore]
-    protected ICollection<INotification> ProtectedDomainEvents { get; set; } = new List<INotification>();
-
-    public void AddDomainEvent(INotification domainEvent)
+    public void AddDomainEvent(IDomainEvent domainEvent)
     {
-        this.ProtectedDomainEvents.Add(domainEvent);
-    }
-
-    public void RemoveDomainEvent(INotification domainEvent)
-    {
-        this.ProtectedDomainEvents.Remove(domainEvent);
+        this._domainEvents.Add(domainEvent);
     }
 
     public void ClearDomainEvents()
     {
-        this.ProtectedDomainEvents.Clear();
+        this._domainEvents.Clear();
     }
 }

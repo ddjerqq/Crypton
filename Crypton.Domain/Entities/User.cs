@@ -3,7 +3,7 @@ using Crypton.Domain.ValueObjects;
 
 namespace Crypton.Domain.Entities;
 
-public sealed class User : UserBase, IAggregateRoot, IEntity
+public sealed class User : UserBase
 {
     public Wallet Wallet { get; init; } = new();
 

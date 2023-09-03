@@ -1,4 +1,5 @@
 using Crypton.Application.Auth;
+using Crypton.Application.Auth.Commands;
 using Crypton.Application.Common.Interfaces;
 using Crypton.Application.Dtos;
 using Crypton.Domain.Entities;

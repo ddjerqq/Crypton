@@ -44,6 +44,7 @@ public static class ConfigureServices
         IConfiguration configuration)
     {
         services.AddSingleton<AuditableEntitySaveChangesInterceptor>();
+        services.AddSingleton<ConvertDomainEventsToOutboxMessagesInterceptor>();
 
         services.AddDbContext<AppDbContext>(o =>
         {

@@ -7,11 +7,11 @@ namespace Crypton.Application.Common.Interfaces;
 
 public interface IAppDbContext : IDisposable
 {
+    // TODO change this to be Set call
     public DbSet<User> Users { get; }
 
-    public DbSet<Item> Items { get; }
-
-    public DbSet<ItemType> ItemTypes { get; }
+    public DbSet<T> Set<T>()
+        where T : class;
 
     public EntityEntry<TEntity> Entry<TEntity>(TEntity entity)
         where TEntity : class;

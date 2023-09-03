@@ -4,7 +4,7 @@ using FluentValidation;
 using MediatR;
 using Microsoft.AspNetCore.Identity;
 
-namespace Crypton.Application.Auth;
+namespace Crypton.Application.Auth.Commands;
 
 public sealed class UserLoginCommand : IRequest<ErrorOr<SignInResult>>
 {
