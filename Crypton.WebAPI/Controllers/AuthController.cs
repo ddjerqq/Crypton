@@ -105,7 +105,7 @@ public sealed class AuthController : ApiController
     [Authorize]
     [HttpGet("users")]
     [ProducesResponseType<IEnumerable<UserDto>>(StatusCodes.Status200OK)]
-    public async Task<IActionResult> AllUsers(CancellationToken ct = default)
+    public async Task<IActionResult> AllUsers(CancellationToken ct)
     {
         var users = await this._dbContext.Users
             .ToListAsync(ct);

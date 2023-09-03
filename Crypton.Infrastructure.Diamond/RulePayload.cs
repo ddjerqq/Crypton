@@ -57,7 +57,6 @@ public sealed class RulePayloadValidator : AbstractValidator<RulePayload>
 {
     public RulePayloadValidator(IRules rules)
     {
-        this.ClassLevelCascadeMode = CascadeMode.Stop;
         this.RuleLevelCascadeMode = CascadeMode.Stop;
 
         this.RuleFor(x => x.Url)
