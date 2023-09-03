@@ -23,7 +23,7 @@ public enum TransactionType
     ItemTransaction,
 }
 
-internal sealed class CreateTransactionCommand : IRequest<IErrorOr>
+internal sealed record CreateTransactionCommand : IRequest<IErrorOr>
 {
     public CreateTransactionCommand(User? sender, User? receiver, decimal amount)
     {
@@ -50,21 +50,21 @@ internal sealed class CreateTransactionCommand : IRequest<IErrorOr>
         this.Item = item;
     }
 
-    public Guid? SenderId { get; init; }
+    public Guid? SenderId { get; }
 
-    public User? Sender { get; init; }
+    public User? Sender { get; }
 
-    public Guid? ReceiverId { get; init; }
+    public Guid? ReceiverId { get; }
 
-    public User? Receiver { get; init; }
+    public User? Receiver { get; }
 
-    public TransactionType TransactionType { get; init; }
+    public TransactionType TransactionType { get; }
 
-    public decimal? Amount { get; init; }
+    public decimal? Amount { get; }
 
-    public Guid? ItemId { get; init; }
+    public Guid? ItemId { get; }
 
-    public Item? Item { get; init; }
+    public Item? Item { get; }
 }
 
 internal sealed class CreateTransactionValidator : AbstractValidator<CreateTransactionCommand>

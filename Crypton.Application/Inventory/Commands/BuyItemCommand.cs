@@ -9,11 +9,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Crypton.Application.Inventory.Commands;
 
-// TODO to records
-public sealed record BuyItemCommand : IRequest<ErrorOr<Item>>
-{
-    public string ItemTypeId { get; set; } = string.Empty;
-}
+public sealed record BuyItemCommand(string ItemTypeId) : IRequest<ErrorOr<Item>>;
 
 public sealed class BuyItemHandler : IRequestHandler<BuyItemCommand, ErrorOr<Item>>
 {

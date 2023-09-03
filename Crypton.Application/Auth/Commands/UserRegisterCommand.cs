@@ -11,14 +11,8 @@ using Microsoft.AspNetCore.Identity;
 
 namespace Crypton.Application.Auth.Commands;
 
-public sealed class UserRegisterCommand : IRequest<IErrorOr>
+public sealed record UserRegisterCommand(string Username, string Email, string Password) : IRequest<IErrorOr>
 {
-    public string Username { get; set; } = string.Empty;
-
-    public string Email { get; set; } = string.Empty;
-
-    public string Password { get; set; } = string.Empty;
-
     [JsonIgnore]
     public User User => new User
     {

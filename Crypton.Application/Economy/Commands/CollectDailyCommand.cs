@@ -6,9 +6,7 @@ using MediatR;
 
 namespace Crypton.Application.Economy.Commands;
 
-public sealed class CollectDailyCommand : IRequest<ErrorOr<decimal>>
-{
-}
+public sealed record CollectDailyCommand : IRequest<ErrorOr<decimal>>;
 
 public sealed class CollectDailyHandler : IRequestHandler<CollectDailyCommand, ErrorOr<decimal>>
 {

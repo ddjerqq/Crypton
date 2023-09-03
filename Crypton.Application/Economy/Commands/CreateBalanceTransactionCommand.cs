@@ -8,12 +8,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Crypton.Application.Economy.Commands;
 
-public sealed class CreateBalanceTransactionCommand : IRequest<IErrorOr>
-{
-    public Guid ReceiverId { get; init; }
-
-    public decimal Amount { get; init; }
-}
+public sealed record CreateBalanceTransactionCommand(Guid ReceiverId, decimal Amount) : IRequest<IErrorOr>;
 
 public sealed class CreateBalanceTransactionValidator : AbstractValidator<CreateBalanceTransactionCommand>
 {
