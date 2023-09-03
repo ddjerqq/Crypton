@@ -34,8 +34,7 @@ public sealed class CreateItemTransactionHandler : IRequestHandler<CreateItemTra
         if (receiver is null)
             return Errors.From(Errors.User.NotFound);
 
-        var item = await this._dbContext.Set<Item>()
-            .FirstOrDefaultAsync(x => x.Id == request.ItemId, ct);
+        var item = sender.Inventory.FirstOrDefault(x => x.Id == request.ItemId);
         if (item is null)
             return Errors.From(Errors.Economy.InvalidItem);
 
