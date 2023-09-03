@@ -49,7 +49,7 @@ public sealed class BuyItemHandler : IRequestHandler<BuyItemCommand, ErrorOr<Ite
             .FirstOrDefaultAsync(x => x.Id == request.ItemTypeId, ct);
 
         // pay for the item
-        var payCommand = new CreateTransactionCommand(currentUser, null, itemType.Price);
+        var payCommand = new CreateTransactionCommand(currentUser, null, itemType!.Price);
         var payResult = await this._mediator.Send(payCommand, ct);
         if (payResult.IsError)
             return payResult.Errors!;
