@@ -48,12 +48,13 @@ public static class ConfigureMiddleware
 
         app.UseRateLimiter();
 
-        // TODO: re-enable for front-end
+        // TODO: re-enable for production
         // app.UseDigitalSignature();
 
         app.UseAuthorization();
 
-        app.UseIdempotency();
+        // TODO: re-enable for production
+        // app.UseIdempotency();
         app.UseCors();
 
         app.MapHealthChecks("/health");
