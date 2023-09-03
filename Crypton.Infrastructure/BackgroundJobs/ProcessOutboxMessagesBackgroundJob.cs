@@ -63,6 +63,7 @@ public sealed class ProcessOutboxMessagesBackgroundJob : IJob
             }
             catch (Exception ex)
             {
+                message.Error = ex.ToString();
                 this._logger.LogError(ex, "Failed to publish message {MessageId}", message.Id);
             }
 
