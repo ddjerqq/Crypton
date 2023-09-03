@@ -1,35 +1,53 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using Crypton.Domain.Entities;
+using ErrorOr;
 using FluentValidation;
 using MediatR;
 using Microsoft.AspNetCore.Identity;
 
 namespace Crypton.Application.Auth;
 
-public sealed class UserLoginCommand : IRequest<SignInResult>
+public sealed class UserLoginCommand : IRequest<ErrorOr<SignInResult>>
 {
-    [Required]
-    [Length(3, 16)]
     public string Username { get; set; } = string.Empty;
 
-    [Required]
-    [DataType(DataType.Password)]
     public string Password { get; set; } = string.Empty;
 
-    [Display(Name = "Remember me?")]
     public bool RememberMe { get; set; }
 }
 
-public sealed class UserLoginCommandValidator : AbstractValidator<UserLoginCommand>
+public sealed class UserLoginValidator : AbstractValidator<UserLoginCommand>
 {
-    public UserLoginCommandValidator()
+    public UserLoginValidator()
     {
         this.RuleLevelCascadeMode = CascadeMode.Stop;
 
         this.RuleFor(x => x.Username)
+            .Length(3, 16)
             .Matches(@"^[a-zA-Z0-9._]{3,16}$")
-            .When(x => !string.IsNullOrEmpty(x.Username));
+            .WithMessage("Username must contain only alphanumeric characters, underscores and dots.");
 
         this.RuleFor(x => x.Password)
+            .Length(5, 32)
             .NotEmpty();
+    }
+}
+
+public sealed class UserLoginHandler : IRequestHandler<UserLoginCommand, ErrorOr<SignInResult>>
+{
+    private readonly SignInManager<User> _signInManager;
+
+    public UserLoginHandler(SignInManager<User> signInManager)
+    {
+        this._signInManager = signInManager;
+    }
+
+    public async Task<ErrorOr<SignInResult>> Handle(UserLoginCommand command, CancellationToken ct)
+    {
+        return await this._signInManager
+            .PasswordSignInAsync(
+                command.Username,
+                command.Password,
+                command.RememberMe,
+                true);
     }
 }

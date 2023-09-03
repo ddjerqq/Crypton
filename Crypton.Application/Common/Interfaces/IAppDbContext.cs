@@ -3,7 +3,7 @@ using Crypton.Domain.ValueObjects;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
 
-namespace Crypton.Application.Interfaces;
+namespace Crypton.Application.Common.Interfaces;
 
 public interface IAppDbContext : IDisposable
 {

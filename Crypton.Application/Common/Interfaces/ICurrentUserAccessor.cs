@@ -1,6 +1,6 @@
 ﻿using Crypton.Domain.Entities;
 
-namespace Crypton.Application.Interfaces;
+namespace Crypton.Application.Common.Interfaces;
 
 public interface ICurrentUserAccessor
 {

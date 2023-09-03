@@ -1,8 +1,7 @@
-﻿using Crypton.Application.Interfaces;
+﻿using Crypton.Application.Common.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
 using Microsoft.EntityFrameworkCore.Infrastructure;
-using Microsoft.Extensions.Logging;
 
 namespace Crypton.Application.Common.Extensions;
 

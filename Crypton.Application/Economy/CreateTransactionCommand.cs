@@ -1,12 +1,11 @@
-﻿using System.ComponentModel.DataAnnotations;
-using System.Text.Json.Serialization;
-using Crypton.Application.Common.Extensions;
-using Crypton.Application.Interfaces;
+﻿using Crypton.Application.Common.Extensions;
+using Crypton.Application.Common.Interfaces;
+using Crypton.Domain.Common.Errors;
 using Crypton.Domain.Entities;
 using Crypton.Domain.ValueObjects;
+using ErrorOr;
 using FluentValidation;
 using MediatR;
-using Microsoft.EntityFrameworkCore;
 
 namespace Crypton.Application.Economy;
 
@@ -23,22 +22,8 @@ public enum TransactionType
     ItemTransaction,
 }
 
-public abstract record CreateTransactionResult
+public sealed class CreateTransactionCommand : IRequest<IErrorOr>
 {
-    public sealed record Success : CreateTransactionResult;
-
-    public sealed record InsufficientFunds : CreateTransactionResult;
-
-    public sealed record InvalidItem : CreateTransactionResult;
-}
-
-public sealed class CreateTransactionCommand : IRequest<CreateTransactionResult>
-{
-    // for Json Construction
-    public CreateTransactionCommand()
-    {
-    }
-
     public CreateTransactionCommand(User? sender, User? receiver, decimal amount)
     {
         this.SenderId = sender?.Id;
@@ -64,60 +49,21 @@ public sealed class CreateTransactionCommand : IRequest<CreateTransactionResult>
         this.Item = item;
     }
 
-    [JsonIgnore]
     public Guid? SenderId { get; private set; }
 
-    [JsonIgnore]
     public User? Sender { get; private set; }
 
-    [JsonRequired]
-    [RegularExpression("^[0-9a-f]{8}(-[0-9a-f]{4}){3}-[0-9a-f]{12}$")]
     public Guid? ReceiverId { get; init; }
 
-    [JsonIgnore]
     public User? Receiver { get; private set; }
 
-    [JsonRequired]
-    [JsonPropertyName("transaction_type")]
-    public TransactionType TransactionType { get; init; } = TransactionType.BalanceTransaction;
+    public TransactionType TransactionType { get; init; }
 
-    [JsonRequired]
-    [JsonPropertyName("amount")]
     public decimal? Amount { get; init; }
 
-    [JsonPropertyName("item_id")]
-    [RegularExpression("^[0-9a-f]{8}(-[0-9a-f]{4}){3}-[0-9a-f]{12}$")]
     public Guid? ItemId { get; init; }
 
-    [JsonIgnore]
     public Item? Item { get; private set; }
-
-    // Json Conversion initializer
-    public async ValueTask<bool> BindAsync(
-        IAppDbContext dbContext,
-        ICurrentUserAccessor currentUserAccessor,
-        CancellationToken ct = default)
-    {
-        var currentUserId = currentUserAccessor.GetCurrentUserId();
-
-        if (currentUserId is null)
-            return false;
-
-        this.SenderId = currentUserId.Value;
-        this.Sender = await dbContext.Users
-            .FirstOrDefaultAsync(x => x.Id == this.SenderId, ct);
-
-        this.Receiver = await dbContext.Users
-            .FirstOrDefaultAsync(x => x.Id == this.ReceiverId, ct);
-
-        if (this.TransactionType == TransactionType.ItemTransaction)
-        {
-            this.Item = await dbContext.Items
-                .FirstOrDefaultAsync(x => x.Id == this.ItemId, ct);
-        }
-
-        return true;
-    }
 }
 
 public sealed class CreateTransactionCommandValidator : AbstractValidator<CreateTransactionCommand>
@@ -163,7 +109,7 @@ public sealed class CreateTransactionCommandValidator : AbstractValidator<Create
     }
 }
 
-public sealed class CreateTransactionCommandHandler : IRequestHandler<CreateTransactionCommand, CreateTransactionResult>
+public sealed class CreateTransactionCommandHandler : IRequestHandler<CreateTransactionCommand, IErrorOr>
 {
     private readonly IAppDbContext _dbContext;
 
@@ -172,7 +118,7 @@ public sealed class CreateTransactionCommandHandler : IRequestHandler<CreateTran
         this._dbContext = dbContext;
     }
 
-    public async Task<CreateTransactionResult> Handle(CreateTransactionCommand request, CancellationToken ct)
+    public async Task<IErrorOr> Handle(CreateTransactionCommand request, CancellationToken ct)
     {
         return request.TransactionType switch
         {
@@ -182,7 +128,7 @@ public sealed class CreateTransactionCommandHandler : IRequestHandler<CreateTran
         };
     }
 
-    private async ValueTask<CreateTransactionResult> HandleBalanceTransaction(
+    private async ValueTask<IErrorOr> HandleBalanceTransaction(
         CreateTransactionCommand request,
         CancellationToken ct)
     {
@@ -192,7 +138,7 @@ public sealed class CreateTransactionCommandHandler : IRequestHandler<CreateTran
             : new Wallet(decimal.MaxValue);
 
         if (!wallet.HasBalance(request.Amount!.Value))
-            return new CreateTransactionResult.InsufficientFunds();
+            return Errors.From(Errors.Economy.InsufficientFunds);
 
         wallet.Transfer(request.Receiver!.Wallet, request.Amount!.Value);
 
@@ -200,10 +146,10 @@ public sealed class CreateTransactionCommandHandler : IRequestHandler<CreateTran
         this._dbContext.Users.TryUpdateIfNotNull(request.Receiver);
         await this._dbContext.SaveChangesAsync(ct);
 
-        return new CreateTransactionResult.Success();
+        return Errors.Success;
     }
 
-    private async ValueTask<CreateTransactionResult> HandleItemTransaction(
+    private async ValueTask<IErrorOr> HandleItemTransaction(
         CreateTransactionCommand request,
         CancellationToken ct)
     {
@@ -215,7 +161,7 @@ public sealed class CreateTransactionCommandHandler : IRequestHandler<CreateTran
             : new Domain.ValueObjects.Inventory();
 
         if (!inventory.HasItemWithId(request.ItemId!.Value))
-            return new CreateTransactionResult.InvalidItem();
+            return Errors.From(Errors.Economy.InvalidItem);
 
         inventory.Transfer(request.Receiver!.Inventory, request.ItemId!.Value);
 
@@ -223,6 +169,6 @@ public sealed class CreateTransactionCommandHandler : IRequestHandler<CreateTran
         this._dbContext.Users.TryUpdateIfNotNull(request.Receiver);
         await this._dbContext.SaveChangesAsync(ct);
 
-        return new CreateTransactionResult.Success();
+        return Errors.Success;
     }
 }

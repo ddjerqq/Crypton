@@ -1,20 +1,15 @@
-﻿using Crypton.Application.Interfaces;
+﻿using Crypton.Application.Common.Interfaces;
+using Crypton.Domain.Common.Errors;
+using ErrorOr;
 using MediatR;
 
 namespace Crypton.Application.Economy;
 
-public abstract record CollectDailyResult
-{
-    public sealed record Success(decimal AmountCollected) : CollectDailyResult;
-
-    public sealed record NotReadyYet(DateTime CollectAt) : CollectDailyResult;
-}
-
-public sealed class CollectDailyCommand : IRequest<CollectDailyResult>
+public sealed class CollectDailyCommand : IRequest<ErrorOr<decimal>>
 {
 }
 
-public sealed class CollectDailyCommandHandler : IRequestHandler<CollectDailyCommand, CollectDailyResult>
+public sealed class CollectDailyCommandHandler : IRequestHandler<CollectDailyCommand, ErrorOr<decimal>>
 {
     private readonly IMediator _mediator;
     private readonly IAppDbContext _dbContext;
@@ -30,15 +25,15 @@ public sealed class CollectDailyCommandHandler : IRequestHandler<CollectDailyCom
         this._currentUserAccessor = currentUserAccessor;
     }
 
-    public async Task<CollectDailyResult> Handle(CollectDailyCommand request, CancellationToken ct)
+    public async Task<ErrorOr<decimal>> Handle(CollectDailyCommand request, CancellationToken ct)
     {
         var currentUser = await this._currentUserAccessor.GetCurrentUserAsync(ct);
+        if (currentUser is null)
+            return Errors.User.Unauthenticated;
 
-        // daily collected
-        if (!(currentUser?.DailyStreak.IsEligibleForDaily() ?? false))
-        {
-            return new CollectDailyResult.NotReadyYet(currentUser?.DailyStreak.CollectNextDailyAt ?? DateTime.MaxValue);
-        }
+        // daily already collected
+        if (!currentUser.DailyStreak.IsEligibleForDaily())
+            return Errors.User.DailyNotReady;
 
         currentUser.DailyStreak.CollectDaily();
         this._dbContext.Users.Update(currentUser);
@@ -49,6 +44,6 @@ public sealed class CollectDailyCommandHandler : IRequestHandler<CollectDailyCom
         var command = new CreateTransactionCommand(null, currentUser, amount);
         await this._mediator.Send(command, ct);
 
-        return new CollectDailyResult.Success(amount);
+        return amount;
     }
 }

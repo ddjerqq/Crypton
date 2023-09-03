@@ -1,48 +1,63 @@
-﻿using FluentValidation;
+﻿using System.Diagnostics.CodeAnalysis;
+using System.Reflection;
+using ErrorOr;
+using FluentValidation;
+using FluentValidation.Results;
 using MediatR;
-using Microsoft.Extensions.Logging;
+using ValidationException = FluentValidation.ValidationException;
 
 namespace Crypton.Application.Common.Behaviours;
 
 public sealed class RequestValidationBehaviour<TRequest, TResponse>
     : IPipelineBehavior<TRequest, TResponse>
     where TRequest : IRequest<TResponse>
+    where TResponse : IErrorOr
 {
-    private readonly ILogger<RequestValidationBehaviour<TRequest, TResponse>> logger;
-    private readonly IEnumerable<IValidator<TRequest>> validators;
+    private readonly IEnumerable<IValidator<TRequest>> _validators;
 
-    public RequestValidationBehaviour(
-        ILogger<RequestValidationBehaviour<TRequest, TResponse>> logger,
-        IEnumerable<IValidator<TRequest>> validators)
+    public RequestValidationBehaviour(IEnumerable<IValidator<TRequest>> validators)
     {
-        this.validators = validators;
-        this.logger = logger;
+        this._validators = validators;
     }
 
-    public async Task<TResponse> Handle(
-        TRequest request,
-        RequestHandlerDelegate<TResponse> next,
-        CancellationToken ct)
+    public async Task<TResponse> Handle(TRequest request, RequestHandlerDelegate<TResponse> next, CancellationToken ct)
     {
         var context = new ValidationContext<TRequest>(request);
 
         var validationResults = await Task
-            .WhenAll(this.validators
-                .Select(v => v.ValidateAsync(context, ct)));
+            .WhenAll(this._validators.Select(v => v.ValidateAsync(context, ct)));
 
         var failures = validationResults
             .SelectMany(r => r.Errors)
-            .Where(f => f != null)
+            .Where(f => f is not null)
             .ToList();
 
-        if (failures.Count != 0)
+        if (validationResults.All(x => x.IsValid))
         {
-            var errors = string.Join(',', failures.Select(x => x.ErrorMessage));
-            this.logger.LogError("Validation errors - {Errors}", errors);
-
-            throw new ValidationException("validation error", failures, true);
+            return await next();
         }
 
-        return await next();
+        return TryCreateResponseFromErrors(failures, out var response)
+            ? response
+            : throw new ValidationException(failures);
+    }
+
+    private static bool TryCreateResponseFromErrors(
+        List<ValidationFailure> validationFailures,
+        [MaybeNullWhen(false)] [NotNullWhen(true)] out TResponse response)
+    {
+        List<Error> errors = validationFailures.ConvertAll(x => Error.Validation(
+            code: x.PropertyName,
+            description: x.ErrorMessage));
+
+        response = (TResponse?)typeof(TResponse)
+            .GetMethod(
+                name: nameof(ErrorOr<object>.From),
+                bindingAttr: BindingFlags.Static | BindingFlags.Public,
+                types: new[] { typeof(List<Error>) })?
+            .Invoke(null, new object?[] { errors })!;
+
+        // ReSharper disable once ConditionIsAlwaysTrueOrFalseAccordingToNullableAPIContract
+        return response is not null;
     }
 }

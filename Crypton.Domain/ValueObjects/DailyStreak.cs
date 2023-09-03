@@ -1,5 +1,4 @@
 ﻿using Crypton.Domain.Common.Abstractions;
-using Crypton.Domain.Entities;
 
 namespace Crypton.Domain.ValueObjects;
 

@@ -9,7 +9,8 @@ public sealed class FluentValidationFilter : IActionFilter
     {
         if (!context.ModelState.IsValid)
         {
-            context.Result = new BadRequestObjectResult(context.ModelState);
+            var problem = new ValidationProblemDetails(context.ModelState);
+            context.Result = new ObjectResult(problem);
         }
     }
 

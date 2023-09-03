@@ -9,11 +9,9 @@ using Crypton.Domain;
 using Crypton.Infrastructure.Filters;
 using Crypton.Infrastructure.Policies;
 using Crypton.Infrastructure.RateLimiting;
-using Crypton.WebAPI.Errors;
 using Crypton.WebAPI.OperationFilters;
 using FluentValidation;
 using FluentValidation.AspNetCore;
-using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Microsoft.AspNetCore.ResponseCompression;
 using Microsoft.OpenApi.Models;
 using ZymLabs.NSwag.FluentValidation;
@@ -39,6 +37,7 @@ public static class ConfigureServices
             .AddControllers(o =>
             {
                 o.Filters.Add<FluentValidationFilter>();
+                o.Filters.Add<ErrorHandlingFilterAttribute>();
                 o.RespectBrowserAcceptHeader = true;
             })
             .AddJsonOptions(options =>
@@ -68,8 +67,6 @@ public static class ConfigureServices
 
             return new FluentValidationSchemaProcessor(provider, validationRules, loggerFactory);
         });
-
-        services.AddSingleton<ProblemDetailsFactory, CustomProblemDetailsFactory>();
 
         if (env.IsDevelopment())
         {

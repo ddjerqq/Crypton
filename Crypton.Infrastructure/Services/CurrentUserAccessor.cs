@@ -1,5 +1,5 @@
 ﻿using System.Security.Claims;
-using Crypton.Application.Interfaces;
+using Crypton.Application.Common.Interfaces;
 using Crypton.Domain.Entities;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;

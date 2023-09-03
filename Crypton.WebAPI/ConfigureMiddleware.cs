@@ -1,5 +1,4 @@
-﻿using Crypton.Infrastructure.Idempotency;
-using Crypton.Infrastructure.Persistence;
+﻿using Crypton.Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
 
 namespace Crypton.WebAPI;
@@ -54,8 +53,8 @@ public static class ConfigureMiddleware
         // app.UseDigitalSignature();
         app.UseAuthorization();
 
-        app.UseIdempotency();
-
+        // TODO: re enable when testing idempotency
+        // app.UseIdempotency();
         app.UseCors();
 
         app.MapHealthChecks("/health");

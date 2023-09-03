@@ -1,4 +1,4 @@
-﻿using Crypton.Application.Interfaces;
+﻿using Crypton.Application.Common.Interfaces;
 using Crypton.Infrastructure.Persistence.Interceptors;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;

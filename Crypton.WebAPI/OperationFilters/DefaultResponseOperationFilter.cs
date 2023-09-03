@@ -11,8 +11,6 @@ public sealed class DefaultResponseOperationFilter : IOperationFilter
 {
     public void Apply(OpenApiOperation operation, OperationFilterContext context)
     {
-        operation.Responses.Remove("200");
-
         if (HasAttribute<RequireIdempotencyAttribute>(context))
             operation.Responses.TryAdd("409", new OpenApiResponse { Description = "Conflicting Idempotency Key" });
 
@@ -22,10 +20,14 @@ public sealed class DefaultResponseOperationFilter : IOperationFilter
             operation.Responses.TryAdd("403", new OpenApiResponse { Description = "Forbidden" });
         }
 
-        if (!HasAttribute<IgnoreDigitalSignatureAttribute>(context))
-            operation.Responses.TryAdd("400", new OpenApiResponse { Description = "Digital Signature rules issue" });
-        else
-            operation.Responses.TryAdd("400", new OpenApiResponse { Description = "Validation error" });
+        operation.Responses.TryAdd(
+            "400",
+            new OpenApiResponse
+            {
+                Description = HasAttribute<IgnoreDigitalSignatureAttribute>(context)
+                    ? "Invalid Digital Signature"
+                    : "Validation error",
+            });
 
         if (HasAttribute<EnableRateLimitingAttribute>(context) && !HasAttribute<DisableRateLimitingAttribute>(context))
             operation.Responses.TryAdd("429", new OpenApiResponse { Description = "Rate limit" });

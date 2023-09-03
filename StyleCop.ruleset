@@ -125,7 +125,8 @@
     <Rules AnalyzerId="StyleCop.Analyzers" RuleNamespace="StyleCop.Analyzers.MaintainabilityRules">
         <Rule Id="SA1119" Action="Warning"/>          <!-- Statement should not use unnecessary parenthesis -->
         <Rule Id="SA1400" Action="Warning"/>          <!-- Access modifier should be declared -->
-        <Rule Id="SA1401" Action="Warning"/>          <!-- Fields should be private -->
+        <Rule Id="SA1401" Action="None"/>             <!-- Fields should be private -->
+        <Rule Id="CA2211" Action="None"/>             <!-- Non-const field should not be visible -->
         <Rule Id="SA1402" Action="Warning"/>          <!-- File may only contain a single type -->
         <Rule Id="SA1403" Action="Warning"/>          <!-- File may only contain a single namespace -->
         <Rule Id="SA1404" Action="Warning"/>          <!-- Code analysis suppression should have justification -->
@@ -166,7 +167,7 @@
 
     <Rules AnalyzerId="StyleCop.Analyzers" RuleNamespace="StyleCop.Analyzers.DocumentationRules">
         <Rule Id="SA1600" Action="Warning"/>          <!-- Elements should be documented -->
-        <Rule Id="SA1601" Action="Warning"/>          <!-- Partial elements should be documented -->
+        <Rule Id="SA1601" Action="None"/>             <!-- Partial elements should be documented -->
         <Rule Id="SA1602" Action="Warning"/>          <!-- Enumeration items should be documented -->
         <Rule Id="SA1603" Action="None"/>             <!-- Documentation should contain valid XML -->
         <Rule Id="SA1604" Action="Warning"/>          <!-- Element documentation should have summary -->

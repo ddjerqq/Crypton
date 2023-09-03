@@ -1,6 +1,5 @@
-﻿using Crypton.Application.Interfaces;
+﻿using Crypton.Application.Common.Interfaces;
 using Crypton.Infrastructure.Idempotency;
-using Crypton.Infrastructure.ModelBinders;
 using Crypton.Infrastructure.Services;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -12,9 +11,6 @@ public static class ConfigureServices
     {
         services.AddHttpContextAccessor();
         services.AddScoped<ICurrentUserAccessor, CurrentUserAccessor>();
-
-        services.AddMvc(o => { o.ModelBinderProviders.Insert(0, new ModelBinderProvider()); });
-
         services.AddIdempotency();
 
         return services;

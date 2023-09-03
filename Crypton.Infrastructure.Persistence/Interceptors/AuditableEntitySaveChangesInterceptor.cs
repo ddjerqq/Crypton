@@ -1,4 +1,4 @@
-﻿using Crypton.Application.Interfaces;
+﻿using Crypton.Application.Common.Interfaces;
 using Crypton.Domain.Common.Abstractions;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;

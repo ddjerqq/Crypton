@@ -1,6 +1,5 @@
 ﻿using Crypton.Domain.Entities;
 using Crypton.Domain.ValueObjects;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 

@@ -1,4 +1,4 @@
-﻿using Crypton.Application.Interfaces;
+﻿using Crypton.Application.Common.Interfaces;
 using Crypton.Domain.Common.Extensions;
 using Crypton.Domain.Entities;
 using Crypton.Domain.ValueObjects;
