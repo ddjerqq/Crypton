@@ -13,7 +13,7 @@ public sealed class EconomyController : ApiController
     /// Collect daily coins.
     /// </summary>
     [RequireIdempotency]
-    [EnableRateLimiting(RateLimitConstants.TransactionPolicyName)]
+    [Cooldown(1, 86400)]
     [HttpPost("daily")]
     public async Task<IActionResult> CollectDaily(CancellationToken ct)
     {
@@ -26,7 +26,7 @@ public sealed class EconomyController : ApiController
     /// Create a balance transaction.
     /// </summary>
     [RequireIdempotency]
-    [EnableRateLimiting(RateLimitConstants.TransactionPolicyName)]
+    [Cooldown(1, 10)]
     [HttpPost("create_balance")]
     public async Task<IActionResult> CreateBalanceTransaction(CreateBalanceTransactionCommand command, CancellationToken ct)
     {

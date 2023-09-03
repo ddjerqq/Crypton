@@ -4,7 +4,6 @@ namespace Crypton.Infrastructure.RateLimiting;
 
 public static class RateLimitConstants
 {
-    public const string TransactionPolicyName = "transaction";
     public const string GlobalPolicyName = "global";
 
     public static IEnumerable<RateLimitOptions> LoadRateLimitOptions(IConfiguration configuration)

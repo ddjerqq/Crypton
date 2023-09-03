@@ -110,7 +110,6 @@ public static class ConfigureServices
                                 Id = "Bearer",
                             },
                         },
-
                         new string[] { }
                     },
                 });
@@ -137,68 +136,6 @@ public static class ConfigureServices
             o.Providers.Add<GzipCompressionProvider>();
             o.Providers.Add<BrotliCompressionProvider>();
         });
-        return services;
-    }
-
-    // TODO add a rate limiting option, to limit how often users can perform actions.
-    public static IServiceCollection AddRateLimiting(this IServiceCollection services, IConfiguration configuration)
-    {
-        var policies = RateLimitConstants.LoadRateLimitOptions(configuration)
-            .ToList();
-
-        var globalPolicy = policies
-            .First(x => x.PolicyName == RateLimitConstants.GlobalPolicyName);
-
-        var transactionPolicy = policies
-            .First(x => x.PolicyName == RateLimitConstants.TransactionPolicyName);
-
-        services.AddRateLimiter(rateLimitOptions =>
-        {
-            rateLimitOptions.RejectionStatusCode = 429;
-
-            rateLimitOptions.OnRejected = (ctx, _) =>
-            {
-                if (ctx.Lease.TryGetMetadata(MetadataName.RetryAfter, out var retryAfter))
-                {
-                    ctx.HttpContext.Response.Headers.RetryAfter = ((int)retryAfter.TotalSeconds)
-                        .ToString(NumberFormatInfo.InvariantInfo);
-                }
-
-                return ValueTask.CompletedTask;
-            };
-
-            // transaction policy
-            rateLimitOptions.AddPolicy(transactionPolicy.PolicyName, ctx =>
-            {
-                // TODO use IPAddress instead of the user identifier if it is missing
-                var userIdentifier = ctx.User
-                    .Claims
-                    .FirstOrDefault(x => x.Type == ClaimTypes.NameIdentifier)?
-                    .Value;
-
-                // TODO this needs to be like 1000x smaller
-                if (!string.IsNullOrEmpty(userIdentifier))
-                    return RateLimitPartition.GetTokenBucketLimiter(userIdentifier, _ => transactionPolicy);
-
-                return RateLimitPartition.GetTokenBucketLimiter("anonymous", _ => transactionPolicy);
-            });
-
-            // global rate limit IP address specific
-            rateLimitOptions.GlobalLimiter = PartitionedRateLimiter.Create<HttpContext, IPAddress>(context =>
-            {
-                // TODO: which one to use?
-                // userIdentifiers or IPAddresses?
-                var remoteIpAddress = context.Connection.RemoteIpAddress;
-
-                if (!IPAddress.IsLoopback(remoteIpAddress!))
-                {
-                    return RateLimitPartition.GetTokenBucketLimiter(remoteIpAddress!, _ => globalPolicy);
-                }
-
-                return RateLimitPartition.GetNoLimiter(IPAddress.Loopback);
-            });
-        });
-
         return services;
     }
 }
