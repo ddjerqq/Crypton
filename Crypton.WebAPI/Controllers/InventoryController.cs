@@ -53,23 +53,22 @@ public sealed class InventoryController : ApiController
     [RequireIdempotency]
     [HttpPost("send")]
     public async Task<IActionResult> SendToUser(
-        [FromBody, BindRequired] CreateItemTransactionCommand transactionCommand,
+        [FromBody, BindRequired] SendItemTransactionCommand transactionCommand,
         CancellationToken ct)
     {
         await this.HandleCommandAsync(transactionCommand, ct);
         return this.Ok();
     }
 
-    // /// <summary>
-    // /// Sell item
-    // /// </summary>
-    // [AllowAnonymous]
-    // [RequireIdempotency]
-    // [HttpPost("sell")]
-    // public async Task<IActionResult> Sell([FromBody, BindRequired] SellItemCommand command)
-    // {
-    //     // return this.Created();
-    //     // return this.BadRequest(result.Errors);
-    //     throw new NotImplementedException();
-    // }
+    /// <summary>
+    /// Sell item
+    /// </summary>
+    [AllowAnonymous]
+    [RequireIdempotency]
+    [HttpPost("sell")]
+    public async Task<IActionResult> Sell([FromBody, BindRequired] SellItemCommand command)
+    {
+        var soldFor = await this.HandleCommandAsync<SellItemCommand, decimal>(command);
+        return this.Ok(soldFor);
+    }
 }

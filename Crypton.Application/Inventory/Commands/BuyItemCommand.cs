@@ -33,7 +33,7 @@ public sealed class BuyItemHandler : IRequestHandler<BuyItemCommand, ErrorOr<Ite
         var itemType = await this._dbContext.Set<ItemType>()
             .FirstOrDefaultAsync(x => x.Id == request.ItemTypeId, ct);
         if (itemType is null)
-            return Errors.Economy.InvalidItemType;
+            return Errors.Inventory.InvalidItem;
 
         // pay for the item
         var payCommand = new CreateTransactionCommand(currentUser, null, itemType!.Price);

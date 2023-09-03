@@ -2,15 +2,17 @@
 
 namespace Crypton.Application.Dtos;
 
-public sealed class ItemDto
+public sealed record ItemDto
 {
     public Guid Id { get; init; }
 
-    public float Rarity { get; set; }
+    public float Rarity { get; init; }
 
     public string TypeId { get; init; } = string.Empty;
 
     public string TypeName { get; init; } = string.Empty;
+
+    public decimal RawPrice { get; init; }
 
     public decimal Price { get; init; }
 
@@ -22,7 +24,8 @@ public sealed class ItemDto
             Rarity = item.Rarity.Value,
             TypeId = item.ItemType.Id,
             TypeName = item.ItemType.Name,
-            Price = item.ItemType.Price,
+            RawPrice = item.ItemType.Price,
+            Price = item.Price,
         };
     }
 }

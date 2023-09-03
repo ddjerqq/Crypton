@@ -117,12 +117,26 @@ internal sealed class CreateTransactionHandler : IRequestHandler<CreateTransacti
 
     public async Task<IErrorOr> Handle(CreateTransactionCommand request, CancellationToken ct)
     {
-        return request.TransactionType switch
-        {
-            TransactionType.BalanceTransaction => await this.HandleBalanceTransaction(request, ct),
-            TransactionType.ItemTransaction => await this.HandleItemTransaction(request, ct),
-            _ => throw new ArgumentOutOfRangeException(nameof(request.TransactionType), "no such transaction type"),
-        };
+        if (request.TransactionType == TransactionType.BalanceTransaction)
+            return await this.HandleBalanceTransaction(request, ct);
+
+        IErrorOr itemTransactionResult;
+        if (request.Sender is null)
+            itemTransactionResult = await this.HandleItemCreation(request, ct);
+        else if (request.Receiver is null)
+            itemTransactionResult = await this.HandleItemSell(request, ct);
+        else
+            itemTransactionResult = await this.HandleItemTransfer(request, ct);
+
+        if (itemTransactionResult.IsError)
+            return Errors.From(itemTransactionResult.Errors!);
+
+        this._dbContext.Set<User>().TryUpdateIfNotNull(request.Sender);
+        this._dbContext.Set<User>().TryUpdateIfNotNull(request.Receiver);
+
+        await this._dbContext.SaveChangesAsync(ct);
+
+        return Errors.Success;
     }
 
     private async ValueTask<IErrorOr> HandleBalanceTransaction(
@@ -151,38 +165,52 @@ internal sealed class CreateTransactionHandler : IRequestHandler<CreateTransacti
         return Errors.Success;
     }
 
-    private async ValueTask<IErrorOr> HandleItemTransaction(
-        CreateTransactionCommand request,
-        CancellationToken ct)
+    // sender and receiver are both not null
+    private ValueTask<IErrorOr> HandleItemTransfer(CreateTransactionCommand request, CancellationToken ct)
     {
-        // if sender is not null
-        if (request.Sender is not null)
-        {
-            // transfer items between inventories
-            if (!request.Sender.Inventory.HasItemWithId(request.ItemId!.Value))
-                return Errors.From(Errors.Economy.InvalidItem);
+        if (!request.Sender!.Inventory.HasItemWithId(request.ItemId!.Value))
+            return ValueTask.FromResult(Errors.From(Errors.Inventory.InvalidItem));
 
-            // we assume that the receiver is never null, because items
-            // should not be destroyed, only transferred between inventories
-            request.Sender.Inventory.Transfer(
-                request.Receiver!.Inventory,
-                request.ItemId!.Value,
-                request.Receiver);
-        }
-        else
-        {
-            // add the item to the receiver's inventory
-            await this._dbContext.Set<Item>()
-                .AddAsync(request.Item!, ct);
+        request.Sender.Inventory.Transfer(request.Receiver!.Inventory, request.ItemId!.Value, request.Receiver);
+        request.Receiver!.AddDomainEvent(new ItemReceivedEvent(request.ItemId!.Value));
 
-            request.Receiver!.Inventory.Add(request.Item!);
-        }
+        return ValueTask.FromResult(Errors.Success);
+    }
 
-        request.Receiver?.AddDomainEvent(new ItemReceivedEvent(request.ItemId!.Value));
+    // sender is null
+    private async ValueTask<IErrorOr> HandleItemCreation(CreateTransactionCommand request, CancellationToken ct)
+    {
+        // create the item in the database
+        await this._dbContext.Set<Item>()
+            .AddAsync(request.Item!, ct);
 
-        this._dbContext.Set<User>().TryUpdateIfNotNull(request.Sender);
-        this._dbContext.Set<User>().TryUpdateIfNotNull(request.Receiver);
-        await this._dbContext.SaveChangesAsync(ct);
+        // add it to the receiver's inventory
+        request.Receiver!.Inventory.Add(request.Item!);
+        request.Receiver!.AddDomainEvent(new ItemReceivedEvent(request.ItemId!.Value));
+
+        return Errors.Success;
+    }
+
+    // receiver is null
+    private async ValueTask<IErrorOr> HandleItemSell(CreateTransactionCommand request, CancellationToken ct)
+    {
+        if (!request.Sender!.Inventory.HasItemWithId(request.ItemId!.Value))
+            return Errors.From(Errors.Inventory.InvalidItem);
+
+        // remove the item from the sender's inventory
+        var senderItem = request.Sender.Inventory.First(x => x.Id == request.ItemId!.Value);
+        request.Sender.Inventory.Remove(senderItem);
+
+        // give funds to the sender
+        var transactionCommand = new CreateTransactionCommand(null, request.Sender, senderItem.Price);
+        var transactionResult = await this.HandleBalanceTransaction(transactionCommand, ct);
+        if (transactionResult.IsError)
+            return Errors.From(transactionResult.Errors!);
+
+        // to avoid JsonException: A possible object cycle was detected which is not supported.
+        // we will set the owner to null
+        senderItem.Owner = null!;
+        request.Sender.AddDomainEvent(new ItemSoldEvent(senderItem));
 
         return Errors.Success;
     }

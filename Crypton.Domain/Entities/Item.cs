@@ -1,4 +1,5 @@
-﻿using Crypton.Domain.Common.Abstractions;
+﻿using System.ComponentModel.DataAnnotations.Schema;
+using Crypton.Domain.Common.Abstractions;
 using Crypton.Domain.ValueObjects;
 
 namespace Crypton.Domain.Entities;
@@ -16,4 +17,7 @@ public sealed class Item : EntityBase
     public Guid OwnerId { get; set; }
 
     public User Owner { get; set; } = null!;
+
+    [NotMapped]
+    public decimal Price => this.ItemType.Price * ((decimal)(1 / this.Rarity.Value));
 }
