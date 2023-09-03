@@ -108,8 +108,9 @@ public sealed class AuthController : ApiController
     [ProducesResponseType<IEnumerable<UserDto>>(StatusCodes.Status200OK)]
     public async Task<IActionResult> AllUsers(CancellationToken ct)
     {
-        var users = await this._dbContext.Users
+        var users = await this._dbContext.Set<User>()
             .ToListAsync(ct);
+
         return this.Ok(users.Select(x => (UserDto)x));
     }
 }

@@ -7,9 +7,6 @@ namespace Crypton.Application.Common.Interfaces;
 
 public interface IAppDbContext : IDisposable
 {
-    // TODO change this to be Set call
-    public DbSet<User> Users { get; }
-
     public DbSet<T> Set<T>()
         where T : class;
 

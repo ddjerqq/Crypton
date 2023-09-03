@@ -1,5 +1,6 @@
 ﻿using Crypton.Application.Common.Interfaces;
 using Crypton.Domain.Common.Errors;
+using Crypton.Domain.Entities;
 using ErrorOr;
 using FluentValidation;
 using MediatR;
@@ -47,7 +48,9 @@ public sealed class CreateBalanceTransactionHandler : IRequestHandler<CreateBala
         if (sender is null)
             return Errors.From(Errors.User.Unauthenticated);
 
-        var receiver = await this._dbContext.Users.FirstOrDefaultAsync(x => x.Id == request.ReceiverId, ct);
+        var receiver = await this._dbContext.Set<User>()
+            .FirstOrDefaultAsync(x => x.Id == request.ReceiverId, ct);
+
         if (receiver is null)
             return Errors.From(Errors.User.NotFound);
 

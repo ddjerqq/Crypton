@@ -1,5 +1,6 @@
 ﻿using Crypton.Application.Common.Interfaces;
 using Crypton.Domain.Common.Errors;
+using Crypton.Domain.Entities;
 using ErrorOr;
 using MediatR;
 
@@ -36,7 +37,7 @@ public sealed class CollectDailyHandler : IRequestHandler<CollectDailyCommand, E
             return Errors.User.DailyNotReady;
 
         currentUser.DailyStreak.CollectDaily();
-        this._dbContext.Users.Update(currentUser);
+        this._dbContext.Set<User>().Update(currentUser);
         await this._dbContext.SaveChangesAsync(ct);
 
         var amount = currentUser.DailyStreak.Streak * 100;

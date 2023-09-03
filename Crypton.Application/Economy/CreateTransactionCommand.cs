@@ -138,8 +138,8 @@ public sealed class CreateTransactionHandler : IRequestHandler<CreateTransaction
 
         wallet.Transfer(request.Receiver!.Wallet, request.Amount!.Value);
 
-        this._dbContext.Users.TryUpdateIfNotNull(request.Sender);
-        this._dbContext.Users.TryUpdateIfNotNull(request.Receiver);
+        this._dbContext.Set<User>().TryUpdateIfNotNull(request.Sender);
+        this._dbContext.Set<User>().TryUpdateIfNotNull(request.Receiver);
         await this._dbContext.SaveChangesAsync(ct);
 
         return Errors.Success;
@@ -161,8 +161,8 @@ public sealed class CreateTransactionHandler : IRequestHandler<CreateTransaction
 
         inventory.Transfer(request.Receiver!.Inventory, request.ItemId!.Value);
 
-        this._dbContext.Users.TryUpdateIfNotNull(request.Sender);
-        this._dbContext.Users.TryUpdateIfNotNull(request.Receiver);
+        this._dbContext.Set<User>().TryUpdateIfNotNull(request.Sender);
+        this._dbContext.Set<User>().TryUpdateIfNotNull(request.Receiver);
         await this._dbContext.SaveChangesAsync(ct);
 
         return Errors.Success;
