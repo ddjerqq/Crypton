@@ -29,8 +29,9 @@ public sealed class CooldownAttribute : ActionFilterAttribute
             .RequestServices
             .GetRequiredService<IMemoryCache>();
 
+        var uri = context.HttpContext.Request.Path.Value;
         var key = await this.Key(context.HttpContext, context.HttpContext.RequestAborted);
-        var cacheKey = $"cooldown:{key}";
+        var cacheKey = $"cooldown:{key}:{uri}";
 
         RateLimitCacheEntry? cacheEntry = await cache
             .GetOrCreateAsync(cacheKey, entry =>
