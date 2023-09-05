@@ -17,8 +17,8 @@ public sealed record UserRegisterCommand(string Username, string Email, string P
     public User User => new User
     {
         Id = Guid.NewGuid(),
-        UserName = this.Username,
-        Email = this.Email,
+        UserName = Username,
+        Email = Email,
     };
 }
 
@@ -26,20 +26,20 @@ public sealed class UserRegisterValidator : AbstractValidator<UserRegisterComman
 {
     public UserRegisterValidator()
     {
-        this.RuleLevelCascadeMode = CascadeMode.Stop;
+        RuleLevelCascadeMode = CascadeMode.Stop;
 
-        this.RuleFor(x => x.Username)
+        RuleFor(x => x.Username)
             .NotEmpty()
             .Matches(@"^[a-zA-Z0-9._]{3,16}$")
             .WithMessage(
                 "Username must be between 3 and 16 characters long and contain only alphanumeric characters, underscores and dots.");
 
-        this.RuleFor(x => x.Email)
+        RuleFor(x => x.Email)
             .NotEmpty()
             .Matches(@"^[\w-.]+@([\w-]+\.)+[\w-]{2,4}$")
             .WithMessage("Email must be a valid email address.");
 
-        this.RuleFor(x => x.Password)
+        RuleFor(x => x.Password)
             .NotEmpty()
             .Matches(@"^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^\da-zA-Z]).{8,}$")
             .WithMessage(
@@ -54,19 +54,19 @@ public sealed class UserRegisterHandler : IRequestHandler<UserRegisterCommand, I
 
     public UserRegisterHandler(UserManager<User> userManager, IAppDbContext dbContext)
     {
-        this._userManager = userManager;
-        this._dbContext = dbContext;
+        _userManager = userManager;
+        _dbContext = dbContext;
     }
 
     public async Task<IErrorOr> Handle(UserRegisterCommand request, CancellationToken ct)
     {
         var user = request.User;
-        var res = await this._userManager.CreateAsync(user, request.Password);
+        var res = await _userManager.CreateAsync(user, request.Password);
 
         if (res.Succeeded)
         {
             user.AddDomainEvent(new UserCreatedEvent(user.Id));
-            await this._dbContext.SaveChangesAsync(ct);
+            await _dbContext.SaveChangesAsync(ct);
             return Errors.Success;
         }
 

@@ -19,12 +19,12 @@ public sealed class Rules : IRules
 {
     private Rules(Guid salt, int hashHead, int hashTail, byte checksumStart, IEnumerable<int> checksumIndexes, UInt128 appToken)
     {
-        this.Salt = salt;
-        this.HashHead = hashHead;
-        this.HashTail = hashTail;
-        this.ChecksumIndexes = checksumIndexes.ToArray();
-        this.ChecksumStart = checksumStart;
-        this.AppToken = appToken;
+        Salt = salt;
+        HashHead = hashHead;
+        HashTail = hashTail;
+        ChecksumIndexes = checksumIndexes.ToArray();
+        ChecksumStart = checksumStart;
+        AppToken = appToken;
     }
 
     public Guid Salt { get; init; }
@@ -43,9 +43,9 @@ public sealed class Rules : IRules
     public UInt128 AppToken { get; init; }
 
     [JsonPropertyName("app_token")]
-    public string AppTokenDigest => this.AppToken.ToString("x16");
+    public string AppTokenDigest => AppToken.ToString("x16");
 
-    public string HashFormat => $"{this.HashHead:x4}:{{0}}:{{1}}:{this.HashTail:x8}";
+    public string HashFormat => $"{HashHead:x4}:{{0}}:{{1}}:{HashTail:x8}";
 
     public static Rules Random()
     {
@@ -79,17 +79,17 @@ public sealed class Rules : IRules
 
         // 2023-08-05T20:52:11.288Z
         // to make this compliant with the javascript ISO format.
-        var payload = $"{this.Salt}:{timestamp:yyyy-MM-dd'T'HH:mm:ss'.'fff'Z'}:{parsedUrl}:{userId}";
+        var payload = $"{Salt}:{timestamp:yyyy-MM-dd'T'HH:mm:ss'.'fff'Z'}:{parsedUrl}:{userId}";
 
         byte[] hash = SHA1.HashData(Encoding.UTF8.GetBytes(payload));
         string digest = string.Concat(hash.Select(b => b.ToString("x2")));
 
         byte[] digestBytes = Encoding.UTF8.GetBytes(digest);
-        var sum = (int)this.ChecksumIndexes.Aggregate(this.ChecksumStart, (sum, idx) => (byte)(sum + digestBytes[idx]));
+        var sum = (int)ChecksumIndexes.Aggregate(ChecksumStart, (sum, idx) => (byte)(sum + digestBytes[idx]));
         sum = Math.Abs(sum);
         Console.WriteLine(sum);
 
-        return string.Format(this.HashFormat, digest, $"{sum:D3}");
+        return string.Format(HashFormat, digest, $"{sum:D3}");
     }
 
     internal static Rules CreateInstance(

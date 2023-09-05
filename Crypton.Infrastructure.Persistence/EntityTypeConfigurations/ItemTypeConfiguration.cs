@@ -16,7 +16,7 @@ public class ItemTypeConfiguration : IEntityTypeConfiguration<ItemType>
             .WithOne(x => x.ItemType)
             .HasForeignKey(x => x.ItemTypeId);
 
-        this.SeedData(builder);
+        SeedData(builder);
     }
 
     private void SeedData(EntityTypeBuilder<ItemType> builder)

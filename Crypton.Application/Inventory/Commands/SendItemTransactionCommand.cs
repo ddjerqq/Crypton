@@ -18,24 +18,24 @@ public sealed class SendItemTransactionHandler : IRequestHandler<SendItemTransac
 
     public SendItemTransactionHandler(IMediator mediator, IAppDbContext dbContext, ICurrentUserAccessor currentUserAccessor)
     {
-        this._mediator = mediator;
-        this._dbContext = dbContext;
-        this._currentUserAccessor = currentUserAccessor;
+        _mediator = mediator;
+        _dbContext = dbContext;
+        _currentUserAccessor = currentUserAccessor;
     }
 
     public async Task<IErrorOr> Handle(SendItemTransactionCommand request, CancellationToken ct)
     {
-        var sender = await this._currentUserAccessor
+        var sender = await _currentUserAccessor
             .GetCurrentUserAsync(ct);
         if (sender is null)
             return Errors.From(Errors.User.Unauthenticated);
 
-        var receiver = await this._dbContext.Set<User>()
+        var receiver = await _dbContext.Set<User>()
             .FirstOrDefaultAsync(x => x.Id == request.ReceiverId, ct);
         if (receiver is null)
             return Errors.From(Errors.User.NotFound);
 
-        var item = await this._dbContext.Set<Item>()
+        var item = await _dbContext.Set<Item>()
             .FirstOrDefaultAsync(x => x.Id == request.ItemId, ct);
 
         // if the item does not exist, or the sender does not have it
@@ -43,6 +43,6 @@ public sealed class SendItemTransactionHandler : IRequestHandler<SendItemTransac
             return Errors.From(Errors.Inventory.InvalidItem);
 
         var command = new CreateTransactionCommand(sender, receiver, item);
-        return await this._mediator.Send(command, ct);
+        return await _mediator.Send(command, ct);
     }
 }

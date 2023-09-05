@@ -13,13 +13,13 @@ public sealed class CurrentUserAccessor : ICurrentUserAccessor
 
     public CurrentUserAccessor(IHttpContextAccessor httpContextAccessor, UserManager<User> userManager)
     {
-        this.httpContextAccessor = httpContextAccessor;
-        this.userManager = userManager;
+        httpContextAccessor = httpContextAccessor;
+        userManager = userManager;
     }
 
     public Guid? GetCurrentUserId()
     {
-        var claimsPrincipal = this.httpContextAccessor.HttpContext?.User;
+        var claimsPrincipal = httpContextAccessor.HttpContext?.User;
         var stringId = claimsPrincipal?
             .Claims
             .FirstOrDefault(x => x.Type == ClaimTypes.NameIdentifier)?
@@ -30,9 +30,9 @@ public sealed class CurrentUserAccessor : ICurrentUserAccessor
 
     public async Task<User?> GetCurrentUserAsync(CancellationToken ct = default)
     {
-        var claimsPrincipal = this.httpContextAccessor.HttpContext?.User;
+        var claimsPrincipal = httpContextAccessor.HttpContext?.User;
         if (claimsPrincipal is null) return null;
 
-        return await this.userManager.GetUserAsync(claimsPrincipal);
+        return await userManager.GetUserAsync(claimsPrincipal);
     }
 }

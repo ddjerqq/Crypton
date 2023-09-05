@@ -31,15 +31,15 @@ public sealed class ProcessOutboxMessagesBackgroundJob : IJob
         IAppDbContext dbContext,
         ILogger<ProcessOutboxMessagesBackgroundJob> logger)
     {
-        this._publisher = publisher;
-        this._dbContext = dbContext;
-        this._logger = logger;
+        _publisher = publisher;
+        _dbContext = dbContext;
+        _logger = logger;
     }
 
     public async Task Execute(IJobExecutionContext context)
     {
         // 20 oldest messages
-        var messages = await this._dbContext
+        var messages = await _dbContext
             .Set<OutboxMessage>()
             .Where(m => m.ProcessedOnUtc == null)
             .OrderBy(m => m.OccuredOnUtc)
@@ -53,23 +53,23 @@ public sealed class ProcessOutboxMessagesBackgroundJob : IJob
 
             if (domainEvent is null)
             {
-                this._logger.LogWarning("Failed to deserialize message {MessageId}", message.Id);
+                _logger.LogWarning("Failed to deserialize message {MessageId}", message.Id);
                 continue;
             }
 
             try
             {
-                await this._publisher.Publish(domainEvent, context.CancellationToken);
+                await _publisher.Publish(domainEvent, context.CancellationToken);
             }
             catch (Exception ex)
             {
                 message.Error = ex.ToString();
-                this._logger.LogError(ex, "Failed to publish message {MessageId}", message.Id);
+                _logger.LogError(ex, "Failed to publish message {MessageId}", message.Id);
             }
 
             message.ProcessedOnUtc = DateTime.UtcNow;
         }
 
-        await this._dbContext.SaveChangesAsync(context.CancellationToken);
+        await _dbContext.SaveChangesAsync(context.CancellationToken);
     }
 }

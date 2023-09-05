@@ -19,14 +19,14 @@ public sealed class CollectDailyHandler : IRequestHandler<CollectDailyCommand, E
         IAppDbContext dbContext,
         ICurrentUserAccessor currentUserAccessor)
     {
-        this._mediator = mediator;
-        this._dbContext = dbContext;
-        this._currentUserAccessor = currentUserAccessor;
+        _mediator = mediator;
+        _dbContext = dbContext;
+        _currentUserAccessor = currentUserAccessor;
     }
 
     public async Task<ErrorOr<decimal>> Handle(CollectDailyCommand request, CancellationToken ct)
     {
-        var currentUser = await this._currentUserAccessor.GetCurrentUserAsync(ct);
+        var currentUser = await _currentUserAccessor.GetCurrentUserAsync(ct);
         if (currentUser is null)
             return Errors.User.Unauthenticated;
 
@@ -35,13 +35,13 @@ public sealed class CollectDailyHandler : IRequestHandler<CollectDailyCommand, E
             return Errors.User.DailyNotReady;
 
         currentUser.DailyStreak.CollectDaily();
-        this._dbContext.Set<User>().Update(currentUser);
-        await this._dbContext.SaveChangesAsync(ct);
+        _dbContext.Set<User>().Update(currentUser);
+        await _dbContext.SaveChangesAsync(ct);
 
         var amount = currentUser.DailyStreak.Streak * 100;
 
         var command = new CreateTransactionCommand(null, currentUser, amount);
-        await this._mediator.Send(command, ct);
+        await _mediator.Send(command, ct);
 
         return amount;
     }

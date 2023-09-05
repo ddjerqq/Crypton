@@ -18,29 +18,29 @@ public sealed class LoggingPipelineBehaviour<TRequest, TResponse>
         ICurrentUserAccessor currentUserAccessor,
         ILogger<LoggingPipelineBehaviour<TRequest, TResponse>> logger)
     {
-        this._currentUserAccessor = currentUserAccessor;
-        this._logger = logger;
+        _currentUserAccessor = currentUserAccessor;
+        _logger = logger;
     }
 
     public async Task<TResponse> Handle(TRequest request, RequestHandlerDelegate<TResponse> next, CancellationToken ct)
     {
-        var user = await this._currentUserAccessor.GetCurrentUserAsync(ct);
+        var user = await _currentUserAccessor.GetCurrentUserAsync(ct);
 
-        this._logger.LogInformation(
+        _logger.LogInformation(
             "{@UserId} {@UserName} started request {@RequestName} {@Request}",
             user?.Id,
             user?.UserName,
             typeof(TRequest).Name,
             request);
 
-        this._stopwatch.Start();
+        _stopwatch.Start();
         var result = await next();
-        this._stopwatch.Stop();
+        _stopwatch.Stop();
 
-        var end = this._stopwatch.ElapsedMilliseconds;
-        this._stopwatch.Reset();
+        var end = _stopwatch.ElapsedMilliseconds;
+        _stopwatch.Reset();
 
-        this._logger.LogInformation(
+        _logger.LogInformation(
             "{@UserId} {@UserName} finished request {@RequestName} {@Request} in {@Duration}ms",
             user?.Id,
             user?.UserName,

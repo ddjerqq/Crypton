@@ -6,7 +6,7 @@ public sealed record DailyStreak : ValueObjectBase
 {
     public DateTime DailyCollectedAt { get; private set; } = new(2015, 1, 1, 0, 0, 0, DateTimeKind.Utc);
 
-    public DateTime CollectNextDailyAt => this.DailyCollectedAt.AddDays(1);
+    public DateTime CollectNextDailyAt => DailyCollectedAt.AddDays(1);
 
     public int Streak { get; private set; } = 0;
 
@@ -16,8 +16,8 @@ public sealed record DailyStreak : ValueObjectBase
     /// </summary>
     public void CollectDaily()
     {
-        this.Streak++;
-        this.DailyCollectedAt = DateTime.UtcNow;
+        Streak++;
+        DailyCollectedAt = DateTime.UtcNow;
     }
 
     /// <summary>
@@ -26,6 +26,6 @@ public sealed record DailyStreak : ValueObjectBase
     /// <returns>true if the user is eligible, false otherwise</returns>
     public bool IsEligibleForDaily()
     {
-        return this.DailyCollectedAt.AddDays(1) < DateTime.UtcNow;
+        return DailyCollectedAt.AddDays(1) < DateTime.UtcNow;
     }
 }

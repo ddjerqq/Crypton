@@ -22,15 +22,15 @@ public sealed class AppDbContext : IdentityDbContext<User, IdentityRole<Guid>, G
         ConvertDomainEventsToOutboxMessagesInterceptor convertDomainEventsToOutboxMessagesInterceptor)
         : base(options)
     {
-        this._auditableEntitySaveChangesInterceptor = auditableEntitySaveChangesInterceptor;
-        this._convertDomainEventsToOutboxMessagesInterceptor = convertDomainEventsToOutboxMessagesInterceptor;
+        _auditableEntitySaveChangesInterceptor = auditableEntitySaveChangesInterceptor;
+        _convertDomainEventsToOutboxMessagesInterceptor = convertDomainEventsToOutboxMessagesInterceptor;
     }
 
-    public DbSet<Item> Items => this.Set<Item>();
+    public DbSet<Item> Items => Set<Item>();
 
-    public DbSet<ItemType> ItemTypes => this.Set<ItemType>();
+    public DbSet<ItemType> ItemTypes => Set<ItemType>();
 
-    public DbSet<OutboxMessage> OutboxMessages => this.Set<OutboxMessage>();
+    public DbSet<OutboxMessage> OutboxMessages => Set<OutboxMessage>();
 
     protected override void OnModelCreating(ModelBuilder builder)
     {
@@ -43,8 +43,8 @@ public sealed class AppDbContext : IdentityDbContext<User, IdentityRole<Guid>, G
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
-        optionsBuilder.AddInterceptors(this._auditableEntitySaveChangesInterceptor);
-        optionsBuilder.AddInterceptors(this._convertDomainEventsToOutboxMessagesInterceptor);
+        optionsBuilder.AddInterceptors(_auditableEntitySaveChangesInterceptor);
+        optionsBuilder.AddInterceptors(_convertDomainEventsToOutboxMessagesInterceptor);
         base.OnConfiguring(optionsBuilder);
     }
 

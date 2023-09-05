@@ -19,5 +19,5 @@ public sealed class Item : EntityBase
     public User Owner { get; set; } = null!;
 
     [NotMapped]
-    public decimal Price => this.ItemType.Price * ((decimal)(1 / this.Rarity.Value));
+    public decimal Price => (decimal)(1 / Rarity.Value);
 }

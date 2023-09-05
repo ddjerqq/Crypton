@@ -14,12 +14,12 @@ public sealed class CreateBalanceTransactionValidator : AbstractValidator<Create
 {
     public CreateBalanceTransactionValidator()
     {
-        this.RuleLevelCascadeMode = CascadeMode.Stop;
+        RuleLevelCascadeMode = CascadeMode.Stop;
 
-        this.RuleFor(x => x.ReceiverId)
+        RuleFor(x => x.ReceiverId)
             .NotEmpty();
 
-        this.RuleFor(x => x.Amount)
+        RuleFor(x => x.Amount)
             .GreaterThan(0);
     }
 }
@@ -32,24 +32,24 @@ public sealed class CreateBalanceTransactionHandler : IRequestHandler<CreateBala
 
     public CreateBalanceTransactionHandler(IMediator mediator, IAppDbContext dbContext, ICurrentUserAccessor currentUserAccessor)
     {
-        this._mediator = mediator;
-        this._dbContext = dbContext;
-        this._currentUserAccessor = currentUserAccessor;
+        _mediator = mediator;
+        _dbContext = dbContext;
+        _currentUserAccessor = currentUserAccessor;
     }
 
     public async Task<IErrorOr> Handle(CreateBalanceTransactionCommand request, CancellationToken ct)
     {
-        var sender = await this._currentUserAccessor.GetCurrentUserAsync(ct);
+        var sender = await _currentUserAccessor.GetCurrentUserAsync(ct);
         if (sender is null)
             return Errors.From(Errors.User.Unauthenticated);
 
-        var receiver = await this._dbContext.Set<User>()
+        var receiver = await _dbContext.Set<User>()
             .FirstOrDefaultAsync(x => x.Id == request.ReceiverId, ct);
 
         if (receiver is null)
             return Errors.From(Errors.User.NotFound);
 
         var createTransactionCommand = new CreateTransactionCommand(sender, receiver, request.Amount);
-        return await this._mediator.Send(createTransactionCommand, ct);
+        return await _mediator.Send(createTransactionCommand, ct);
     }
 }

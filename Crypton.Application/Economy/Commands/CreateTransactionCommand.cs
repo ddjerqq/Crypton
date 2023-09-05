@@ -27,27 +27,27 @@ internal sealed record CreateTransactionCommand : IRequest<IErrorOr>
 {
     public CreateTransactionCommand(User? sender, User? receiver, decimal amount)
     {
-        this.SenderId = sender?.Id;
-        this.Sender = sender;
+        SenderId = sender?.Id;
+        Sender = sender;
 
-        this.ReceiverId = receiver?.Id;
-        this.Receiver = receiver;
+        ReceiverId = receiver?.Id;
+        Receiver = receiver;
 
-        this.TransactionType = TransactionType.BalanceTransaction;
-        this.Amount = amount;
+        TransactionType = TransactionType.BalanceTransaction;
+        Amount = amount;
     }
 
     public CreateTransactionCommand(User? sender, User? receiver, Item item)
     {
-        this.SenderId = sender?.Id;
-        this.Sender = sender;
+        SenderId = sender?.Id;
+        Sender = sender;
 
-        this.ReceiverId = receiver?.Id;
-        this.Receiver = receiver;
+        ReceiverId = receiver?.Id;
+        Receiver = receiver;
 
-        this.TransactionType = TransactionType.ItemTransaction;
-        this.ItemId = item.Id;
-        this.Item = item;
+        TransactionType = TransactionType.ItemTransaction;
+        ItemId = item.Id;
+        Item = item;
     }
 
     public Guid? SenderId { get; }
@@ -71,36 +71,36 @@ internal sealed class CreateTransactionValidator : AbstractValidator<CreateTrans
 {
     public CreateTransactionValidator()
     {
-        this.RuleLevelCascadeMode = CascadeMode.Stop;
+        RuleLevelCascadeMode = CascadeMode.Stop;
 
-        this.RuleFor(x => x.SenderId)
+        RuleFor(x => x.SenderId)
             .NotEqual(x => x.ReceiverId)
             .WithMessage("Sender and Receiver are the same user.")
             .When(x => x.SenderId.HasValue);
 
-        this.RuleFor(x => x.Receiver)
+        RuleFor(x => x.Receiver)
             .NotEmpty();
 
-        this.RuleFor(x => x.ReceiverId)
+        RuleFor(x => x.ReceiverId)
             .NotEmpty()
             .NotEqual(x => x.SenderId)
             .WithMessage("Sender and Receiver are the same user.");
 
-        this.When(x => x.TransactionType == TransactionType.BalanceTransaction, () =>
+        When(x => x.TransactionType == TransactionType.BalanceTransaction, () =>
         {
-            this.RuleFor(x => x.Amount)
+            RuleFor(x => x.Amount)
                 .NotEmpty()
                 .GreaterThan(0);
         });
 
-        this.When(x => x.TransactionType == TransactionType.ItemTransaction, () =>
+        When(x => x.TransactionType == TransactionType.ItemTransaction, () =>
         {
-            this.RuleFor(x => x.ItemId)
+            RuleFor(x => x.ItemId)
                 .NotEmpty()
                 .Must((ctx, itemId) => ctx.Sender?.Inventory.HasItemWithId(itemId!.Value) ?? true)
                 .WithMessage("Sender does not own the item.");
 
-            this.RuleFor(x => x.Item)
+            RuleFor(x => x.Item)
                 .NotEmpty();
         });
     }
@@ -112,29 +112,29 @@ internal sealed class CreateTransactionHandler : IRequestHandler<CreateTransacti
 
     public CreateTransactionHandler(IAppDbContext dbContext)
     {
-        this._dbContext = dbContext;
+        _dbContext = dbContext;
     }
 
     public async Task<IErrorOr> Handle(CreateTransactionCommand request, CancellationToken ct)
     {
         if (request.TransactionType == TransactionType.BalanceTransaction)
-            return await this.HandleBalanceTransaction(request, ct);
+            return await HandleBalanceTransaction(request, ct);
 
         IErrorOr itemTransactionResult;
         if (request.Sender is null)
-            itemTransactionResult = await this.HandleItemCreation(request, ct);
+            itemTransactionResult = await HandleItemCreation(request, ct);
         else if (request.Receiver is null)
-            itemTransactionResult = await this.HandleItemSell(request, ct);
+            itemTransactionResult = await HandleItemSell(request, ct);
         else
-            itemTransactionResult = await this.HandleItemTransfer(request, ct);
+            itemTransactionResult = await HandleItemTransfer(request, ct);
 
         if (itemTransactionResult.IsError)
             return Errors.From(itemTransactionResult.Errors!);
 
-        this._dbContext.Set<User>().TryUpdateIfNotNull(request.Sender);
-        this._dbContext.Set<User>().TryUpdateIfNotNull(request.Receiver);
+        _dbContext.Set<User>().TryUpdateIfNotNull(request.Sender);
+        _dbContext.Set<User>().TryUpdateIfNotNull(request.Receiver);
 
-        await this._dbContext.SaveChangesAsync(ct);
+        await _dbContext.SaveChangesAsync(ct);
 
         return Errors.Success;
     }
@@ -158,9 +158,9 @@ internal sealed class CreateTransactionHandler : IRequestHandler<CreateTransacti
 
         senderWallet.Transfer(receiverWallet, request.Amount!.Value);
 
-        this._dbContext.Set<User>().TryUpdateIfNotNull(request.Sender);
-        this._dbContext.Set<User>().TryUpdateIfNotNull(request.Receiver);
-        await this._dbContext.SaveChangesAsync(ct);
+        _dbContext.Set<User>().TryUpdateIfNotNull(request.Sender);
+        _dbContext.Set<User>().TryUpdateIfNotNull(request.Receiver);
+        await _dbContext.SaveChangesAsync(ct);
 
         return Errors.Success;
     }
@@ -181,7 +181,7 @@ internal sealed class CreateTransactionHandler : IRequestHandler<CreateTransacti
     private async ValueTask<IErrorOr> HandleItemCreation(CreateTransactionCommand request, CancellationToken ct)
     {
         // create the item in the database
-        await this._dbContext.Set<Item>()
+        await _dbContext.Set<Item>()
             .AddAsync(request.Item!, ct);
 
         // add it to the receiver's inventory
@@ -203,7 +203,7 @@ internal sealed class CreateTransactionHandler : IRequestHandler<CreateTransacti
 
         // give funds to the sender
         var transactionCommand = new CreateTransactionCommand(null, request.Sender, senderItem.Price);
-        var transactionResult = await this.HandleBalanceTransaction(transactionCommand, ct);
+        var transactionResult = await HandleBalanceTransaction(transactionCommand, ct);
         if (transactionResult.IsError)
             return Errors.From(transactionResult.Errors!);
 

@@ -12,9 +12,9 @@ public sealed class CooldownAttribute : ActionFilterAttribute
 {
     public CooldownAttribute(int rate, double perSeconds)
     {
-        this.Rate = rate;
-        this.Per = TimeSpan.FromSeconds(perSeconds);
-        this.Key = GetDefaultKey;
+        Rate = rate;
+        Per = TimeSpan.FromSeconds(perSeconds);
+        Key = GetDefaultKey;
     }
 
     public int Rate { get; }
@@ -30,14 +30,14 @@ public sealed class CooldownAttribute : ActionFilterAttribute
             .GetRequiredService<IMemoryCache>();
 
         var uri = context.HttpContext.Request.Path.Value;
-        var key = await this.Key(context.HttpContext, context.HttpContext.RequestAborted);
+        var key = await Key(context.HttpContext, context.HttpContext.RequestAborted);
         var cacheKey = $"cooldown:{key}:{uri}";
 
         RateLimitCacheEntry? cacheEntry = await cache
             .GetOrCreateAsync(cacheKey, entry =>
             {
-                entry.SetAbsoluteExpiration(this.Per);
-                return Task.FromResult(new RateLimitCacheEntry(this.Rate, this.Per));
+                entry.SetAbsoluteExpiration(Per);
+                return Task.FromResult(new RateLimitCacheEntry(Rate, Per));
             });
 
         if (cacheEntry?.TryAcquire(out var retryAfter) ?? true)

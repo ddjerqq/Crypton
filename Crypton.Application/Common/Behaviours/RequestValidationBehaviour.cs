@@ -17,7 +17,7 @@ public sealed class RequestValidationBehaviour<TRequest, TResponse>
 
     public RequestValidationBehaviour(IEnumerable<IValidator<TRequest>> validators)
     {
-        this._validators = validators;
+        _validators = validators;
     }
 
     public async Task<TResponse> Handle(TRequest request, RequestHandlerDelegate<TResponse> next, CancellationToken ct)
@@ -25,7 +25,7 @@ public sealed class RequestValidationBehaviour<TRequest, TResponse>
         var context = new ValidationContext<TRequest>(request);
 
         var validationResults = await Task
-            .WhenAll(this._validators.Select(v => v.ValidateAsync(context, ct)));
+            .WhenAll(_validators.Select(v => v.ValidateAsync(context, ct)));
 
         var failures = validationResults
             .SelectMany(r => r.Errors)

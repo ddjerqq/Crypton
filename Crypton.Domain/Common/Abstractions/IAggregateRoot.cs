@@ -20,15 +20,15 @@ public abstract class AggregateRootBase : EntityBase, IAggregateRoot
     [JsonIgnore]
     private readonly List<IDomainEvent> _domainEvents = new List<IDomainEvent>();
 
-    public IEnumerable<IDomainEvent> DomainEvents => this._domainEvents;
+    public IEnumerable<IDomainEvent> DomainEvents => _domainEvents;
 
     public void AddDomainEvent(IDomainEvent domainEvent)
     {
-        this._domainEvents.Add(domainEvent);
+        _domainEvents.Add(domainEvent);
     }
 
     public void ClearDomainEvents()
     {
-        this._domainEvents.Clear();
+        _domainEvents.Clear();
     }
 }

@@ -15,7 +15,7 @@ public abstract class ApiController : ControllerBase
         CancellationToken ct = default)
         where TRequest : IRequest<ErrorOr<TResponse>>
     {
-        var mediator = this.HttpContext.RequestServices.GetRequiredService<IMediator>();
+        var mediator = HttpContext.RequestServices.GetRequiredService<IMediator>();
         var result = await mediator.Send(request, ct);
 
         if (result.IsError)
@@ -29,7 +29,7 @@ public abstract class ApiController : ControllerBase
         CancellationToken ct = default)
         where TRequest : IRequest<IErrorOr>
     {
-        var mediator = this.HttpContext.RequestServices.GetRequiredService<IMediator>();
+        var mediator = HttpContext.RequestServices.GetRequiredService<IMediator>();
         var result = await mediator.Send(request, ct);
 
         if (result.IsError)

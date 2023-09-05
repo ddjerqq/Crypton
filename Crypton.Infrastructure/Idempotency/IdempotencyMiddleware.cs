@@ -12,7 +12,7 @@ public sealed class IdempotencyMiddleware : IMiddleware
 
     public IdempotencyMiddleware(IIdempotencyService idempotencyService)
     {
-        this.idempotencyService = idempotencyService;
+        idempotencyService = idempotencyService;
     }
 
     public async Task InvokeAsync(HttpContext context, RequestDelegate next)
@@ -38,7 +38,7 @@ public sealed class IdempotencyMiddleware : IMiddleware
             return;
         }
 
-        if (this.idempotencyService.ContainsKey(key))
+        if (idempotencyService.ContainsKey(key))
         {
             context.Response.StatusCode = StatusCodes.Status409Conflict;
 
@@ -47,7 +47,7 @@ public sealed class IdempotencyMiddleware : IMiddleware
             return;
         }
 
-        this.idempotencyService.AddKey(key);
+        idempotencyService.AddKey(key);
 
         await next(context);
     }

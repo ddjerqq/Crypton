@@ -13,8 +13,8 @@ public sealed class DigitalSignatureMiddleware : IMiddleware
         ILogger<DigitalSignatureMiddleware> logger,
         IValidator<RulePayload> payloadValidator)
     {
-        this.logger = logger;
-        this.payloadValidator = payloadValidator;
+        logger = logger;
+        payloadValidator = payloadValidator;
     }
 
     public async Task InvokeAsync(HttpContext context, RequestDelegate next)
@@ -37,10 +37,10 @@ public sealed class DigitalSignatureMiddleware : IMiddleware
             return;
         }
 
-        if (await this.payloadValidator.ValidateAsync(payload) is { IsValid: false } result)
+        if (await payloadValidator.ValidateAsync(payload) is { IsValid: false } result)
         {
             var errors = string.Join(", ", result.Errors);
-            this.logger.LogWarning("Digital signature issue(s): {Errors}", errors);
+            logger.LogWarning("Digital signature issue(s): {Errors}", errors);
 
             context.Response.StatusCode = StatusCodes.Status400BadRequest;
             return;

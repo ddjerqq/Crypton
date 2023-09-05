@@ -26,9 +26,9 @@ public sealed class AuthController : ApiController
         IAppDbContext dbContext,
         UserManager<User> userManager)
     {
-        this._rules = rules;
-        this._userManager = userManager;
-        this._dbContext = dbContext;
+        _rules = rules;
+        _userManager = userManager;
+        _dbContext = dbContext;
     }
 
     /// <summary>
@@ -41,8 +41,8 @@ public sealed class AuthController : ApiController
     [HttpPost("register")]
     public async Task<IActionResult> Register([FromBody, BindRequired] UserRegisterCommand command)
     {
-        await this.HandleCommandAsync(command);
-        return this.Ok();
+        await HandleCommandAsync(command);
+        return Ok();
     }
 
     /// <summary>
@@ -57,18 +57,18 @@ public sealed class AuthController : ApiController
     [ProducesResponseType<string>(StatusCodes.Status200OK)]
     public async Task<IActionResult> Login([FromBody, BindRequired] UserLoginCommand command)
     {
-        var result = await this.HandleCommandAsync<UserLoginCommand, SignInResult>(command);
+        var result = await HandleCommandAsync<UserLoginCommand, SignInResult>(command);
 
         if (result.Succeeded)
-            return this.Ok(JwtTokenManager.GenerateToken(this.User.Claims));
+            return Ok(JwtTokenManager.GenerateToken(User.Claims));
 
         if (result.RequiresTwoFactor)
             throw new NotImplementedException("2fa is not implemented yet");
 
         if (result.IsLockedOut)
-            return this.StatusCode(StatusCodes.Status429TooManyRequests);
+            return StatusCode(StatusCodes.Status429TooManyRequests);
 
-        return this.BadRequest();
+        return BadRequest();
     }
 
     /// <summary>
@@ -82,7 +82,7 @@ public sealed class AuthController : ApiController
     [ProducesResponseType<Rules>(StatusCodes.Status200OK)]
     public IActionResult Rules()
     {
-        return this.Ok((Rules)this._rules);
+        return Ok((Rules)_rules);
     }
 
     /// <summary>
@@ -94,14 +94,27 @@ public sealed class AuthController : ApiController
     [ProducesResponseType<UserDto>(StatusCodes.Status200OK)]
     public async Task<IActionResult> GetUser(CancellationToken ct)
     {
-        var userId = Guid.Parse(this._userManager.GetUserId(this.User)!);
+        var userId = Guid.Parse(_userManager.GetUserId(User)!);
 
-        var user = await this._dbContext.Set<User>()
+        var user = await _dbContext.Set<User>()
             .Include(x => x.Inventory)
             .ThenInclude(x => x.ItemType)
             .FirstOrDefaultAsync(x => x.Id == userId, ct);
 
-        return this.Ok((UserDto)user!);
+        return Ok((UserDto)user!);
+    }
+
+    /// <summary>
+    /// get currently authenticated user's information.
+    /// </summary>
+    /// <response code="200">Success and <see cref="Dictionary{String,String}">user claims</see></response>
+    [Authorize]
+    [HttpGet("user_claims")]
+    [ProducesResponseType<UserDto>(StatusCodes.Status200OK)]
+    public IActionResult GetUserClaims()
+    {
+        var claims = User.Claims.ToDictionary(x => x.Type, x => x.Value);
+        return Ok(claims);
     }
 
     /// <summary>
@@ -113,11 +126,11 @@ public sealed class AuthController : ApiController
     [ProducesResponseType<IEnumerable<UserDto>>(StatusCodes.Status200OK)]
     public async Task<IActionResult> AllUsers(CancellationToken ct)
     {
-        var users = await this._dbContext.Set<User>()
+        var users = await _dbContext.Set<User>()
             .Include(x => x.Inventory)
             .ThenInclude(x => x.ItemType)
             .ToListAsync(ct);
 
-        return this.Ok(users.Select(x => (UserDto)x));
+        return Ok(users.Select(x => (UserDto)x));
     }
 }

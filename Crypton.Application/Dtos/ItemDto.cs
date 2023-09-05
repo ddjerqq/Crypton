@@ -12,8 +12,6 @@ public sealed record ItemDto
 
     public string TypeName { get; init; } = string.Empty;
 
-    public decimal RawPrice { get; init; }
-
     public decimal Price { get; init; }
 
     public static implicit operator ItemDto(Item item)
@@ -24,7 +22,6 @@ public sealed record ItemDto
             Rarity = item.Rarity.Value,
             TypeId = item.ItemType.Id,
             TypeName = item.ItemType.Name,
-            RawPrice = item.ItemType.Price,
             Price = item.Price,
         };
     }

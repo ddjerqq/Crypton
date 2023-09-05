@@ -12,7 +12,7 @@ public sealed record ItemType(string Id, string Name, decimal Price, float MinRa
         {
             Id = Guid.NewGuid(),
             Rarity = Rarity.CreateForItemType(this),
-            ItemTypeId = this.Id,
+            ItemTypeId = Id,
             ItemType = this,
             OwnerId = owner.Id,
             Owner = owner,

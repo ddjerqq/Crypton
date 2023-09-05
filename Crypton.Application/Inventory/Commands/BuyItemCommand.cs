@@ -19,32 +19,32 @@ public sealed class BuyItemHandler : IRequestHandler<BuyItemCommand, ErrorOr<Ite
 
     public BuyItemHandler(IMediator mediator, IAppDbContext dbContext, ICurrentUserAccessor currentUserAccessor)
     {
-        this._mediator = mediator;
-        this._dbContext = dbContext;
-        this._currentUserAccessor = currentUserAccessor;
+        _mediator = mediator;
+        _dbContext = dbContext;
+        _currentUserAccessor = currentUserAccessor;
     }
 
     public async Task<ErrorOr<Item>> Handle(BuyItemCommand request, CancellationToken ct)
     {
-        var currentUser = await this._currentUserAccessor.GetCurrentUserAsync(ct);
+        var currentUser = await _currentUserAccessor.GetCurrentUserAsync(ct);
         if (currentUser is null)
             return Errors.User.Unauthenticated;
 
-        var itemType = await this._dbContext.Set<ItemType>()
+        var itemType = await _dbContext.Set<ItemType>()
             .FirstOrDefaultAsync(x => x.Id == request.ItemTypeId, ct);
         if (itemType is null)
             return Errors.Inventory.InvalidItem;
 
         // pay for the item
         var payCommand = new CreateTransactionCommand(currentUser, null, itemType!.Price);
-        var payResult = await this._mediator.Send(payCommand, ct);
+        var payResult = await _mediator.Send(payCommand, ct);
         if (payResult.IsError)
             return payResult.Errors!;
 
         // create the item and add it to the user's inventory
         var item = itemType.CreateItem(currentUser);
         var acquireItemCommand = new CreateTransactionCommand(null, currentUser, item);
-        var acquireItemCommandResult = await this._mediator.Send(acquireItemCommand, ct);
+        var acquireItemCommandResult = await _mediator.Send(acquireItemCommand, ct);
         if (acquireItemCommandResult.IsError)
             return acquireItemCommandResult.Errors!;
 

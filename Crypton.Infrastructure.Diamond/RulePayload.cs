@@ -12,12 +12,12 @@ public sealed class RulePayload
 {
     private RulePayload(string url, string appToken, string userId, string timestamp, string signature, ClaimsPrincipal user)
     {
-        this.Url = url;
-        this.AppToken = appToken;
-        this.UserId = userId;
-        this.Timestamp = timestamp;
-        this.Signature = signature;
-        this.User = user;
+        Url = url;
+        AppToken = appToken;
+        UserId = userId;
+        Timestamp = timestamp;
+        Signature = signature;
+        User = user;
     }
 
     public string Url { get; set; }
@@ -57,22 +57,22 @@ public sealed class RulePayloadValidator : AbstractValidator<RulePayload>
 {
     public RulePayloadValidator(IRules rules)
     {
-        this.RuleLevelCascadeMode = CascadeMode.Stop;
+        RuleLevelCascadeMode = CascadeMode.Stop;
 
-        this.RuleFor(x => x.Url)
+        RuleFor(x => x.Url)
             .NotEmpty();
 
-        this.RuleFor(x => x.AppToken)
+        RuleFor(x => x.AppToken)
             .NotEmpty()
             .Equal(rules.AppTokenDigest)
             .WithMessage("AppToken mismatch");
 
-        this.RuleFor(x => x.UserId)
+        RuleFor(x => x.UserId)
             .NotEmpty()
             .Must((payload, userId) => payload.User.Claims.FirstOrDefault(x => x.Type == ClaimTypes.NameIdentifier)?.Value == userId)
             .WithMessage("UserId mismatch");
 
-        this.RuleFor(x => x.Timestamp)
+        RuleFor(x => x.Timestamp)
             .NotEmpty()
             .Must(ts => DateTime.TryParse(ts, out _))
             .WithMessage("Timestamp is not a valid ISO8601 date")
@@ -81,7 +81,7 @@ public sealed class RulePayloadValidator : AbstractValidator<RulePayload>
             .Must(ts => DateTime.Parse(ts) < DateTime.Now.AddMinutes(5))
             .WithMessage("Timestamp is in the future");
 
-        this.RuleFor(x => x.Signature)
+        RuleFor(x => x.Signature)
             .NotEmpty()
             .Must((payload, sign) =>
             {

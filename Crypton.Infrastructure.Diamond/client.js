@@ -11,11 +11,11 @@ class Rules {
      * @param {string} hash_format the format of the hash
      */
     constructor(salt, app_token, checksum_indexes, checksum_start, hash_format) {
-        this.salt = salt;
-        this.app_token = app_token;
-        this.checksum_indexes = checksum_indexes;
-        this.checksum_start = checksum_start;
-        this.hash_format = hash_format;
+        salt = salt;
+        app_token = app_token;
+        checksum_indexes = checksum_indexes;
+        checksum_start = checksum_start;
+        hash_format = hash_format;
     }
 
     /**

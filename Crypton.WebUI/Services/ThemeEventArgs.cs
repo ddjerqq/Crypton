@@ -5,7 +5,7 @@ public sealed class ThemeEventArgs : EventArgs
 {
     public ThemeEventArgs(Theme theme)
     {
-        this.Theme = theme;
+        Theme = theme;
     }
 
     public Theme Theme { get; set; }

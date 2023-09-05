@@ -10,13 +10,13 @@ internal sealed record RateLimitCacheEntry(int Remaining, TimeSpan Per)
     {
         retryAfter = default;
 
-        if (this.Remaining > 0)
+        if (Remaining > 0)
         {
-            this.Remaining--;
+            Remaining--;
             return true;
         }
 
-        retryAfter = DateTime.UtcNow + this.Per;
+        retryAfter = DateTime.UtcNow + Per;
         return false;
     }
 }

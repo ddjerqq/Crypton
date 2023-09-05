@@ -8,15 +8,15 @@ public sealed record Wallet(decimal Balance = default) : ValueObjectBase
 
     public bool HasBalance(decimal amount)
     {
-        return this.Balance >= amount;
+        return Balance >= amount;
     }
 
     public void Transfer(Wallet other, decimal amount)
     {
-        if (!this.HasBalance(amount))
+        if (!HasBalance(amount))
             throw new InvalidOperationException("Insufficient funds.");
 
-        this.Balance -= amount;
+        Balance -= amount;
         other.Balance += amount;
     }
 }

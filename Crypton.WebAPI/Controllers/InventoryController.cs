@@ -20,7 +20,7 @@ public sealed class InventoryController : ApiController
 
     public InventoryController(IAppDbContext dbContext)
     {
-        this._dbContext = dbContext;
+        _dbContext = dbContext;
     }
 
     /// <summary>
@@ -29,8 +29,8 @@ public sealed class InventoryController : ApiController
     [HttpGet("types")]
     public async Task<IActionResult> SeeAllAvailableItemTypes(CancellationToken ct)
     {
-        var types = await this._dbContext.Set<ItemType>().ToListAsync(ct);
-        return this.Ok(types);
+        var types = await _dbContext.Set<ItemType>().ToListAsync(ct);
+        return Ok(types);
     }
 
     /// <summary>
@@ -43,8 +43,8 @@ public sealed class InventoryController : ApiController
         [FromBody, BindRequired] BuyItemCommand command,
         CancellationToken ct)
     {
-        var item = await this.HandleCommandAsync<BuyItemCommand, Item>(command, ct);
-        return this.Ok((ItemDto)item);
+        var item = await HandleCommandAsync<BuyItemCommand, Item>(command, ct);
+        return Ok((ItemDto)item);
     }
 
     /// <summary>
@@ -56,8 +56,8 @@ public sealed class InventoryController : ApiController
         [FromBody, BindRequired] SendItemTransactionCommand transactionCommand,
         CancellationToken ct)
     {
-        await this.HandleCommandAsync(transactionCommand, ct);
-        return this.Ok();
+        await HandleCommandAsync(transactionCommand, ct);
+        return Ok();
     }
 
     /// <summary>
@@ -68,7 +68,7 @@ public sealed class InventoryController : ApiController
     [HttpPost("sell")]
     public async Task<IActionResult> Sell([FromBody, BindRequired] SellItemCommand command)
     {
-        var soldFor = await this.HandleCommandAsync<SellItemCommand, decimal>(command);
-        return this.Ok(soldFor);
+        var soldFor = await HandleCommandAsync<SellItemCommand, decimal>(command);
+        return Ok(soldFor);
     }
 }

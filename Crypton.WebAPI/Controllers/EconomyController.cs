@@ -21,8 +21,8 @@ public sealed class EconomyController : ApiController
     public async Task<IActionResult> CollectDaily(CancellationToken ct)
     {
         var command = new CollectDailyCommand();
-        var collected = await this.HandleCommandAsync<CollectDailyCommand, decimal>(command, ct);
-        return this.Ok(collected);
+        var collected = await HandleCommandAsync<CollectDailyCommand, decimal>(command, ct);
+        return Ok(collected);
     }
 
     /// <summary>
@@ -35,7 +35,7 @@ public sealed class EconomyController : ApiController
         [FromBody, BindRequired] CreateBalanceTransactionCommand command,
         CancellationToken ct)
     {
-        await this.HandleCommandAsync(command, ct);
-        return this.Ok();
+        await HandleCommandAsync(command, ct);
+        return Ok();
     }
 }

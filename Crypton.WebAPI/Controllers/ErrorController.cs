@@ -6,5 +6,5 @@ public sealed class ErrorController : ControllerBase
 {
     [ApiExplorerSettings(IgnoreApi = true)]
     [Route("/error")]
-    public IActionResult Error() => this.Problem();
+    public IActionResult Error() => Problem();
 }

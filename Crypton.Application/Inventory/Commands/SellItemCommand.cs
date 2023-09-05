@@ -18,18 +18,18 @@ public sealed class SellItemHandler : IRequestHandler<SellItemCommand, ErrorOr<d
 
     public SellItemHandler(IMediator mediator, IAppDbContext dbContext, ICurrentUserAccessor currentUserAccessor)
     {
-        this._mediator = mediator;
-        this._dbContext = dbContext;
-        this._currentUserAccessor = currentUserAccessor;
+        _mediator = mediator;
+        _dbContext = dbContext;
+        _currentUserAccessor = currentUserAccessor;
     }
 
     public async Task<ErrorOr<decimal>> Handle(SellItemCommand request, CancellationToken ct)
     {
-        var sender = await this._currentUserAccessor.GetCurrentUserAsync(ct);
+        var sender = await _currentUserAccessor.GetCurrentUserAsync(ct);
         if (sender is null)
             return Errors.User.Unauthenticated;
 
-        var item = await this._dbContext.Set<Item>()
+        var item = await _dbContext.Set<Item>()
             .Include(x => x.ItemType)
             .FirstOrDefaultAsync(x => x.Id == request.ItemId, ct);
 
@@ -38,7 +38,7 @@ public sealed class SellItemHandler : IRequestHandler<SellItemCommand, ErrorOr<d
             return Errors.Inventory.InvalidItem;
 
         var command = new CreateTransactionCommand(sender, null, item);
-        var result = await this._mediator.Send(command, ct);
+        var result = await _mediator.Send(command, ct);
         if (result.IsError)
             return result.Errors!;
 
