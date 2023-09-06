@@ -12,7 +12,7 @@ public sealed record CreateItemTypeCommand(string Id, string Name, decimal Price
     public ItemType ToItemType() => new(Id, Name, Price, MinRarity, MaxRarity);
 }
 
-internal sealed class CreateItemTypeValidator : AbstractValidator<CreateItemTypeCommand>
+public sealed class CreateItemTypeValidator : AbstractValidator<CreateItemTypeCommand>
 {
     public CreateItemTypeValidator()
     {

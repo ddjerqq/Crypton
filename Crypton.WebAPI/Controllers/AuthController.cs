@@ -1,11 +1,15 @@
 using Crypton.Application.Auth.Commands;
 using Crypton.Application.Common.Interfaces;
 using Crypton.Application.Dto;
+using Crypton.Domain.Common.Errors;
 using Crypton.Domain.Entities;
+using Crypton.Domain.Events;
 using Crypton.Infrastructure.Diamond;
+using Crypton.Infrastructure.Errors;
 using Crypton.Infrastructure.Idempotency;
 using Crypton.Infrastructure.Services;
 using Crypton.WebAPI.Common.Abstractions;
+using ErrorOr;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -41,10 +45,26 @@ public sealed class AuthController : ApiController
     [AllowAnonymous]
     [RequireIdempotency]
     [HttpPost("register")]
-    public async Task<IActionResult> Register([FromBody, BindRequired] UserRegisterCommand command)
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType<IEnumerable<IdentityError>>(StatusCodes.Status400BadRequest)]
+    public async Task<IActionResult> Register([FromBody, BindRequired] UserRegisterCommand command, CancellationToken ct)
     {
-        await HandleCommandAsync(command);
-        return Ok();
+        var user = command.User;
+        var result = await _userManager.CreateAsync(user, command.Password);
+
+        if (result.Succeeded)
+        {
+            user.AddDomainEvent(new UserCreatedEvent(user.Id));
+            await _dbContext.SaveChangesAsync(ct);
+            return Ok();
+        }
+
+        var errors = result.Errors
+            .Select(x => Error.Failure(x.Code, x.Description))
+            .ToList();
+
+        var error = Errors.From(errors);
+        throw new CommandFailedException(error);
     }
 
     /// <summary>

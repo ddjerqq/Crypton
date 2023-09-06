@@ -8,7 +8,7 @@ namespace Crypton.Application.Auth.Commands;
 public sealed record UserLoginCommand(string Username, string Password, bool RememberMe)
     : IRequest<ErrorOr<SignInResult>>;
 
-internal sealed class UserLoginValidator : AbstractValidator<UserLoginCommand>
+public sealed class UserLoginValidator : AbstractValidator<UserLoginCommand>
 {
     public UserLoginValidator()
     {

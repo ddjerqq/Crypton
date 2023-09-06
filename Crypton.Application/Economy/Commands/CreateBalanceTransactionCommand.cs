@@ -10,7 +10,7 @@ namespace Crypton.Application.Economy.Commands;
 
 public sealed record CreateBalanceTransactionCommand(Guid ReceiverId, decimal Amount) : IRequest<IErrorOr>;
 
-internal sealed class CreateBalanceTransactionValidator : AbstractValidator<CreateBalanceTransactionCommand>
+public sealed class CreateBalanceTransactionValidator : AbstractValidator<CreateBalanceTransactionCommand>
 {
     public CreateBalanceTransactionValidator()
     {

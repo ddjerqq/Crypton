@@ -1,13 +1,8 @@
 ﻿using System.Text.Json.Serialization;
-using Crypton.Application.Common.Interfaces;
-using Crypton.Domain.Common.Errors;
-using Crypton.Domain.Common.Extensions;
 using Crypton.Domain.Entities;
-using Crypton.Domain.Events;
 using ErrorOr;
 using FluentValidation;
 using MediatR;
-using Microsoft.AspNetCore.Identity;
 
 namespace Crypton.Application.Auth.Commands;
 
@@ -22,7 +17,7 @@ public sealed record UserRegisterCommand(string Username, string Email, string P
     };
 }
 
-internal sealed class UserRegisterValidator : AbstractValidator<UserRegisterCommand>
+public sealed class UserRegisterValidator : AbstractValidator<UserRegisterCommand>
 {
     public UserRegisterValidator()
     {
@@ -44,36 +39,5 @@ internal sealed class UserRegisterValidator : AbstractValidator<UserRegisterComm
             .Matches(@"^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^\da-zA-Z]).{8,}$")
             .WithMessage(
                 "Password must be at least 8 characters long and contain at least one uppercase letter, one lowercase letter, one number and one special character.");
-    }
-}
-
-internal sealed class UserRegisterHandler : IRequestHandler<UserRegisterCommand, IErrorOr>
-{
-    private readonly IAppDbContext _dbContext;
-    private readonly UserManager<User> _userManager;
-
-    public UserRegisterHandler(UserManager<User> userManager, IAppDbContext dbContext)
-    {
-        _userManager = userManager;
-        _dbContext = dbContext;
-    }
-
-    public async Task<IErrorOr> Handle(UserRegisterCommand request, CancellationToken ct)
-    {
-        var user = request.User;
-        var res = await _userManager.CreateAsync(user, request.Password);
-
-        if (res.Succeeded)
-        {
-            user.AddDomainEvent(new UserCreatedEvent(user.Id));
-            await _dbContext.SaveChangesAsync(ct);
-            return Errors.Success;
-        }
-
-        var errors = res.Errors
-            .Select(x => Error.Failure(x.Code.ToSnakeCase(), x.Description))
-            .ToList();
-
-        return Errors.From(errors);
     }
 }
