@@ -1,10 +1,8 @@
-﻿using Crypton.Application.Caching;
-using Crypton.Application.Common.Interfaces;
+﻿using Crypton.Application.Common.Interfaces;
 using Crypton.Domain.ValueObjects;
 using ErrorOr;
 using FluentValidation;
 using MediatR;
-using Microsoft.AspNetCore.OutputCaching;
 
 namespace Crypton.Application.Inventory.Commands;
 
@@ -44,12 +42,10 @@ public sealed class CreateItemTypeValidator : AbstractValidator<CreateItemTypeCo
 public sealed class CreateItemTypeCommandHandler : IRequestHandler<CreateItemTypeCommand, ErrorOr<ItemType>>
 {
     private readonly IAppDbContext _dbContext;
-    private readonly IOutputCacheStore _outputCacheStore;
 
-    public CreateItemTypeCommandHandler(IAppDbContext dbContext, IOutputCacheStore outputCacheStore)
+    public CreateItemTypeCommandHandler(IAppDbContext dbContext)
     {
         _dbContext = dbContext;
-        _outputCacheStore = outputCacheStore;
     }
 
     public async Task<ErrorOr<ItemType>> Handle(CreateItemTypeCommand request, CancellationToken ct)
@@ -58,8 +54,6 @@ public sealed class CreateItemTypeCommandHandler : IRequestHandler<CreateItemTyp
 
         await _dbContext.Set<ItemType>().AddAsync(itemType, ct);
         await _dbContext.SaveChangesAsync(ct);
-
-        await _outputCacheStore.EvictByTagAsync(CacheConstants.AllItemTypesPolicyName, ct);
 
         return itemType;
     }

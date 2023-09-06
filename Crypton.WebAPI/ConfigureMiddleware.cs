@@ -64,7 +64,6 @@ public static class ConfigureMiddleware
 
         // for front-end
         app.MapControllers();
-        app.UseOutputCache();
         app.MapFallbackToFile("index.html");
 
         return app;

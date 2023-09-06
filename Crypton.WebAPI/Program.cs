@@ -1,12 +1,10 @@
 using Crypton.Application;
-using Crypton.Application.Caching;
 using Crypton.Infrastructure;
 using Crypton.Infrastructure.Diamond;
 using Crypton.Infrastructure.Identity;
 using Crypton.Infrastructure.Persistence;
 using Crypton.WebAPI;
 using dotenv.net;
-using Microsoft.AspNetCore.OutputCaching;
 
 DotEnv.Fluent()
     .WithEnvFiles("./../.env")

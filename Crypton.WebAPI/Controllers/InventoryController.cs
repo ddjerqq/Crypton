@@ -1,5 +1,4 @@
-﻿using Crypton.Application.Caching;
-using Crypton.Application.Common.Interfaces;
+﻿using Crypton.Application.Common.Interfaces;
 using Crypton.Application.Dtos;
 using Crypton.Application.Inventory.Commands;
 using Crypton.Domain.Entities;
@@ -9,7 +8,6 @@ using Crypton.WebAPI.Common.Abstractions;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
-using Microsoft.AspNetCore.OutputCaching;
 using Microsoft.EntityFrameworkCore;
 
 namespace Crypton.WebAPI.Controllers;
@@ -29,7 +27,6 @@ public sealed class InventoryController : ApiController
     /// </summary>
     [AllowAnonymous]
     [HttpGet("types")]
-    [OutputCache(PolicyName = CacheConstants.AllItemTypesPolicyName)]
     [ProducesResponseType<ItemType>(StatusCodes.Status200OK)]
     public async Task<IActionResult> SeeAllAvailableItemTypes(CancellationToken ct)
     {
