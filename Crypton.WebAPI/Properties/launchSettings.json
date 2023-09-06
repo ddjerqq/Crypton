@@ -3,7 +3,6 @@
     "https": {
       "commandName": "Project",
       "dotnetRunMessages": true,
-      "launchBrowser": false,
       "launchUrl": "swagger",
       "applicationUrl": "https://*:443;http://*:80",
       "environmentVariables": {

@@ -53,11 +53,13 @@ public static class ConfigureMiddleware
         // TODO: re-enable for production
         // app.UseDigitalSignature();
 
+        // before authorization
+        app.UseCors();
+
         app.UseAuthorization();
 
         // TODO: re-enable for production
         // app.UseIdempotency();
-        app.UseCors();
 
         app.MapHealthChecks("/health");
 

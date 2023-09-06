@@ -1,6 +1,7 @@
 ﻿using System.Net.Http.Json;
 using System.Security.Claims;
 using Microsoft.AspNetCore.Components.Authorization;
+using Microsoft.AspNetCore.Components.WebAssembly.Http;
 
 namespace Crypton.WebUI.Services;
 
@@ -19,7 +20,7 @@ public sealed class CookieAuthenticationStateProvider : AuthenticationStateProvi
         return new AuthenticationState(claimsPrincipal);
     }
 
-    public async Task LoginAsync(/* UserLoginCommand command */ CancellationToken ct = default)
+    public async Task LoginAsync( /* UserLoginCommand command */ CancellationToken ct = default)
     {
         var payload = new
         {
@@ -36,7 +37,10 @@ public sealed class CookieAuthenticationStateProvider : AuthenticationStateProvi
 
     public async Task<ClaimsPrincipal> GetUserStateAsync(CancellationToken ct = default)
     {
-        var resp = await _http.GetAsync("api/v1/auth/user_claims", ct);
+        var request = new HttpRequestMessage(HttpMethod.Get, "api/v1/auth/user_claims");
+        request.SetBrowserRequestCredentials(BrowserRequestCredentials.Include);
+
+        var resp = await _http.SendAsync(request, ct);
         if (!resp.IsSuccessStatusCode)
             return new ClaimsPrincipal(new ClaimsIdentity());
 

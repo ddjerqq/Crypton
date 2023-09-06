@@ -123,7 +123,17 @@ public static class ConfigureServices
             });
         }
 
-        services.AddCors();
+        services.AddCors(options =>
+        {
+            options.AddDefaultPolicy(policy =>
+            {
+                policy.WithOrigins("http://localhost:5000", "https://localhost:5001");
+                policy.AllowAnyHeader();
+                policy.AllowAnyMethod();
+                policy.AllowCredentials();
+            });
+        });
+
         services.AddResponseCaching();
         services.AddResponseCompression(o =>
         {
