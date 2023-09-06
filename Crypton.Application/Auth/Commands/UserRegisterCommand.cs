@@ -22,7 +22,7 @@ public sealed record UserRegisterCommand(string Username, string Email, string P
     };
 }
 
-public sealed class UserRegisterValidator : AbstractValidator<UserRegisterCommand>
+internal sealed class UserRegisterValidator : AbstractValidator<UserRegisterCommand>
 {
     public UserRegisterValidator()
     {
@@ -47,7 +47,7 @@ public sealed class UserRegisterValidator : AbstractValidator<UserRegisterComman
     }
 }
 
-public sealed class UserRegisterHandler : IRequestHandler<UserRegisterCommand, IErrorOr>
+internal sealed class UserRegisterHandler : IRequestHandler<UserRegisterCommand, IErrorOr>
 {
     private readonly IAppDbContext _dbContext;
     private readonly UserManager<User> _userManager;

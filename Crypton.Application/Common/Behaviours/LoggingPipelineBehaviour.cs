@@ -2,10 +2,11 @@
 using Crypton.Application.Common.Interfaces;
 using ErrorOr;
 using MediatR;
+using Microsoft.Extensions.Logging;
 
 namespace Crypton.Application.Common.Behaviours;
 
-public sealed class LoggingPipelineBehaviour<TRequest, TResponse>
+internal sealed class LoggingPipelineBehaviour<TRequest, TResponse>
     : IPipelineBehavior<TRequest, TResponse>
     where TRequest : IRequest<TResponse>
     where TResponse : IErrorOr

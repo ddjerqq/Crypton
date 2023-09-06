@@ -3,7 +3,7 @@ using Newtonsoft.Json;
 
 namespace Crypton.Application.Common;
 
-public sealed class OutboxMessage
+internal sealed class OutboxMessage
 {
     private static readonly JsonSerializerSettings JsonSerializerSettings = new()
     {

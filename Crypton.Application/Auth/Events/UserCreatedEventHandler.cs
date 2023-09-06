@@ -3,7 +3,7 @@ using MediatR;
 
 namespace Crypton.Application.Auth.Events;
 
-public sealed class UserCreatedEventHandler : INotificationHandler<UserCreatedEvent>
+internal sealed class UserCreatedEventHandler : INotificationHandler<UserCreatedEvent>
 {
     public Task Handle(UserCreatedEvent notification, CancellationToken ct)
     {

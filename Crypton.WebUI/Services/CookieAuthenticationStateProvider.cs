@@ -19,7 +19,7 @@ public sealed class CookieAuthenticationStateProvider : AuthenticationStateProvi
         return new AuthenticationState(claimsPrincipal);
     }
 
-    public async Task LoginAsync( /* UserLoginCommand command */ CancellationToken ct = default)
+    public async Task LoginAsync(/* UserLoginCommand command */ CancellationToken ct = default)
     {
         var payload = new
         {

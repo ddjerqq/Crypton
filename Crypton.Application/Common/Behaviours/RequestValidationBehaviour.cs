@@ -8,7 +8,7 @@ using ValidationException = FluentValidation.ValidationException;
 
 namespace Crypton.Application.Common.Behaviours;
 
-public sealed class RequestValidationBehaviour<TRequest, TResponse>
+internal sealed class RequestValidationBehaviour<TRequest, TResponse>
     : IPipelineBehavior<TRequest, TResponse>
     where TRequest : IRequest<TResponse>
     where TResponse : IErrorOr

@@ -1,10 +1,11 @@
 ﻿using Crypton.Domain.Common.Errors;
 using ErrorOr;
 using MediatR;
+using Microsoft.Extensions.Logging;
 
 namespace Crypton.Application.Common.Behaviours;
 
-public sealed class ErrorHandlingBehaviour<TRequest, TResponse>
+internal sealed class ErrorHandlingBehaviour<TRequest, TResponse>
     : IPipelineBehavior<TRequest, TResponse>
     where TRequest : IRequest<TResponse>
     where TResponse : IErrorOr

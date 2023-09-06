@@ -10,7 +10,7 @@ namespace Crypton.Application.Inventory.Commands;
 
 public sealed record SellItemCommand(Guid ItemId) : IRequest<ErrorOr<decimal>>;
 
-public sealed class SellItemHandler : IRequestHandler<SellItemCommand, ErrorOr<decimal>>
+internal sealed class SellItemHandler : IRequestHandler<SellItemCommand, ErrorOr<decimal>>
 {
     private readonly IMediator _mediator;
     private readonly IAppDbContext _dbContext;

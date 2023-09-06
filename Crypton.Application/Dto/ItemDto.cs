@@ -1,6 +1,6 @@
 ﻿using Crypton.Domain.Entities;
 
-namespace Crypton.Application.Dtos;
+namespace Crypton.Application.Dto;
 
 public sealed record ItemDto
 {

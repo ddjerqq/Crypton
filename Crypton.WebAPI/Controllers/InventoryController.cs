@@ -1,5 +1,5 @@
 ﻿using Crypton.Application.Common.Interfaces;
-using Crypton.Application.Dtos;
+using Crypton.Application.Dto;
 using Crypton.Application.Inventory.Commands;
 using Crypton.Domain.Entities;
 using Crypton.Domain.ValueObjects;

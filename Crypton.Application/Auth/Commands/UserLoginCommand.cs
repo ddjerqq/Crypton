@@ -9,7 +9,7 @@ namespace Crypton.Application.Auth.Commands;
 public sealed record UserLoginCommand(string Username, string Password, bool RememberMe)
     : IRequest<ErrorOr<SignInResult>>;
 
-public sealed class UserLoginValidator : AbstractValidator<UserLoginCommand>
+internal sealed class UserLoginValidator : AbstractValidator<UserLoginCommand>
 {
     public UserLoginValidator()
     {
@@ -23,25 +23,5 @@ public sealed class UserLoginValidator : AbstractValidator<UserLoginCommand>
         RuleFor(x => x.Password)
             .Length(5, 32)
             .NotEmpty();
-    }
-}
-
-public sealed class UserLoginHandler : IRequestHandler<UserLoginCommand, ErrorOr<SignInResult>>
-{
-    private readonly SignInManager<User> _signInManager;
-
-    public UserLoginHandler(SignInManager<User> signInManager)
-    {
-        _signInManager = signInManager;
-    }
-
-    public async Task<ErrorOr<SignInResult>> Handle(UserLoginCommand command, CancellationToken ct)
-    {
-        return await _signInManager
-            .PasswordSignInAsync(
-                command.Username,
-                command.Password,
-                command.RememberMe,
-                true);
     }
 }

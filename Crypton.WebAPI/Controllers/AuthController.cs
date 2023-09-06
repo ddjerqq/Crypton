@@ -1,6 +1,6 @@
 using Crypton.Application.Auth.Commands;
 using Crypton.Application.Common.Interfaces;
-using Crypton.Application.Dtos;
+using Crypton.Application.Dto;
 using Crypton.Domain.Entities;
 using Crypton.Infrastructure.Diamond;
 using Crypton.Infrastructure.Idempotency;
@@ -11,7 +11,6 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.EntityFrameworkCore;
-using SignInResult = Microsoft.AspNetCore.Identity.SignInResult;
 
 namespace Crypton.WebAPI.Controllers;
 
@@ -20,15 +19,18 @@ public sealed class AuthController : ApiController
     private readonly IRules _rules;
     private readonly IAppDbContext _dbContext;
     private readonly UserManager<User> _userManager;
+    private readonly SignInManager<User> _signInManager;
 
     public AuthController(
         IRules rules,
         IAppDbContext dbContext,
-        UserManager<User> userManager)
+        UserManager<User> userManager,
+        SignInManager<User> signInManager)
     {
         _rules = rules;
-        _userManager = userManager;
         _dbContext = dbContext;
+        _userManager = userManager;
+        _signInManager = signInManager;
     }
 
     /// <summary>
@@ -57,7 +59,12 @@ public sealed class AuthController : ApiController
     [ProducesResponseType<string>(StatusCodes.Status200OK)]
     public async Task<IActionResult> Login([FromBody, BindRequired] UserLoginCommand command)
     {
-        var result = await HandleCommandAsync<UserLoginCommand, SignInResult>(command);
+        var result = await _signInManager
+            .PasswordSignInAsync(
+                command.Username,
+                command.Password,
+                command.RememberMe,
+                true);
 
         if (result.Succeeded)
             return Ok(JwtTokenManager.GenerateToken(User.Claims));

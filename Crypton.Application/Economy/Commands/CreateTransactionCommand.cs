@@ -23,6 +23,7 @@ public enum TransactionType
     ItemTransaction,
 }
 
+// TODO: come back here and handle all the different transaction related commands
 internal sealed record CreateTransactionCommand : IRequest<IErrorOr>
 {
     public CreateTransactionCommand(User? sender, User? receiver, decimal amount)

@@ -3,7 +3,7 @@ using MediatR;
 
 namespace Crypton.Application.Inventory.Events;
 
-public sealed class ItemReceivedEventHandler : INotificationHandler<ItemReceivedEvent>
+internal sealed class ItemReceivedEventHandler : INotificationHandler<ItemReceivedEvent>
 {
     public async Task Handle(ItemReceivedEvent notification, CancellationToken cancellationToken)
     {

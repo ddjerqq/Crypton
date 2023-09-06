@@ -2,12 +2,13 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.Extensions.Logging;
 
 namespace Crypton.Application.Common.Extensions;
 
-public static class DbSetExtensions
+internal static class DbSetExtensions
 {
-    public static EntityEntry<TEntity>? TryUpdateIfNotNull<TEntity>(this DbSet<TEntity> dbSet, TEntity? entity)
+    internal static EntityEntry<TEntity>? TryUpdateIfNotNull<TEntity>(this DbSet<TEntity> dbSet, TEntity? entity)
         where TEntity : class
     {
         try

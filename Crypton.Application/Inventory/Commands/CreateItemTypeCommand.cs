@@ -12,7 +12,7 @@ public sealed record CreateItemTypeCommand(string Id, string Name, decimal Price
     public ItemType ToItemType() => new(Id, Name, Price, MinRarity, MaxRarity);
 }
 
-public sealed class CreateItemTypeValidator : AbstractValidator<CreateItemTypeCommand>
+internal sealed class CreateItemTypeValidator : AbstractValidator<CreateItemTypeCommand>
 {
     public CreateItemTypeValidator()
     {
@@ -39,7 +39,7 @@ public sealed class CreateItemTypeValidator : AbstractValidator<CreateItemTypeCo
     }
 }
 
-public sealed class CreateItemTypeCommandHandler : IRequestHandler<CreateItemTypeCommand, ErrorOr<ItemType>>
+internal sealed class CreateItemTypeCommandHandler : IRequestHandler<CreateItemTypeCommand, ErrorOr<ItemType>>
 {
     private readonly IAppDbContext _dbContext;
 

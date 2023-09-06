@@ -11,7 +11,7 @@ namespace Crypton.Application.Inventory.Commands;
 
 public sealed record BuyItemCommand(string ItemTypeId) : IRequest<ErrorOr<Item>>;
 
-public sealed class BuyItemHandler : IRequestHandler<BuyItemCommand, ErrorOr<Item>>
+internal sealed class BuyItemHandler : IRequestHandler<BuyItemCommand, ErrorOr<Item>>
 {
     private readonly IMediator _mediator;
     private readonly IAppDbContext _dbContext;

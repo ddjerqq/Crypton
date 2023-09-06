@@ -35,11 +35,11 @@
     </ItemGroup>
 
     <ItemGroup>
+      <ProjectReference Include="..\Crypton.Application\Crypton.Application.csproj" />
       <ProjectReference Include="..\Crypton.Domain\Crypton.Domain.csproj" />
     </ItemGroup>
 
     <ItemGroup>
-      <_ContentIncludedByDefault Remove="wwwroot\sample-data\weather.json" />
       <_ContentIncludedByDefault Remove="wwwroot\css\bootstrap-icons\bootstrap-icons.css" />
       <_ContentIncludedByDefault Remove="wwwroot\css\bootstrap-icons\bootstrap-icons.json" />
       <_ContentIncludedByDefault Remove="wwwroot\css\bootstrap-icons\bootstrap-icons.min.css" />

@@ -3,6 +3,7 @@ using Crypton.Application.Common.Behaviours;
 using Crypton.Domain;
 using FluentValidation;
 using MediatR;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace Crypton.Application;
 

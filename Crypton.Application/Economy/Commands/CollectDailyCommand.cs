@@ -8,7 +8,7 @@ namespace Crypton.Application.Economy.Commands;
 
 public sealed record CollectDailyCommand : IRequest<ErrorOr<decimal>>;
 
-public sealed class CollectDailyHandler : IRequestHandler<CollectDailyCommand, ErrorOr<decimal>>
+internal sealed class CollectDailyHandler : IRequestHandler<CollectDailyCommand, ErrorOr<decimal>>
 {
     private readonly IMediator _mediator;
     private readonly IAppDbContext _dbContext;

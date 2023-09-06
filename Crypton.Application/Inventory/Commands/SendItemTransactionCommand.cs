@@ -10,7 +10,7 @@ namespace Crypton.Application.Inventory.Commands;
 
 public sealed record SendItemTransactionCommand(Guid ItemId, Guid ReceiverId) : IRequest<IErrorOr>;
 
-public sealed class SendItemTransactionHandler : IRequestHandler<SendItemTransactionCommand, IErrorOr>
+internal sealed class SendItemTransactionHandler : IRequestHandler<SendItemTransactionCommand, IErrorOr>
 {
     private readonly IMediator _mediator;
     private readonly IAppDbContext _dbContext;
