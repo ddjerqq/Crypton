@@ -1,15 +1,18 @@
 ﻿using System.Globalization;
 using System.Net;
 using System.Threading.RateLimiting;
+using Crypton.Application.Caching;
 using Crypton.Application.Common.Interfaces;
 using Crypton.Infrastructure.BackgroundJobs;
 using Crypton.Infrastructure.Idempotency;
+using Crypton.Infrastructure.Policies;
 using Crypton.Infrastructure.RateLimiting;
 using Crypton.Infrastructure.Services;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Net.Http.Headers;
 using Quartz;
 
 namespace Crypton.Infrastructure;
@@ -23,6 +26,21 @@ public static class ConfigureServices
         services.AddIdempotency();
 
         services.AddMemoryCache();
+        services.AddOutputCache(options =>
+        {
+            options.DefaultExpirationTimeSpan = TimeSpan.FromMinutes(5);
+
+            options.AddBasePolicy(IgnoreAuthCachePolicy.Instance);
+
+            options.AddPolicy(CacheConstants.AllItemTypesPolicyName, policy =>
+            {
+                policy
+                    .AddPolicy<IgnoreAuthCachePolicy>()
+                    .SetVaryByHeader(HeaderNames.Authorization)
+                    .Expire(TimeSpan.FromHours(1))
+                    .Tag(CacheConstants.AllItemTypesPolicyName);
+            });
+        });
 
         return services;
     }

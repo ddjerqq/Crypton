@@ -36,14 +36,13 @@ public static class ConfigureMiddleware
             app.UseHsts();
         }
 
+        app.UseHttpsRedirection();
+
         app.UseResponseCaching();
         app.UseResponseCompression();
 
-        app.UseHttpsRedirection();
-
         // for front-end
         app.UseBlazorFrameworkFiles();
-
         app.UseStaticFiles();
 
         app.UseAuthentication();
@@ -64,7 +63,8 @@ public static class ConfigureMiddleware
         app.MapHealthChecks("/health");
 
         // for front-end
-        app.UseEndpoints(x => { x.MapControllers(); });
+        app.MapControllers();
+        app.UseOutputCache();
         app.MapFallbackToFile("index.html");
 
         return app;

@@ -8,18 +8,18 @@ namespace Crypton.Infrastructure.Services;
 
 public sealed class CurrentUserAccessor : ICurrentUserAccessor
 {
-    private readonly IHttpContextAccessor httpContextAccessor;
-    private readonly UserManager<User> userManager;
+    private readonly IHttpContextAccessor _httpContextAccessor;
+    private readonly UserManager<User> _userManager;
 
     public CurrentUserAccessor(IHttpContextAccessor httpContextAccessor, UserManager<User> userManager)
     {
-        httpContextAccessor = httpContextAccessor;
-        userManager = userManager;
+        _httpContextAccessor = httpContextAccessor;
+        _userManager = userManager;
     }
 
     public Guid? GetCurrentUserId()
     {
-        var claimsPrincipal = httpContextAccessor.HttpContext?.User;
+        var claimsPrincipal = _httpContextAccessor.HttpContext?.User;
         var stringId = claimsPrincipal?
             .Claims
             .FirstOrDefault(x => x.Type == ClaimTypes.NameIdentifier)?
@@ -30,9 +30,9 @@ public sealed class CurrentUserAccessor : ICurrentUserAccessor
 
     public async Task<User?> GetCurrentUserAsync(CancellationToken ct = default)
     {
-        var claimsPrincipal = httpContextAccessor.HttpContext?.User;
+        var claimsPrincipal = _httpContextAccessor.HttpContext?.User;
         if (claimsPrincipal is null) return null;
 
-        return await userManager.GetUserAsync(claimsPrincipal);
+        return await _userManager.GetUserAsync(claimsPrincipal);
     }
 }

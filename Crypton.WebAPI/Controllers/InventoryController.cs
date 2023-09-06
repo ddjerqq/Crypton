@@ -1,6 +1,6 @@
-﻿using Crypton.Application.Common.Interfaces;
+﻿using Crypton.Application.Caching;
+using Crypton.Application.Common.Interfaces;
 using Crypton.Application.Dtos;
-using Crypton.Application.Economy.Commands;
 using Crypton.Application.Inventory.Commands;
 using Crypton.Domain.Entities;
 using Crypton.Domain.ValueObjects;
@@ -9,6 +9,7 @@ using Crypton.WebAPI.Common.Abstractions;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
+using Microsoft.AspNetCore.OutputCaching;
 using Microsoft.EntityFrameworkCore;
 
 namespace Crypton.WebAPI.Controllers;
@@ -26,8 +27,24 @@ public sealed class InventoryController : ApiController
     /// <summary>
     /// See all available item types
     /// </summary>
+    [AllowAnonymous]
     [HttpGet("types")]
+    [OutputCache(PolicyName = CacheConstants.AllItemTypesPolicyName)]
+    [ProducesResponseType<ItemType>(StatusCodes.Status200OK)]
     public async Task<IActionResult> SeeAllAvailableItemTypes(CancellationToken ct)
+    {
+        var types = await _dbContext.Set<ItemType>().ToListAsync(ct);
+        return Ok(types);
+    }
+
+    /// <summary>
+    /// Create an item type
+    /// </summary>
+    [HttpPost("types/create")]
+    [ProducesResponseType<ItemType>(StatusCodes.Status200OK)]
+    public async Task<IActionResult> CreateItemType(
+        [FromBody, BindRequired] CreateItemTypeCommand command,
+        CancellationToken ct)
     {
         var types = await _dbContext.Set<ItemType>().ToListAsync(ct);
         return Ok(types);
@@ -53,10 +70,10 @@ public sealed class InventoryController : ApiController
     [RequireIdempotency]
     [HttpPost("send")]
     public async Task<IActionResult> SendToUser(
-        [FromBody, BindRequired] SendItemTransactionCommand transactionCommand,
+        [FromBody, BindRequired] SendItemTransactionCommand command,
         CancellationToken ct)
     {
-        await HandleCommandAsync(transactionCommand, ct);
+        await HandleCommandAsync(command, ct);
         return Ok();
     }
 

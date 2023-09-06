@@ -32,6 +32,7 @@ public static class ConfigureServices
             .AddControllers(o =>
             {
                 o.Filters.Add<FluentValidationFilter>();
+                o.Filters.Add<ResponseTimeFilter>();
                 o.Filters.Add<ErrorHandlingFilterAttribute>();
                 o.RespectBrowserAcceptHeader = true;
             })
