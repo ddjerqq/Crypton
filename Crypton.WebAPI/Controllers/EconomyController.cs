@@ -30,7 +30,7 @@ public sealed class EconomyController : ApiController
     [Cooldown(1, 5)]
     [HttpPost("create_balance")]
     public async Task<IActionResult> CreateBalanceTransaction(
-        [FromBody, BindRequired] CreateBalanceTransactionCommand command,
+        [FromBody, BindRequired] SendBalanceCommand command,
         CancellationToken ct)
     {
         await HandleCommandAsync(command, ct);

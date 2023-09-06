@@ -11,7 +11,6 @@ internal sealed class LoggingPipelineBehaviour<TRequest, TResponse>
     where TRequest : IRequest<TResponse>
     where TResponse : IErrorOr
 {
-    private readonly Stopwatch _stopwatch = new();
     private readonly ICurrentUserAccessor _currentUserAccessor;
     private readonly ILogger<LoggingPipelineBehaviour<TRequest, TResponse>> _logger;
 
@@ -34,12 +33,11 @@ internal sealed class LoggingPipelineBehaviour<TRequest, TResponse>
             typeof(TRequest).Name,
             request);
 
-        _stopwatch.Start();
+        var stopwatch = Stopwatch.StartNew();
         var result = await next();
-        _stopwatch.Stop();
+        stopwatch.Stop();
 
-        var end = _stopwatch.ElapsedMilliseconds;
-        _stopwatch.Reset();
+        var end = stopwatch.ElapsedMilliseconds;
 
         _logger.LogInformation(
             "{@UserId} {@UserName} finished request {@RequestName} {@Request} in {@Duration}ms",

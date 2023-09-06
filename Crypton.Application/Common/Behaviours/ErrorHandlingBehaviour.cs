@@ -26,7 +26,20 @@ internal sealed class ErrorHandlingBehaviour<TRequest, TResponse>
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error handling request {@Request}", request);
-            return (dynamic)Errors.From(Error.Unexpected("unhandled_exception", ex.Message));
+
+            // TODO: somehow limit how much info we provide about the errors if we are not in development
+
+            // if TResponse is IErrorOr
+            //   then use Errors.Unexpected("unhandled_exception", ex.Message)
+            if (typeof(TResponse) == typeof(IErrorOr))
+                return (dynamic)Errors.From(Error.Unexpected("unhandled_exception", ex.Message));
+
+            // if TResponse is ErrorOr<T>
+            //   then use Error.Unexpected("unhandled_exception", ex.Message)
+            if (typeof(TResponse).IsGenericType && typeof(TResponse).GetGenericTypeDefinition() == typeof(ErrorOr<>))
+                return (dynamic)Error.Unexpected("unhandled_exception", ex.Message);
+
+            throw;
         }
     }
 }

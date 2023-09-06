@@ -1,3 +1,4 @@
+using System.Security.Claims;
 using Crypton.Application.Auth.Commands;
 using Crypton.Application.Common.Interfaces;
 using Crypton.Application.Dto;
@@ -78,7 +79,6 @@ public sealed class AuthController : ApiController
     [AllowAnonymous]
     [RequireIdempotency]
     [HttpPost("login")]
-    [Cooldown(1, 3)]
     [ProducesResponseType<string>(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status403Forbidden)]
     public async Task<IActionResult> Login([FromBody, BindRequired] UserLoginCommand command)
@@ -110,7 +110,6 @@ public sealed class AuthController : ApiController
     /// Sign out
     /// </summary>
     [HttpPost("logout")]
-    [Cooldown(1, 3)]
     [ProducesResponseType(StatusCodes.Status200OK)]
     public async Task<IActionResult> Logout()
     {
@@ -157,7 +156,7 @@ public sealed class AuthController : ApiController
     /// <response code="200">Success and <see cref="Dictionary{String,String}">user claims</see></response>
     [Authorize]
     [HttpGet("user_claims")]
-    [ProducesResponseType<UserDto>(StatusCodes.Status200OK)]
+    [ProducesResponseType<Dictionary<string, string>>(StatusCodes.Status200OK)]
     public IActionResult GetUserClaims()
     {
         var claims = User.Claims.ToDictionary(x => x.Type, x => x.Value);

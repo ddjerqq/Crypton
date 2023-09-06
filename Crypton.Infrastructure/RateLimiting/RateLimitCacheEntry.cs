@@ -1,6 +1,4 @@
-﻿using System.Diagnostics.CodeAnalysis;
-
-namespace Crypton.Infrastructure.RateLimiting;
+﻿namespace Crypton.Infrastructure.RateLimiting;
 
 internal sealed record RateLimitCacheEntry(int Remaining, TimeSpan Per)
 {

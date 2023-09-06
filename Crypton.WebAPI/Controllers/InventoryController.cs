@@ -4,6 +4,7 @@ using Crypton.Application.Inventory.Commands;
 using Crypton.Domain.Entities;
 using Crypton.Domain.ValueObjects;
 using Crypton.Infrastructure.Idempotency;
+using Crypton.Infrastructure.RateLimiting;
 using Crypton.WebAPI.Common.Abstractions;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -52,6 +53,7 @@ public sealed class InventoryController : ApiController
     /// </summary>
     [RequireIdempotency]
     [HttpPost("buy")]
+    [Cooldown(10, 60)]
     [ProducesResponseType<ItemDto>(StatusCodes.Status200OK)]
     public async Task<IActionResult> Buy(
         [FromBody, BindRequired] BuyItemCommand command,
@@ -67,7 +69,7 @@ public sealed class InventoryController : ApiController
     [RequireIdempotency]
     [HttpPost("send")]
     public async Task<IActionResult> SendToUser(
-        [FromBody, BindRequired] SendItemTransactionCommand command,
+        [FromBody, BindRequired] SendItemCommand command,
         CancellationToken ct)
     {
         await HandleCommandAsync(command, ct);
