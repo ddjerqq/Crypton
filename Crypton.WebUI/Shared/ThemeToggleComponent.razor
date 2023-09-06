@@ -12,10 +12,10 @@
 
 @code {
 
-    private Theme Theme { get; set; }
+    private string Theme { get; set; } = string.Empty;
 
-    private string ButtonClass => Theme == Theme.Light ? "btn-outline-dark" : "btn-outline-light";
-    private string IconClass => Theme == Theme.Light ? "oi-moon text-dark" : "oi-sun text-white";
+    private string ButtonClass => Theme == "light" ? "btn-outline-dark" : "btn-outline-light";
+    private string IconClass => Theme == "light" ? "oi-moon text-dark" : "oi-sun text-white";
 
     protected override async Task OnInitializedAsync()
     {
@@ -23,7 +23,7 @@
 
         ThemeService.OnThemeChanged += async (_, theme) =>
         {
-            Theme = theme.Theme;
+            Theme = theme;
             await InvokeAsync(StateHasChanged);
         };
 

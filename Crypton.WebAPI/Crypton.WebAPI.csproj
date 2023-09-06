@@ -48,13 +48,13 @@
     </ItemGroup>
 
     <ItemGroup>
-        <ProjectReference Include="..\BlazorApp1\BlazorApp1.csproj" />
         <ProjectReference Include="..\Crypton.Application\Crypton.Application.csproj"/>
         <ProjectReference Include="..\Crypton.Infrastructure.Diamond\Crypton.Infrastructure.Diamond.csproj"/>
         <ProjectReference Include="..\Crypton.Domain\Crypton.Domain.csproj"/>
         <ProjectReference Include="..\Crypton.Infrastructure.Identity\Crypton.Infrastructure.Identity.csproj"/>
         <ProjectReference Include="..\Crypton.Infrastructure\Crypton.Infrastructure.csproj"/>
         <ProjectReference Include="..\Crypton.Infrastructure.Persistence\Crypton.Infrastructure.Persistence.csproj"/>
+        <ProjectReference Include="..\Crypton.WebUI\Crypton.WebUI.csproj" />
     </ItemGroup>
 
     <ItemGroup>

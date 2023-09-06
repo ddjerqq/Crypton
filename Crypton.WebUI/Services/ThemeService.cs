@@ -6,39 +6,39 @@ namespace Crypton.WebUI.Services;
 
 public sealed class ThemeService : IThemeService
 {
-    private readonly IJSRuntime js;
-    private readonly ILocalStorageService localStorage;
+    private readonly IJSRuntime _js;
+    private readonly ILocalStorageService _localStorage;
 
     public ThemeService(ILocalStorageService localStorage, IJSRuntime js)
     {
-        localStorage = localStorage;
-        js = js;
+        _localStorage = localStorage;
+        _js = js;
     }
 
-    public event EventHandler<ThemeEventArgs>? OnThemeChanged;
+    public event EventHandler<string>? OnThemeChanged;
 
-    public async Task<Theme> GetThemeAsync()
+    public async Task<string> GetThemeAsync()
     {
-        string? theme = await localStorage.GetItemAsStringAsync("theme");
+        string? theme = await _localStorage.GetItemAsStringAsync("theme");
 
         // if the theme is dark return dark
-        if (theme == "dark") return Theme.Dark;
+        if (theme == "dark") return "dark";
 
         // if its anything else, even light, return light.
-        return Theme.Light;
+        return "light";
     }
 
-    public async Task SetThemeAsync(Theme theme)
+    public async Task SetThemeAsync(string theme)
     {
-        await js.InvokeVoidAsync("setTheme", theme.Value());
-        await localStorage.SetItemAsStringAsync("theme", theme.Value());
+        await _js.InvokeVoidAsync("setTheme", theme);
+        await _localStorage.SetItemAsStringAsync("theme", theme);
 
-        OnThemeChanged?.Invoke(this, new ThemeEventArgs(theme));
+        OnThemeChanged?.Invoke(this, theme);
     }
 
     public async Task ToggleThemeAsync()
     {
         var theme = await GetThemeAsync();
-        await SetThemeAsync(theme == Theme.Light ? Theme.Dark : Theme.Light);
+        await SetThemeAsync(theme == "light" ? "dark" : "light");
     }
 }
