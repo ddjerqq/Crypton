@@ -1,5 +1,4 @@
-﻿using Crypton.Application.Economy;
-using Crypton.Application.Economy.Commands;
+﻿using Crypton.Application.Economy.Commands;
 using Crypton.Infrastructure.Idempotency;
 using Crypton.Infrastructure.RateLimiting;
 using Crypton.WebAPI.Common.Abstractions;

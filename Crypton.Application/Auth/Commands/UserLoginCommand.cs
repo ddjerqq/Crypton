@@ -1,5 +1,4 @@
-﻿using Crypton.Domain.Entities;
-using ErrorOr;
+﻿using ErrorOr;
 using FluentValidation;
 using MediatR;
 using Microsoft.AspNetCore.Identity;

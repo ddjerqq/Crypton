@@ -1,5 +1,4 @@
-﻿using Crypton.Infrastructure.Idempotency;
-using Crypton.Infrastructure.Persistence;
+﻿using Crypton.Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
 
 namespace Crypton.WebAPI;
