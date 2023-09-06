@@ -1,5 +1,6 @@
 ﻿using System.Globalization;
 using System.Net;
+using System.Security.Claims;
 using System.Threading.RateLimiting;
 using Crypton.Application.Common.Interfaces;
 using Crypton.Infrastructure.BackgroundJobs;
@@ -69,16 +70,21 @@ public static class ConfigureServices
                 return ValueTask.CompletedTask;
             };
 
-            rateLimitOptions.GlobalLimiter = PartitionedRateLimiter.Create<HttpContext, IPAddress>(context =>
+            rateLimitOptions.GlobalLimiter = PartitionedRateLimiter.Create<HttpContext, string>(context =>
             {
-                IPAddress? remoteIpAddress = context.Connection.RemoteIpAddress;
+                var key = context.Connection.RemoteIpAddress?.ToString() ?? context.Connection.Id;
 
-                if (remoteIpAddress is not null && !IPAddress.IsLoopback(remoteIpAddress))
+                if (context.User is { Identity.IsAuthenticated: true, Claims: var claims })
                 {
-                    return RateLimitPartition.GetTokenBucketLimiter(remoteIpAddress, _ => globalPolicy);
+                    var id = claims
+                        .FirstOrDefault(x => x.Type == ClaimTypes.NameIdentifier)?
+                        .Value;
+
+                    if (!string.IsNullOrEmpty(id))
+                        key = id;
                 }
 
-                return RateLimitPartition.GetNoLimiter(IPAddress.Loopback);
+                return RateLimitPartition.GetTokenBucketLimiter(key, _ => globalPolicy);
             });
         });
 

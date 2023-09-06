@@ -7,6 +7,7 @@ using Crypton.Domain.Events;
 using Crypton.Infrastructure.Diamond;
 using Crypton.Infrastructure.Errors;
 using Crypton.Infrastructure.Idempotency;
+using Crypton.Infrastructure.RateLimiting;
 using Crypton.Infrastructure.Services;
 using Crypton.WebAPI.Common.Abstractions;
 using ErrorOr;
@@ -40,15 +41,19 @@ public sealed class AuthController : ApiController
     /// <summary>
     /// Register a new user.
     /// </summary>
-    /// <response code="200">Success</response>
-    /// <response code="400">Identity issues</response>
     [AllowAnonymous]
     [RequireIdempotency]
     [HttpPost("register")]
+    [Cooldown(1, 3)]
     [ProducesResponseType(StatusCodes.Status200OK)]
-    [ProducesResponseType<IEnumerable<IdentityError>>(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType<ProblemDetails>(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status403Forbidden)]
     public async Task<IActionResult> Register([FromBody, BindRequired] UserRegisterCommand command, CancellationToken ct)
     {
+        var isUserAuthenticated = User.Identity?.IsAuthenticated ?? false;
+        if (isUserAuthenticated)
+            return Forbid();
+
         var user = command.User;
         var result = await _userManager.CreateAsync(user, command.Password);
 
@@ -70,15 +75,18 @@ public sealed class AuthController : ApiController
     /// <summary>
     /// Login a user.
     /// </summary>
-    /// <response code="200">Success and JWT</response>
-    /// <response code="400">Invalid Credentials</response>
-    /// <response code="429">Rate Limit or Lockout</response>
     [AllowAnonymous]
     [RequireIdempotency]
     [HttpPost("login")]
+    [Cooldown(1, 3)]
     [ProducesResponseType<string>(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status403Forbidden)]
     public async Task<IActionResult> Login([FromBody, BindRequired] UserLoginCommand command)
     {
+        var isUserAuthenticated = User.Identity?.IsAuthenticated ?? false;
+        if (isUserAuthenticated)
+            return Forbid();
+
         var result = await _signInManager
             .PasswordSignInAsync(
                 command.Username,
@@ -96,6 +104,18 @@ public sealed class AuthController : ApiController
             return StatusCode(StatusCodes.Status429TooManyRequests);
 
         return BadRequest();
+    }
+
+    /// <summary>
+    /// Sign out
+    /// </summary>
+    [HttpPost("logout")]
+    [Cooldown(1, 3)]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    public async Task<IActionResult> Logout()
+    {
+        await _signInManager.SignOutAsync();
+        return Ok();
     }
 
     /// <summary>

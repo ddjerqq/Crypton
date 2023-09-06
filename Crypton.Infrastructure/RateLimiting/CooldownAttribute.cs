@@ -31,7 +31,7 @@ public sealed class CooldownAttribute : ActionFilterAttribute
 
         var uri = context.HttpContext.Request.Path.Value;
         var key = await Key(context.HttpContext, context.HttpContext.RequestAborted);
-        var cacheKey = $"cooldown:{key}:{uri}";
+        var cacheKey = $"cooldown:{uri}:{key}";
 
         RateLimitCacheEntry? cacheEntry = await cache
             .GetOrCreateAsync(cacheKey, entry =>
@@ -43,25 +43,27 @@ public sealed class CooldownAttribute : ActionFilterAttribute
         if (cacheEntry?.TryAcquire(out var retryAfter) ?? true)
         {
             await next();
+            return;
         }
-        else
-        {
-            context.Result = new StatusCodeResult(429);
-            context.HttpContext.Response.Headers.Add("Retry-After", retryAfter.ToString("R"));
-        }
+
+        context.Result = new StatusCodeResult(429);
+        context.HttpContext.Response.Headers.Add("Retry-After", retryAfter.ToString("R"));
     }
 
     private static Task<string> GetDefaultKey(HttpContext context, CancellationToken ct = default)
     {
+        var key = context.Connection.RemoteIpAddress?.ToString() ?? context.Connection.Id;
+
         if (context.User is { Identity.IsAuthenticated: true, Claims: var claims })
         {
             var id = claims
-                .First(x => x.Type == ClaimTypes.NameIdentifier)
+                .FirstOrDefault(x => x.Type == ClaimTypes.NameIdentifier)?
                 .Value;
 
-            return Task.FromResult(id);
+            if (!string.IsNullOrEmpty(id))
+                key = id;
         }
 
-        return Task.FromResult(context.Connection.Id);
+        return Task.FromResult(key);
     }
 }

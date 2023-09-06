@@ -15,7 +15,6 @@ public sealed class EconomyController : ApiController
     /// Collect daily coins.
     /// </summary>
     [RequireIdempotency]
-    [Cooldown(1, 86400)]
     [HttpPost("daily")]
     public async Task<IActionResult> CollectDaily(CancellationToken ct)
     {

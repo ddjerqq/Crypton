@@ -6,7 +6,7 @@ internal sealed record RateLimitCacheEntry(int Remaining, TimeSpan Per)
 {
     public int Remaining { get; private set; } = Remaining;
 
-    public bool TryAcquire([MaybeNullWhen(true)] [NotNullWhen(false)] out DateTime retryAfter)
+    public bool TryAcquire(out DateTime retryAfter)
     {
         retryAfter = default;
 

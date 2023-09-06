@@ -10,9 +10,9 @@ public sealed class RateLimitOptions
 
     public int QueueLimit { get; set; } = 20;
 
-    public int TokenLimit { get; set; } = 10;
+    public int TokenLimit { get; set; } = 100;
 
-    public int TokensPerPeriod { get; set; } = 5;
+    public int TokensPerPeriod { get; set; } = 10;
 
     public bool AutoReplenishment { get; set; } = true;
 
