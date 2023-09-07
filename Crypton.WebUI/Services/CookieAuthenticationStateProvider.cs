@@ -37,10 +37,11 @@ public sealed class CookieAuthenticationStateProvider : AuthenticationStateProvi
 
     public async Task<ClaimsPrincipal> GetUserStateAsync(CancellationToken ct = default)
     {
-        var request = new HttpRequestMessage(HttpMethod.Get, "api/v1/auth/user_claims");
-        request.SetBrowserRequestCredentials(BrowserRequestCredentials.Include);
-
-        var resp = await _http.SendAsync(request, ct);
+        // var request = new HttpRequestMessage(HttpMethod.Get, "api/v1/auth/user_claims");
+        // request.SetBrowserRequestCredentials(BrowserRequestCredentials.Include);
+        //
+        // var resp = await _http.SendAsync(request, ct);
+        var resp = await _http.GetAsync("api/v1/auth/user_claims", ct);
         if (!resp.IsSuccessStatusCode)
             return new ClaimsPrincipal(new ClaimsIdentity());
 
