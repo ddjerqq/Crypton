@@ -1,4 +1,5 @@
-﻿using System.Security.Claims;
+﻿using System.Diagnostics.CodeAnalysis;
+using System.Security.Claims;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
@@ -23,6 +24,7 @@ public sealed class CooldownAttribute : ActionFilterAttribute
 
     public Func<HttpContext, CancellationToken, Task<string>> Key { get; set; }
 
+    [SuppressMessage("Usage", "ASP0019", Justification = "This is a filter, not a controller action")]
     public override async Task OnActionExecutionAsync(ActionExecutingContext context, ActionExecutionDelegate next)
     {
         var cache = context.HttpContext

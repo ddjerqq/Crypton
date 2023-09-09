@@ -22,7 +22,8 @@ public sealed class ThemeService : IThemeService
         string? theme = await _localStorage.GetItemAsStringAsync("theme");
 
         // if the theme is dark return dark
-        if (theme == "dark") return "dark";
+        if (theme == "dark")
+            return "dark";
 
         // if its anything else, even light, return light.
         return "light";

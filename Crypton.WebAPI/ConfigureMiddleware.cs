@@ -37,8 +37,12 @@ public static class ConfigureMiddleware
 
         app.UseHttpsRedirection();
 
+        if (!app.Environment.IsDevelopment())
+        {
+            app.UseResponseCompression();
+        }
+
         app.UseResponseCaching();
-        app.UseResponseCompression();
 
         // for front-end
         app.UseBlazorFrameworkFiles();

@@ -1,29 +1,46 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
-        <TargetFramework>net8.0</TargetFramework>
-        <ImplicitUsings>enable</ImplicitUsings>
-        <Nullable>enable</Nullable>
-        <CodeAnalysisRuleSet>$(SolutionDir)StyleCop.ruleset</CodeAnalysisRuleSet>
+        <NoWarn>$(NoWarn);NETSDK1206</NoWarn>
     </PropertyGroup>
 
     <ItemGroup>
-        <FrameworkReference Include="Microsoft.AspNetCore.App" />
+        <AdditionalFiles Include="$(MSBuildThisFileDirectory)\StyleCop.ruleset"/>
+    </ItemGroup>
+    
+    <PropertyGroup>
+        <TargetFramework>net8.0</TargetFramework>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <Nullable>enable</Nullable>
+        <CodeAnalysisRuleSet>$(MSBuildThisFileDirectory)\..\StyleCop.ruleset</CodeAnalysisRuleSet>
+    </PropertyGroup>
+
+    <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
+        <DebugType>full</DebugType>
+        <DocumentationFile>bin\Debug\Crypton.Infrastructure.Diamond.xml</DocumentationFile>
+    </PropertyGroup>
+
+    <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
+        <DocumentationFile>bin\Release\Crypton.Infrastructure.Diamond.xml</DocumentationFile>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <FrameworkReference Include="Microsoft.AspNetCore.App"/>
     </ItemGroup>
 
 
     <ItemGroup>
-      <PackageReference Include="ErrorOr" Version="1.2.1" />
-      <PackageReference Include="FluentValidation" Version="11.7.1" />
-      <PackageReference Include="StyleCop.Analyzers" Version="1.2.0-beta.507">
-        <PrivateAssets>all</PrivateAssets>
-        <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-      </PackageReference>
+        <PackageReference Include="ErrorOr" Version="1.2.1"/>
+        <PackageReference Include="FluentValidation" Version="11.7.1"/>
+        <PackageReference Include="StyleCop.Analyzers" Version="1.2.0-beta.507">
+            <PrivateAssets>all</PrivateAssets>
+            <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+        </PackageReference>
     </ItemGroup>
 
 
     <ItemGroup>
-      <ProjectReference Include="..\Crypton.Domain\Crypton.Domain.csproj" />
+        <ProjectReference Include="..\Crypton.Domain\Crypton.Domain.csproj"/>
     </ItemGroup>
 
 </Project>

@@ -15,9 +15,7 @@ builder.Services.AddScoped<AuthenticationStateProvider, CookieAuthenticationStat
 builder.RootComponents.Add<App>("#app");
 builder.RootComponents.Add<HeadOutlet>("head::after");
 
-// var baseUri = builder.HostEnvironment.BaseAddress;
-var baseUri = "https://localhost/";
-builder.Services.AddScoped(_ => new HttpClient { BaseAddress = new Uri(baseUri) });
+builder.Services.AddScoped(_ => new HttpClient { BaseAddress = new Uri(builder.HostEnvironment.BaseAddress) });
 builder.Services.AddBlazoredToast();
 
 var host = builder.Build();

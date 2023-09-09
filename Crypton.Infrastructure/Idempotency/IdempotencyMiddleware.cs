@@ -8,11 +8,11 @@ namespace Crypton.Infrastructure.Idempotency;
 
 public sealed class IdempotencyMiddleware : IMiddleware
 {
-    private readonly IIdempotencyService idempotencyService;
+    private readonly IIdempotencyService _idempotencyService;
 
     public IdempotencyMiddleware(IIdempotencyService idempotencyService)
     {
-        idempotencyService = idempotencyService;
+        _idempotencyService = idempotencyService;
     }
 
     public async Task InvokeAsync(HttpContext context, RequestDelegate next)
@@ -38,7 +38,7 @@ public sealed class IdempotencyMiddleware : IMiddleware
             return;
         }
 
-        if (idempotencyService.ContainsKey(key))
+        if (_idempotencyService.ContainsKey(key))
         {
             context.Response.StatusCode = StatusCodes.Status409Conflict;
 
@@ -47,7 +47,7 @@ public sealed class IdempotencyMiddleware : IMiddleware
             return;
         }
 
-        idempotencyService.AddKey(key);
+        _idempotencyService.AddKey(key);
 
         await next(context);
     }

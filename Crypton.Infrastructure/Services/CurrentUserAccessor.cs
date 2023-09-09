@@ -31,7 +31,8 @@ public sealed class CurrentUserAccessor : ICurrentUserAccessor
     public async Task<User?> GetCurrentUserAsync(CancellationToken ct = default)
     {
         var claimsPrincipal = _httpContextAccessor.HttpContext?.User;
-        if (claimsPrincipal is null) return null;
+        if (claimsPrincipal is null)
+            return null;
 
         return await _userManager.GetUserAsync(claimsPrincipal);
     }

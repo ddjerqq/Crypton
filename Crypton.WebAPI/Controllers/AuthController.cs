@@ -1,4 +1,3 @@
-using System.Security.Claims;
 using Crypton.Application.Auth.Commands;
 using Crypton.Application.Common.Interfaces;
 using Crypton.Application.Dto;

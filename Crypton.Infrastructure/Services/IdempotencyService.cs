@@ -6,15 +6,15 @@ namespace Crypton.Infrastructure.Services;
 public sealed class IdempotencyService : IIdempotencyService
 {
     private static readonly TimeSpan InvalidationTime = TimeSpan.FromMinutes(10);
-    private readonly HashSet<Guid> keys = new();
+    private readonly HashSet<Guid> _keys = new();
 
-    public bool ContainsKey(Guid key) => keys.Contains(key);
+    public bool ContainsKey(Guid key) => _keys.Contains(key);
 
     public void AddKey(Guid key)
     {
-        keys.Add(key);
+        _keys.Add(key);
 
         Task.Delay(InvalidationTime)
-            .ContinueWith(_ => keys.Remove(key));
+            .ContinueWith(_ => _keys.Remove(key));
     }
 }

@@ -42,7 +42,7 @@ else
 @code {
     private WeatherForecast[]? forecasts;
 
-    protected override async Task OnInitializedAsync()
+    protected override Task OnInitializedAsync()
     {
         forecasts = new WeatherForecast[]
         {
@@ -52,6 +52,7 @@ else
             new WeatherForecast { Date = DateOnly.FromDateTime(DateTime.UtcNow), TemperatureC = 32, Summary = "cool" },
             new WeatherForecast { Date = DateOnly.FromDateTime(DateTime.UtcNow), TemperatureC = 32, Summary = "cool" }
         };
+        return Task.CompletedTask;
     }
 
     public class WeatherForecast

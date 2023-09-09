@@ -6,15 +6,15 @@ namespace Crypton.Infrastructure.Diamond;
 
 public sealed class DigitalSignatureMiddleware : IMiddleware
 {
-    private readonly ILogger<DigitalSignatureMiddleware> logger;
-    private readonly IValidator<RulePayload> payloadValidator;
+    private readonly ILogger<DigitalSignatureMiddleware> _logger;
+    private readonly IValidator<RulePayload> _payloadValidator;
 
     public DigitalSignatureMiddleware(
         ILogger<DigitalSignatureMiddleware> logger,
         IValidator<RulePayload> payloadValidator)
     {
-        logger = logger;
-        payloadValidator = payloadValidator;
+        _logger = logger;
+        _payloadValidator = payloadValidator;
     }
 
     public async Task InvokeAsync(HttpContext context, RequestDelegate next)
@@ -37,10 +37,10 @@ public sealed class DigitalSignatureMiddleware : IMiddleware
             return;
         }
 
-        if (await payloadValidator.ValidateAsync(payload) is { IsValid: false } result)
+        if (await _payloadValidator.ValidateAsync(payload) is { IsValid: false } result)
         {
             var errors = string.Join(", ", result.Errors);
-            logger.LogWarning("Digital signature issue(s): {Errors}", errors);
+            _logger.LogWarning("Digital signature issue(s): {Errors}", errors);
 
             context.Response.StatusCode = StatusCodes.Status400BadRequest;
             return;

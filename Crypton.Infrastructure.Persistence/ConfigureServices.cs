@@ -23,7 +23,8 @@ public static class ConfigureServices
         var user = GetEnv("POSTGRES_USER", "postgres");
 
         var password = GetEnv("POSTGRES_PASSWORD");
-        if (string.IsNullOrEmpty(password)) return false;
+        if (string.IsNullOrEmpty(password))
+            return false;
 
         var inDevelopment = GetEnv("DOTNET_ENVIRONMENT") == "Development"
                             || GetEnv("ASPNETCORE_ENVIRONMENT") == "Development";

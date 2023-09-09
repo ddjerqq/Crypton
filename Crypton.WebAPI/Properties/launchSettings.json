@@ -3,11 +3,16 @@
     "https": {
       "commandName": "Project",
       "dotnetRunMessages": true,
-      "launchUrl": "swagger",
       "applicationUrl": "https://*:443;http://*:80",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"
       }
+    },
+    "watch": {
+      "commandName": "Executable",
+      "executablePath": "dotnet",
+      "commandLineArgs": "watch",
+      "workingDirectory": "$(ProjectDir)"
     }
   }
 }
