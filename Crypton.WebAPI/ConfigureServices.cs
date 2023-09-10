@@ -2,8 +2,8 @@
 using System.Text.Json.Serialization;
 using Crypton.Application;
 using Crypton.Domain;
-using Crypton.Infrastructure.Filters;
 using Crypton.Infrastructure.Policies;
+using Crypton.WebAPI.Filters;
 using Crypton.WebAPI.OperationFilters;
 using FluentValidation;
 using FluentValidation.AspNetCore;

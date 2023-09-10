@@ -2,7 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 
-namespace Crypton.Infrastructure.Filters;
+namespace Crypton.WebAPI.Filters;
 
 public sealed class ErrorHandlingFilterAttribute : ExceptionFilterAttribute
 {

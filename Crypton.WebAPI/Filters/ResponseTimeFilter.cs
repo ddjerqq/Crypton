@@ -3,7 +3,7 @@ using System.Diagnostics.CodeAnalysis;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.Extensions.Primitives;
 
-namespace Crypton.Infrastructure.Filters;
+namespace Crypton.WebAPI.Filters;
 
 public sealed class ResponseTimeFilter : IActionFilter
 {
