@@ -1,4 +1,6 @@
-using Blazored.Toast;
+using System.Text.Json.Serialization;
+using Blazored.LocalStorage;
+using Crypton.Application;
 using Crypton.WebUI;
 using Crypton.WebUI.Services;
 using Microsoft.AspNetCore.Components.Authorization;
@@ -15,8 +17,18 @@ builder.Services.AddScoped<AuthenticationStateProvider, CookieAuthenticationStat
 builder.RootComponents.Add<App>("#app");
 builder.RootComponents.Add<HeadOutlet>("head::after");
 
+// digital signature rules
+// idempotency handler
+// error handler
 builder.Services.AddScoped(_ => new HttpClient { BaseAddress = new Uri(builder.HostEnvironment.BaseAddress) });
-builder.Services.AddBlazoredToast();
+
+builder.Services.AddBlazoredLocalStorageAsSingleton(o =>
+{
+    o.JsonSerializerOptions.PropertyNamingPolicy = new SnakeCaseJsonNamingPolicy();
+    o.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
+});
+
+builder.Services.AddBlazorBootstrap();
 
 var host = builder.Build();
 

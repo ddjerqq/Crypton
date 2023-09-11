@@ -1,41 +1,9 @@
-html, body {
-    font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
-}
+/*noinspection CssUnknownTarget*/
+@import url('/lib/open-iconic/font/css/open-iconic-bootstrap.min.css');
 
-h1:focus {
-    outline: none;
-}
 
-a, .btn-link {
-    color: #0071c1;
-}
 
-.btn-primary {
-    color: #fff;
-    background-color: #1b6ec2;
-    border-color: #1861ac;
-}
-
-.btn:focus, .btn:active:focus, .btn-link.nav-link:focus, .form-control:focus, .form-check-input:focus {
-    box-shadow: 0 0 0 0.1rem white, 0 0 0 0.25rem #258cfb;
-}
-
-.content {
-    padding-top: 1.1rem;
-}
-
-.valid.modified:not([type=checkbox]) {
-    outline: 1px solid #26b050;
-}
-
-.invalid {
-    outline: 1px solid red;
-}
-
-.validation-message {
-    color: red;
-}
-
+/*blazor error ui*/
 #blazor-error-ui {
     background: lightyellow;
     bottom: 0;
@@ -65,35 +33,210 @@ a, .btn-link {
     content: "An error has occurred."
 }
 
-.loading-progress {
-    position: relative;
-    display: block;
-    width: 8rem;
-    height: 8rem;
-    margin: 20vh auto 1rem auto;
+
+
+/*fix bootstrap text alignment issues with the toast*/
+.blazored-toast-progressbar {
+    text-align: start !important;
 }
 
-.loading-progress circle {
-    fill: none;
-    stroke: #e0e0e0;
-    stroke-width: 0.6rem;
-    transform-origin: 50% 50%;
-    transform: rotate(-90deg);
+/*remove bootstrap's annoying button outline and wrap*/
+.btn:focus, .btn:active:focus, .btn-link.nav-link:focus, .form-control:focus, .form-check-input:focus {
+    box-shadow: none !important;
 }
 
-.loading-progress circle:last-child {
-    stroke: #1b6ec2;
-    stroke-dasharray: calc(3.141 * var(--blazor-load-percentage, 0%) * 0.8), 500%;
-    transition: stroke-dasharray 0.05s ease-in-out;
+/* for the autofocus component*/
+h1:focus {
+    outline: none;
 }
 
-.loading-progress-text {
-    position: absolute;
-    text-align: center;
-    font-weight: bold;
-    inset: calc(20vh + 3.25rem) 0 auto 0.2rem;
+/* add color transitions */
+* {
+    transition: border-color 75ms ease-out,
+    color 20ms ease-out !important;
 }
 
-.loading-progress-text:after {
-    content: var(--blazor-load-percentage-text, "Loading");
+/* fix table header sort indicator opacity */
+.sort-indicator {
+    opacity: 1 !important;
+    transform: scaleY(-1) !important;
+    background-image: none !important;
 }
+
+/* fix table header sort indicator color */
+[data-bs-theme=dark] .sort-indicator {
+    filter: invert(1);
+}
+
+/* fix the filter button on dark mode */
+[data-bs-theme=dark] .col-options-button {
+    filter: invert(1);
+}
+
+/* fix the filter button on dark mode */
+[data-bs-theme=dark] .col-title-text {
+    color: #fff !important;
+}
+
+/* fix something */
+.col-title-text {
+    color: #000 !important;
+}
+
+/* fix table header sort indicator */
+#themeToggleBtn.btn:hover {
+    color: inherit !important;
+    background-color: inherit !important;
+    border-color: inherit !important;
+    box-shadow: none !important;
+}
+
+/* fix table header sort indicator */
+#themeToggleBtn.btn:focus-visible {
+    color: inherit !important;
+    background-color: inherit !important;
+    border-color: inherit !important;
+    box-shadow: none !important;
+}
+
+/* fix table header sort indicator */
+.col-options {
+    padding: 0.2rem !important;
+}
+
+/* fix table header sort indicator */
+.pagination {
+    margin-bottom: 0 !important;
+}
+
+/* fix blazored toast on mobile */
+.position-topcenter {
+    top: 2rem !important;
+    left: 50% !important;
+    transform: translate(-50%, 0%) !important;
+}
+
+
+/* ===== Scrollbar CSS ===== */
+*::-webkit-scrollbar {
+    width: 3px;
+    height: 3px;
+}
+
+*::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+*::-webkit-scrollbar-thumb {
+    background: var(--bs-info);
+    border-radius: 2px;
+}
+
+.rounded::-webkit-scrollbar-thumb,
+.rounded-1::-webkit-scrollbar-thumb,
+.rounded-2::-webkit-scrollbar-thumb,
+.rounded-3::-webkit-scrollbar-thumb,
+.rounded-4::-webkit-scrollbar-thumb,
+.rounded-5::-webkit-scrollbar-thumb {
+    background: linear-gradient(
+            90deg,
+            rgba(13, 202, 240, 0) 0%,
+            rgba(13, 202, 240, 1) 5%,
+            rgba(13, 202, 240, 1) 95%,
+            rgba(13, 202, 240, 0) 100%
+    );
+}
+
+/* fix text-bg-dark override of validation messages. */
+[data-bs-theme=dark] .text-bg-white {
+    color: #fff !important;
+}
+
+[data-bs-theme=ligth] {
+    color: #000 !important;
+}
+
+
+/* style disconnect ui */
+#components-reconnect-modal {
+    background-color: rgba(0, 0, 0, 0.5) !important;
+    -webkit-backdrop-filter: blur(1rem) !important;
+    backdrop-filter: blur(1rem) !important;;
+    transform: translate3d(0, 0, 0) !important;
+}
+
+/*for disabled links*/
+a[disabled] {
+    pointer-events: none;
+    cursor: default;
+}
+
+/*
+ * magic
+ */
+[data-bs-theme=light] * {
+    --polkadot-fg: #757575;
+    --polkadot-bg: #ffffff;
+}
+
+
+[data-bs-theme=dark] * {
+    --polkadot-fg: #7c7c7c;
+    --polkadot-bg: #212529;
+}
+
+*.pk-color-primary {
+    --polkadot-fg: var(--bs-primary);
+}
+
+.bg-blur {
+    -webkit-backdrop-filter: blur(0.125rem);
+    backdrop-filter: blur(0.125rem);
+    transform: translate3d(0, 0, 0);
+}
+
+.blur-size-1 {
+    backdrop-filter: blur(0.25rem) !important;
+}
+
+.blur-size-2 {
+    backdrop-filter: blur(0.5rem) !important;
+}
+
+.blur-size-3 {
+    backdrop-filter: blur(1rem) !important;
+}
+
+.card.bg-blur {
+    --bs-card-bg: none !important;
+}
+
+.bg-polkadot {
+    background-color: var(--polkadot-bg);
+    background-image: radial-gradient(
+            var(--polkadot-fg) 1px,
+            var(--polkadot-bg) 1px);
+    background-size: 35px 35px;
+}
+
+
+/* ===== make bb colors work with bootstrap dark mode ===== */
+
+:root {
+    --bb-sidebar-title-text-color: rgb(var(--bs-white))!important;
+    --bb-sidebar-brand-icon-color: rgb(var(--bs-white))!important;
+    --bb-sidebar-navbar-toggler-background-color: rgb(255, 255, 255)!important;
+}
+
+:root {
+    --bb-sidebar-background-color: rgb(var(--bs-light))!important;
+    --bs-nav-link-color: rgb(var(--bs-black))!important;
+    --bb-sidebar-nav-item-text-color: rgb(var(--bs-black))!important;
+}
+
+[data-bs-theme=dark] :root {
+    --bb-sidebar-background-color: rgb(var(--bs-dark))!important;
+    --bs-nav-link-color: rgb(var(--bs-white))!important;
+    --bb-sidebar-nav-item-text-color: rgb(var(--bs-white))!important;
+}
+

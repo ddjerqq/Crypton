@@ -2,7 +2,6 @@
 using System.Text.Json.Serialization;
 using Crypton.Application;
 using Crypton.Domain;
-using Crypton.Infrastructure.Policies;
 using Crypton.WebAPI.Filters;
 using Crypton.WebAPI.OperationFilters;
 using FluentValidation;
@@ -66,67 +65,16 @@ public static class ConfigureServices
 
         if (env.IsDevelopment())
         {
-            services.AddEndpointsApiExplorer();
-            services.AddSwaggerGen(c =>
-            {
-                c.SupportNonNullableReferenceTypes();
-
-                c.SwaggerDoc("v1", new OpenApiInfo
-                {
-                    Title = "Crypton.WebAPI",
-                    Version = "v1",
-                    Description = "Crypton Web API",
-                    Contact = new OpenApiContact
-                    {
-                        Name = "Crypton",
-                        Email = "ddjerqq@gmail.com",
-                        Url = new Uri("https://github.com/ddjerqq"),
-                    },
-                });
-
-                c.ResolveConflictingActions(x => x.First());
-                c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
-                {
-                    Name = "authorization",
-                    Type = SecuritySchemeType.ApiKey,
-                    Scheme = "Bearer",
-                    BearerFormat = "JWT",
-                    In = ParameterLocation.Header,
-                    Description = "JWT Authorization header using the Bearer scheme.",
-                });
-
-                c.AddSecurityRequirement(new OpenApiSecurityRequirement
-                {
-                    {
-                        new OpenApiSecurityScheme
-                        {
-                            Reference = new OpenApiReference
-                            {
-                                Type = ReferenceType.SecurityScheme,
-                                Id = "Bearer",
-                            },
-                        },
-                        new string[] { }
-                    },
-                });
-
-                // Set the comments path for the Swagger JSON and UI.
-                var xmlFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
-                var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
-                c.IncludeXmlComments(xmlPath);
-
-                // for idempotency keys
-                c.OperationFilter<IdempotencyKeyOperationFilter>();
-
-                // for default responses
-                c.OperationFilter<DefaultResponseOperationFilter>();
-            });
+            services.AddSwagger(env);
         }
 
         services.AddCors(options =>
         {
             options.AddDefaultPolicy(policy =>
             {
+                // change these to the front-end app domain later.
+                // so that we tell the browser on that domain, that
+                // it is okay to send the API requests.
                 policy.WithOrigins("http://localhost:5000", "https://localhost:5001");
                 policy.AllowAnyHeader();
                 policy.AllowAnyMethod();

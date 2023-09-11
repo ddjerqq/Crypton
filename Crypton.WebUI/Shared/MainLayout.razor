@@ -1,19 +1,31 @@
 ﻿@inherits LayoutComponentBase
 
-<div class="page">
+<div class="d-flex flex-column flex-md-row h-100 w-100">
     <div class="sidebar">
         <NavMenu/>
     </div>
 
-    <main>
-        <div class="top-row px-4">
+    <main class="border rounded-3 bg-polkadot pk-color-primary h-100 w-100 border-top-0 rounded-top-0">
+        <div class="bg-dark text-bg-dark border border-bottom border-top-0 border-start-0 border-end-0 top-row px-4">
             <AuthorizeView>
-                Hello @context.User.Identity?.Name
+                <Authorized>
+                    <span>
+                        Hello @context.User.Identity?.Name
+                    </span>
+                </Authorized>
+                <NotAuthorized>
+                    @* todo *@
+                    login button will go here
+                </NotAuthorized>
             </AuthorizeView>
         </div>
 
-        <article class="content px-4">
+        <article class="align-middle p-4 bg-blur h-100 w-100">
             @Body
         </article>
     </main>
 </div>
+
+<Modal IsServiceModal="true"/>
+<Preload/>
+<Toasts class="p-3" AutoHide="true" Delay="4000" Placement="ToastsPlacement.TopRight"/>

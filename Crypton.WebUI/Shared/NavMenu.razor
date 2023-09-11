@@ -1,27 +1,33 @@
-﻿<div class="top-row ps-3 navbar navbar-dark">
+﻿<div class="top-row ps-3 navbar navbar-dark border-bottom">
     <div class="container-fluid">
-        <a class="navbar-brand" href="">BlazorApp1</a>
+        <a class="navbar-brand d-flex align-items-center" href="">
+            <span class="navbar-brand-icon">
+                <i class="bi bi-currency-bitcoin fs-4 me-2"></i>
+            </span>
+            <span class="navbar-brand-text fw-semibold me-2" b-h9l5f7lx3r="">Crypton</span>
+        </a>
+
         <button title="Navigation menu" class="navbar-toggler" @onclick="ToggleNavMenu">
             <span class="navbar-toggler-icon"></span>
         </button>
     </div>
 </div>
 
-<div class="@NavMenuCssClass nav-scrollable" @onclick="ToggleNavMenu">
+<div class="@NavMenuCssClass nav-scrollable bg-blur bg-blur-size-1" @onclick="ToggleNavMenu">
     <nav class="flex-column">
-        <div class="nav-item px-3">
+        <div class="nav-item px-2">
             <NavLink class="nav-link" href="" Match="NavLinkMatch.All">
-                <span class="oi oi-home p-2" aria-hidden="true"></span> Home
+                <span class="bi bi-house-door-fill ps-2" aria-hidden="true"></span> Home
             </NavLink>
         </div>
-        <div class="nav-item px-3">
+        <div class="nav-item px-2">
             <NavLink class="nav-link" href="counter">
-                <span class="oi oi-plus p-2" aria-hidden="true"></span> Counter
+                <span class="bi bi-plus-square-fill ps-2" aria-hidden="true"></span> Counter
             </NavLink>
         </div>
-        <div class="nav-item px-3">
+        <div class="nav-item px-2">
             <NavLink class="nav-link" href="fetchdata">
-                <span class="oi oi-aperture p-2" aria-hidden="true"></span> Fetch Data
+                <span class="bi bi-list-stars ps-2" aria-hidden="true"></span> Fetch Data
             </NavLink>
         </div>
     </nav>

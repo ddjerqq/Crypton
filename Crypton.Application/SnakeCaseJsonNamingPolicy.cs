@@ -1,7 +1,7 @@
 ﻿using System.Text.Json;
 using Crypton.Domain.Common.Extensions;
 
-namespace Crypton.Infrastructure.Policies;
+namespace Crypton.Application;
 
 public sealed class SnakeCaseJsonNamingPolicy : JsonNamingPolicy
 {
