@@ -1,21 +1,18 @@
-﻿@inject IThemeService ThemeService
-
-<button id="themeToggleBtn"
-        class="btn btn-sm @ButtonClass mx-1"
+﻿<button id="themeToggleBtn"
+        class="btn btn-outline-dark"
         @onclick="@ToggleTheme"
-        data-bs-toggle="tooltip"
-        data-bs-title="ფონის შეცვლა"
-        data-bs-placement="bottom">
-    <span id="themeIcon" class="oi @IconClass" style="min-width: 20px; min-height: 20px"></span>
+        aria-label="Toggle theme">
+    <span id="themeIcon" class="bi @IconClass"></span>
 </button>
-
 
 @code {
 
+    [Inject]
+    private IThemeService ThemeService { get; set; } = null!;
+
     private string Theme { get; set; } = string.Empty;
 
-    private string ButtonClass => Theme == "light" ? "btn-outline-dark" : "btn-outline-light";
-    private string IconClass => Theme == "light" ? "oi-moon text-dark" : "oi-sun text-white";
+    private string IconClass => Theme == "light" ? "bi-moon-stars-fill" : "bi-sun-fill";
 
     protected override async Task OnInitializedAsync()
     {

@@ -1,27 +1,18 @@
 ﻿@inherits LayoutComponentBase
 
-<div class="d-flex flex-column flex-md-row h-100 w-100">
-    <div class="sidebar">
-        <NavMenu/>
+<div class="d-flex flex-column position-relative h-100">
+    <div class="border-bottom border-secondary">
+        <Navbar/>
     </div>
 
-    <main class="border rounded-3 bg-polkadot pk-color-primary h-100 w-100 border-top-0 rounded-top-0">
-        <div class="bg-dark text-bg-dark border border-bottom border-top-0 border-start-0 border-end-0 top-row px-4">
-            <AuthorizeView>
-                <Authorized>
-                    <span>
-                        Hello @context.User.Identity?.Name
-                    </span>
-                </Authorized>
-                <NotAuthorized>
-                    @* todo *@
-                    login button will go here
-                </NotAuthorized>
-            </AuthorizeView>
-        </div>
-
-        <article class="align-middle p-4 bg-blur h-100 w-100">
-            @Body
+    <main>
+        <article class="position-relative container-fluid p-4 shadow bg-polkadot pk-color-primary h-100 overflow-hidden">
+            <div class="d-flex flex-column p-4 bg-blur border border-1 border-secondary rounded-3 h-100">
+                @* this is here to stop the elements without parents from stretching out *@
+                <div>
+                    @Body
+                </div>
+            </div>
         </article>
     </main>
 </div>

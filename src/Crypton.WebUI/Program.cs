@@ -3,6 +3,7 @@ using Blazored.LocalStorage;
 using Crypton.Application;
 using Crypton.WebUI;
 using Crypton.WebUI.Services;
+using Crypton.WebUI.Services.Interfaces;
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Components.Web;
 using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
@@ -13,6 +14,8 @@ builder.Services.AddAuthorizationCore();
 builder.Services.AddScoped<CookieAuthenticationStateProvider>();
 builder.Services.AddScoped<AuthenticationStateProvider, CookieAuthenticationStateProvider>(sp =>
     sp.GetRequiredService<CookieAuthenticationStateProvider>());
+
+builder.Services.AddScoped<IThemeService, ThemeService>();
 
 builder.RootComponents.Add<App>("#app");
 builder.RootComponents.Add<HeadOutlet>("head::after");

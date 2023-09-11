@@ -3,30 +3,27 @@
 
 <PageTitle>Index</PageTitle>
 
-<h1>Hello, world 1!</h1>
+<AuthorizeView>
+    <Authorized>
+        <h1>Welcome back, @context.User.Identity?.Name</h1>
+    </Authorized>
+    <NotAuthorized>
+        <h1>Hello new user</h1>
+    </NotAuthorized>
+</AuthorizeView>
 
-<div class="hero mb-3">
-    <p>Welcome to the all new app!</p>
-    <p>fucking instant man hi hi hi </p>
+<div class="fs-5 mb-3">
+    <p>dashboard here</p>
 </div>
 
 <button class="btn btn-outline-primary" @onclick="Login">
-    Login using magic hello
+    Login
 </button>
-
-<p class="my-3">
-    @GetNum()
-</p>
 
 @code
 {
     public async Task Login()
     {
         await Auth.LoginAsync();
-    }
-
-    public int GetNum()
-    {
-        return 20;
     }
 }

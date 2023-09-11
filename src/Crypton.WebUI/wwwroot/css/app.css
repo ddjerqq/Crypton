@@ -1,11 +1,8 @@
 /*noinspection CssUnknownTarget*/
-@import url('/lib/open-iconic/font/css/open-iconic-bootstrap.min.css');
-
-
 
 /*blazor error ui*/
 #blazor-error-ui {
-    background: lightyellow;
+    background: #ffffff;
     bottom: 0;
     box-shadow: 0 -1px 2px rgba(0, 0, 0, 0.2);
     display: none;
@@ -32,8 +29,6 @@
 .blazor-error-boundary::after {
     content: "An error has occurred."
 }
-
-
 
 /*fix bootstrap text alignment issues with the toast*/
 .blazored-toast-progressbar {
@@ -189,6 +184,34 @@ a[disabled] {
     --polkadot-fg: var(--bs-primary);
 }
 
+*.pk-color-secondary {
+    --polkadot-fg: var(--bs-secondary);
+}
+
+*.pk-color-success {
+    --polkadot-fg: var(--bs-success);
+}
+
+*.pk-color-info {
+    --polkadot-fg: var(--bs-info);
+}
+
+*.pk-color-warning {
+    --polkadot-fg: var(--bs-warning);
+}
+
+*.pk-color-danger {
+    --polkadot-fg: var(--bs-danger);
+}
+
+*.pk-color-light {
+    --polkadot-fg: var(--bs-light);
+}
+
+*.pk-color-dark {
+    --polkadot-fg: var(--bs-dark);
+}
+
 .bg-blur {
     -webkit-backdrop-filter: blur(0.125rem);
     backdrop-filter: blur(0.125rem);
@@ -223,20 +246,20 @@ a[disabled] {
 /* ===== make bb colors work with bootstrap dark mode ===== */
 
 :root {
-    --bb-sidebar-title-text-color: rgb(var(--bs-white))!important;
-    --bb-sidebar-brand-icon-color: rgb(var(--bs-white))!important;
-    --bb-sidebar-navbar-toggler-background-color: rgb(255, 255, 255)!important;
+    --bb-sidebar-title-text-color: rgb(var(--bs-white)) !important;
+    --bb-sidebar-brand-icon-color: rgb(var(--bs-white)) !important;
+    --bb-sidebar-navbar-toggler-background-color: rgb(255, 255, 255) !important;
 }
 
 :root {
-    --bb-sidebar-background-color: rgb(var(--bs-light))!important;
-    --bs-nav-link-color: rgb(var(--bs-black))!important;
-    --bb-sidebar-nav-item-text-color: rgb(var(--bs-black))!important;
+    --bb-sidebar-background-color: rgb(var(--bs-light)) !important;
+    --bs-nav-link-color: rgb(var(--bs-black)) !important;
+    --bb-sidebar-nav-item-text-color: rgb(var(--bs-black)) !important;
 }
 
 [data-bs-theme=dark] :root {
-    --bb-sidebar-background-color: rgb(var(--bs-dark))!important;
-    --bs-nav-link-color: rgb(var(--bs-white))!important;
-    --bb-sidebar-nav-item-text-color: rgb(var(--bs-white))!important;
+    --bb-sidebar-background-color: rgb(var(--bs-dark)) !important;
+    --bs-nav-link-color: rgb(var(--bs-white)) !important;
+    --bb-sidebar-nav-item-text-color: rgb(var(--bs-white)) !important;
 }
 
