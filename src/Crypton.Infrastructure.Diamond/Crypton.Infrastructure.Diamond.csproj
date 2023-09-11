@@ -4,47 +4,43 @@
         <NoWarn>$(NoWarn);NETSDK1206</NoWarn>
     </PropertyGroup>
 
-    <ItemGroup>
-        <AdditionalFiles Include="$(MSBuildThisFileDirectory)\StyleCop.ruleset"/>
-    </ItemGroup>
+    <Target Name="CopyStyleCopRuleset" BeforeTargets="Build">
+        <Copy SourceFiles="$(MSBuildThisFileDirectory)\..\..\StyleCop.ruleset" DestinationFolder="$(TargetDir)" />
+    </Target>
     
     <PropertyGroup>
         <TargetFramework>net8.0</TargetFramework>
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
-        <Company>Crypton</Company>
-        <Product>Crypton.Application</Product>
-        <OutputType>Library</OutputType>
-        <CodeAnalysisRuleSet>$(MSBuildThisFileDirectory)\..\StyleCop.ruleset</CodeAnalysisRuleSet>
+        <CodeAnalysisRuleSet>$(MSBuildThisFileDirectory)\..\..\StyleCop.ruleset</CodeAnalysisRuleSet>
     </PropertyGroup>
 
     <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
         <DebugType>full</DebugType>
-        <DocumentationFile>bin\Debug\Crypton.Application.xml</DocumentationFile>
+        <DocumentationFile>bin\Debug\Crypton.Infrastructure.Diamond.xml</DocumentationFile>
     </PropertyGroup>
 
     <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
-        <DocumentationFile>bin\Release\Crypton.Application.xml</DocumentationFile>
+        <DocumentationFile>bin\Release\Crypton.Infrastructure.Diamond.xml</DocumentationFile>
     </PropertyGroup>
 
     <ItemGroup>
-        <PackageReference Include="Ardalis.GuardClauses" Version="4.1.1"/>
+        <FrameworkReference Include="Microsoft.AspNetCore.App"/>
+    </ItemGroup>
+
+
+    <ItemGroup>
         <PackageReference Include="ErrorOr" Version="1.2.1"/>
         <PackageReference Include="FluentValidation" Version="11.7.1"/>
-        <PackageReference Include="FluentValidation.DependencyInjectionExtensions" Version="11.7.1"/>
-        <PackageReference Include="MediatR" Version="12.1.1"/>
-        <PackageReference Include="Microsoft.EntityFrameworkCore" Version="8.0.0-preview.7.23375.4"/>
-        <PackageReference Include="Newtonsoft.Json" Version="13.0.3"/>
         <PackageReference Include="StyleCop.Analyzers" Version="1.2.0-beta.507">
             <PrivateAssets>all</PrivateAssets>
             <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
         </PackageReference>
     </ItemGroup>
 
+
     <ItemGroup>
         <ProjectReference Include="..\Crypton.Domain\Crypton.Domain.csproj"/>
-
     </ItemGroup>
-
 
 </Project>

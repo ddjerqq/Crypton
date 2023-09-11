@@ -4,25 +4,25 @@
         <NoWarn>$(NoWarn);NETSDK1206</NoWarn>
     </PropertyGroup>
 
-    <ItemGroup>
-        <AdditionalFiles Include="$(MSBuildThisFileDirectory)\StyleCop.ruleset"/>
-    </ItemGroup>
+    <Target Name="CopyStyleCopRuleset" BeforeTargets="Build">
+        <Copy SourceFiles="$(MSBuildThisFileDirectory)\..\..\StyleCop.ruleset" DestinationFolder="$(TargetDir)" />
+    </Target>
     
     <PropertyGroup>
         <TargetFramework>net8.0</TargetFramework>
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
         <Company>Crypton</Company>
-        <CodeAnalysisRuleSet>$(MSBuildThisFileDirectory)\..\StyleCop.ruleset</CodeAnalysisRuleSet>
+        <CodeAnalysisRuleSet>$(MSBuildThisFileDirectory)\..\..\StyleCop.ruleset</CodeAnalysisRuleSet>
     </PropertyGroup>
 
     <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
         <DebugType>full</DebugType>
-        <DocumentationFile>bin\Debug\Crypton.Infrastructure.xml</DocumentationFile>
+        <DocumentationFile>bin\Debug\Crypton.Infrastructure.Identity.xml</DocumentationFile>
     </PropertyGroup>
 
     <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
-        <DocumentationFile>bin\Release\Crypton.Infrastructure.xml</DocumentationFile>
+        <DocumentationFile>bin\Release\Crypton.Infrastructure.Identity.xml</DocumentationFile>
     </PropertyGroup>
 
     <ItemGroup>
@@ -32,24 +32,16 @@
     <ItemGroup>
         <PackageReference Include="ErrorOr" Version="1.2.1"/>
         <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="8.0.0-preview.7.23375.9"/>
-        <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="8.0.0-preview.7.23375.6"/>
-        <PackageReference Include="Microsoft.OpenApi" Version="1.6.6"/>
-        <PackageReference Include="Quartz" Version="3.7.0"/>
-        <PackageReference Include="Quartz.Extensions.Hosting" Version="3.7.0"/>
+        <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="8.0.0-preview.7.23375.9"/>
         <PackageReference Include="StyleCop.Analyzers" Version="1.2.0-beta.507">
             <PrivateAssets>all</PrivateAssets>
             <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
         </PackageReference>
-        <PackageReference Include="Swashbuckle.AspNetCore.SwaggerGen" Version="6.5.0"/>
     </ItemGroup>
 
     <ItemGroup>
-        <ProjectReference Include="..\Crypton.Application\Crypton.Application.csproj"/>
         <ProjectReference Include="..\Crypton.Domain\Crypton.Domain.csproj"/>
-
-
+        <ProjectReference Include="..\Crypton.Infrastructure.Persistence\Crypton.Infrastructure.Persistence.csproj"/>
     </ItemGroup>
-
-
 
 </Project>
