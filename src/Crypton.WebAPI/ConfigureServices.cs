@@ -1,13 +1,12 @@
-﻿using System.Reflection;
-using System.Text.Json.Serialization;
+﻿using System.Text.Json.Serialization;
 using Crypton.Application;
 using Crypton.Domain;
+using Crypton.Infrastructure.Diamond;
 using Crypton.WebAPI.Filters;
-using Crypton.WebAPI.OperationFilters;
 using FluentValidation;
 using FluentValidation.AspNetCore;
+using Microsoft.AspNetCore.HttpLogging;
 using Microsoft.AspNetCore.ResponseCompression;
-using Microsoft.OpenApi.Models;
 using ZymLabs.NSwag.FluentValidation;
 
 namespace Crypton.WebAPI;
@@ -20,6 +19,30 @@ public static class ConfigureServices
     {
         services.AddHttpContextAccessor();
 
+        services.AddHttpLogging(logging =>
+        {
+            logging.LoggingFields = HttpLoggingFields.RequestPath
+                                    | HttpLoggingFields.ResponseStatusCode
+                                    | HttpLoggingFields.RequestMethod
+                                    | HttpLoggingFields.RequestQuery
+                                    | HttpLoggingFields.RequestHeaders
+                                    | HttpLoggingFields.ResponseHeaders;
+
+            logging.RequestHeaders.Add("X-Idempotency-Key");
+
+            // digital signature
+            logging.RequestHeaders.Add(RuleConstants.UserIdHeaderName);
+            logging.RequestHeaders.Add(RuleConstants.SignatureHeaderName);
+            logging.RequestHeaders.Add(RuleConstants.TimestampHeaderName);
+            logging.RequestHeaders.Add(RuleConstants.AppTokenHeaderName);
+
+            logging.ResponseHeaders.Add("X-Client-IP");
+            logging.MediaTypeOptions.AddText("application/javascript");
+
+            logging.RequestBodyLogLimit = 4096;
+            logging.ResponseBodyLogLimit = 4096;
+        });
+
         services.Configure<RouteOptions>(x =>
         {
             x.LowercaseUrls = true;
@@ -30,6 +53,7 @@ public static class ConfigureServices
         services
             .AddControllers(o =>
             {
+                o.Filters.Add<ClientIpAddressFilter>();
                 o.Filters.Add<FluentValidationFilter>();
                 o.Filters.Add<ResponseTimeFilter>();
                 o.Filters.Add<ErrorHandlingFilterAttribute>();

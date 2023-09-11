@@ -7,7 +7,7 @@ using Crypton.WebAPI;
 using dotenv.net;
 
 DotEnv.Fluent()
-    .WithEnvFiles("./../.env")
+    .WithEnvFiles("./../../.env")
     .Load();
 
 // fix postgres issue with timestamps and DateTimes

@@ -23,6 +23,8 @@ public static class ConfigureMiddleware
 
     public static WebApplication ConfigureWebApiMiddleware(this WebApplication app)
     {
+        app.UseHttpLogging();
+
         app.UseExceptionHandler("/error");
 
         if (app.Environment.IsDevelopment())
