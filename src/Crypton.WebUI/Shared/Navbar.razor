@@ -13,7 +13,7 @@
         <div class="d-flex collapse navbar-collapse" id="navbar">
             <Dropdown Direction="DropdownDirection.DropdownCentered">
                 @* TODO pass down theme from the top as a parameter *@
-                <DropdownToggleButton Class="btn-outline-dark">
+                <DropdownToggleButton Class="@(IsLight ? "btn-outline-dark" : "btn-outline-light")">
                     Games
                 </DropdownToggleButton>
 
@@ -60,7 +60,7 @@
             </Dropdown>
 
             <Dropdown Class="mx-2" Direction="DropdownDirection.DropdownCentered">
-                <DropdownToggleButton Class="btn-outline-dark">
+                <DropdownToggleButton Class="@(IsLight ? "btn-outline-dark" : "btn-outline-light")">
                     Wallet
                 </DropdownToggleButton>
 
@@ -112,7 +112,7 @@
 
             <AuthorizeView>
                 <Authorized>
-                    <span class="fw-bolder text-black">
+                    <span class="fw-bolder @(IsLight ? "text-black" : "text-white")">
                         Hello @context.User.Identity?.Name
                     </span>
                 </Authorized>

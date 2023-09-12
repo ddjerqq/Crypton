@@ -1,38 +1,18 @@
 ﻿<button id="themeToggleBtn"
-        class="btn btn-outline-dark"
+        class="btn @ButtonClass"
         @onclick="@ToggleTheme"
         aria-label="Toggle theme">
     <span id="themeIcon" class="bi @IconClass"></span>
 </button>
 
-@code {
-
-    [Inject]
-    private IThemeService ThemeService { get; set; } = null!;
-
-    private string Theme { get; set; } = string.Empty;
-
-    private string IconClass => Theme == "light" ? "bi-moon-stars-fill" : "bi-sun-fill";
-
-    protected override async Task OnInitializedAsync()
-    {
-        Theme = await ThemeService.GetThemeAsync();
-
-        ThemeService.OnThemeChanged += async (_, theme) =>
-        {
-            Theme = theme;
-            await InvokeAsync(StateHasChanged);
-        };
-
-        StateHasChanged();
-
-        await base.OnInitializedAsync();
-    }
+@code
+{
+    private string ButtonClass => IsLight ? "btn-outline-dark" : "btn-outline-light";
+    private string IconClass => IsLight ? "bi-moon-stars-fill" : "bi-sun-fill";
 
     private async Task ToggleTheme()
     {
         await ThemeService.ToggleThemeAsync();
-        StateHasChanged();
+        await InvokeAsync(StateHasChanged);
     }
-
 }

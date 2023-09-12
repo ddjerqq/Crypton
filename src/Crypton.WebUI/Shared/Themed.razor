@@ -1,0 +1,17 @@
+﻿@if (Theme == "light")
+{
+    @Light
+}
+else
+{
+    @Dark
+}
+
+@code
+{
+    [Parameter, EditorRequired]
+    public RenderFragment Light { get; set; } = null!;
+
+    [Parameter, EditorRequired]
+    public RenderFragment Dark { get; set; } = null!;
+}

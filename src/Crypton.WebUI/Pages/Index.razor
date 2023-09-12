@@ -20,10 +20,24 @@
     Login
 </button>
 
+<button class="btn btn-outline-danger" @onclick="Throw">
+    Throw
+</button>
+
+<Themed>
+    <Light>light theme</Light>
+    <Dark>dark theme</Dark>
+</Themed>
+
 @code
 {
     public async Task Login()
     {
         await Auth.LoginAsync();
+    }
+
+    public void Throw()
+    {
+        throw new Exception("Test exception");
     }
 }

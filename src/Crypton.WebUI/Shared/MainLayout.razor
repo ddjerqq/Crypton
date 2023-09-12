@@ -8,10 +8,22 @@
     <main>
         <article class="position-relative container-fluid p-4 shadow bg-polkadot pk-color-primary h-100 overflow-hidden">
             <div class="d-flex flex-column p-4 bg-blur border border-1 border-secondary rounded-3 h-100">
-                @* this is here to stop the elements without parents from stretching out *@
-                <div>
-                    @Body
-                </div>
+                <ErrorBoundary @ref="ErrorBoundary">
+                    <ChildContent>
+                        @* this is here to stop the elements without parents from stretching out *@
+                        <div>
+                            @Body
+                        </div>
+                    </ChildContent>
+                    <ErrorContent>
+                        <Alert Class="mb-auto text-start fs-4" Dismissable="true"
+                               Color="AlertColor.Danger"
+                               OnClose="@(() => ErrorBoundary.Recover())">
+                            <Icon Name="IconName.ExclamationTriangleFill" Color="IconColor" class="me-2" />
+                            An error has occured, click the button to recover.
+                        </Alert>
+                    </ErrorContent>
+                </ErrorBoundary>
             </div>
         </article>
     </main>
@@ -20,3 +32,15 @@
 <Modal IsServiceModal="true"/>
 <Preload/>
 <Toasts class="p-3" AutoHide="true" Delay="4000" Placement="ToastsPlacement.TopRight"/>
+
+@code
+{
+
+    [CascadingParameter(Name = "theme")]
+    public required string Theme { get; set; }
+
+    public IconColor IconColor => Theme == "light" ? IconColor.White : IconColor.Dark;
+
+    private ErrorBoundary ErrorBoundary { get; set; } = null!;
+
+}
