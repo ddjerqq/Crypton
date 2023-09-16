@@ -5,8 +5,13 @@ using Microsoft.AspNetCore.Identity;
 
 namespace Crypton.Application.Auth.Commands;
 
-public sealed record UserLoginCommand(string Username, string Password, bool RememberMe)
-    : IRequest<ErrorOr<SignInResult>>;
+public sealed record UserLoginCommand(string Username, string Password)
+    : IRequest<ErrorOr<SignInResult>>
+{
+    public string Username { get; set; } = Username;
+
+    public string Password { get; set; } = Password;
+}
 
 public sealed class UserLoginValidator : AbstractValidator<UserLoginCommand>
 {

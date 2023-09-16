@@ -1,18 +1,14 @@
-﻿<nav class="navbar navbar-light navbar-expand-md bg-body-tertiary p-2 px-3">
-    <div class="container-fluid text-start">
+﻿<nav class="navbar navbar-expand bg-body-tertiary p-2 px-3" xmlns="http://www.w3.org/1999/html">
+    <div class="container-fluid justify-content-between text-start">
+        <div>
+            <a href="/" class="navbar-brand fw-bold fs-4">
+                Crypton
+                <Icon Name="IconName.GpuCard" Color="IconColor.Primary"/>
+            </a>
+        </div>
 
-        <a href="/" class="navbar-brand fw-bold fs-4">
-            <Icon Name="IconName.GpuCard" Color="IconColor.Primary"/>
-            Crypton
-        </a>
-
-        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar">
-            <span class="navbar-toggler-icon"></span>
-        </button>
-
-        <div class="d-flex collapse navbar-collapse" id="navbar">
-            <Dropdown Direction="DropdownDirection.DropdownCentered">
-                @* TODO pass down theme from the top as a parameter *@
+        <div class="d-block d-sm-flex gap-2 me-sm-auto" id="navbar">
+            <Dropdown Class="d-none d-sm-block" Direction="DropdownDirection.DropdownCentered">
                 <DropdownToggleButton Class="@(IsLight ? "btn-outline-dark" : "btn-outline-light")">
                     Games
                 </DropdownToggleButton>
@@ -59,7 +55,7 @@
                 </DropdownMenu>
             </Dropdown>
 
-            <Dropdown Class="mx-2" Direction="DropdownDirection.DropdownCentered">
+            <Dropdown Class="d-none d-sm-block" Direction="DropdownDirection.DropdownCentered">
                 <DropdownToggleButton Class="@(IsLight ? "btn-outline-dark" : "btn-outline-light")">
                     Wallet
                 </DropdownToggleButton>
@@ -106,10 +102,12 @@
                 </DropdownMenu>
             </Dropdown>
 
-            <ThemeToggleComponent/>
+            <div class="d-none d-sm-block">
+                <ThemeToggle/>
+            </div>
+        </div>
 
-            <div class="mx-auto"></div>
-
+        <div>
             <AuthorizeView>
                 <Authorized>
                     <span class="fw-bolder @(IsLight ? "text-black" : "text-white")">
@@ -117,10 +115,61 @@
                     </span>
                 </Authorized>
                 <NotAuthorized>
-                    @* todo *@
-                    login button will go here
+                    <div class="gap-2">
+                        <Button class="btn btn-success" @onclick="OpenModalAsync">
+                            Sign In
+                        </Button>
+                    </div>
                 </NotAuthorized>
             </AuthorizeView>
         </div>
     </div>
 </nav>
+
+<Modal @ref="Modal" IsVerticallyCentered="true" Size="ModalSize.Large" ModalType="ModalType.Dark" Class="bg-blur p-0 px-3">
+    <HeaderTemplate>
+        <div class="px-1 fw-bold text-bg-white fs-4">
+            @switch (AuthModalState)
+            {
+                case AuthModalState.Login:
+                    <span>Welcome back!</span>
+                    break;
+
+                case AuthModalState.Register:
+                    <span>Welcome to Crypton!</span>
+                    break;
+
+                case AuthModalState.Recover:
+                    <span>Let's get your account back!</span>
+                    break;
+
+                case AuthModalState.TwoFactor:
+                    <span>Let's verify ownership!</span>
+                    break;
+
+                default:
+                    throw new ArgumentOutOfRangeException();
+            }
+        </div>
+    </HeaderTemplate>
+</Modal>
+
+@code
+{
+    [Inject]
+    public NavigationManager NavigationManager { get; set; } = default!;
+
+    public Modal Modal { get; set; } = default!;
+    public AuthModalState AuthModalState { get; set; } = default!;
+
+    private async Task OpenModalAsync()
+    {
+        var parameters = new Dictionary<string, object>
+        {
+            { "State", AuthModalState.Login },
+            { "OnStateChange", EventCallback.Factory.Create<AuthModalState>(this, state => AuthModalState = state) }
+        };
+
+        await Modal.ShowAsync<AuthModal>(string.Empty, parameters: parameters);
+    }
+}

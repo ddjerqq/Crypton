@@ -90,7 +90,7 @@ public sealed class AuthController : ApiController
             .PasswordSignInAsync(
                 command.Username,
                 command.Password,
-                command.RememberMe,
+                true,
                 true);
 
         if (result.Succeeded)

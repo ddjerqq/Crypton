@@ -16,26 +16,24 @@
     <p>dashboard here</p>
 </div>
 
-<button class="btn btn-outline-primary" @onclick="Login">
-    Login
-</button>
+<div class="container d-flex flex-row justify-content-center align-items-center h-100 w-100 row-gap-3">
+    <div class="col h-100 w-100">
+        <div class="row h-100 w-100 bg-secondary"></div>
+        <div class="my-3"></div>
+        <div class="row h-100 w-100 bg-secondary"></div>
+    </div>
 
-<button class="btn btn-outline-danger" @onclick="Throw">
-    Throw
-</button>
+    <div class="mx-3"></div>
 
-<Themed>
-    <Light>light theme</Light>
-    <Dark>dark theme</Dark>
-</Themed>
+    <div class="col h-100 w-100">
+        <div class="row h-100 w-100 bg-secondary"></div>
+        <div class="my-3"></div>
+        <div class="row h-100 w-100 bg-secondary"></div>
+    </div>
+</div>
 
 @code
 {
-    public async Task Login()
-    {
-        await Auth.LoginAsync();
-    }
-
     public void Throw()
     {
         throw new Exception("Test exception");

@@ -23,7 +23,12 @@ builder.RootComponents.Add<HeadOutlet>("head::after");
 // digital signature rules
 // idempotency handler
 // error handler
-builder.Services.AddScoped(_ => new HttpClient { BaseAddress = new Uri(builder.HostEnvironment.BaseAddress) });
+builder.Services.AddScoped(_ =>
+{
+    var pipeline = new HttpClientHandler();
+
+    return new HttpClient { BaseAddress = new Uri(builder.HostEnvironment.BaseAddress) };
+});
 
 builder.Services.AddBlazoredLocalStorageAsSingleton(o =>
 {

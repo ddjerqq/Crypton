@@ -20,7 +20,7 @@
     </ItemGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\Crypton.Domain\Crypton.Domain.csproj" />
+      <ProjectReference Include="..\..\src\Crypton.Domain\Crypton.Domain.csproj" />
     </ItemGroup>
 
     <ItemGroup>

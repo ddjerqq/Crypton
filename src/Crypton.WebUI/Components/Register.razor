@@ -1,0 +1,94 @@
+﻿<div class="d-flex flex-row">
+    <EditForm EditContext="EditContext" OnValidSubmit="RegisterAsync" class="col-12" novalidate>
+        <DataAnnotationsValidator/>
+        <FluentValidationValidator/>
+
+        <div class="text-start mb-2">
+            <label for="email" class="form-label fw-bolder text-bg-white mb-0">
+                Email
+            </label>
+            <InputText
+                @bind-Value="Command.Email"
+                class="form-control bg-white text-black"
+                id="email"
+                type="email"
+                required autofocus/>
+            <div class="invalid-feedback fw-bold">
+                <ValidationMessage For="@(() => Command.Email)"/>
+            </div>
+        </div>
+
+        <div class="text-start mb-2">
+            <label for="username" class="form-label fw-bolder text-bg-white mb-0">
+                Username
+            </label>
+            <InputText
+                @bind-Value="Command.Username"
+                class="form-control bg-white text-black"
+                id="username"
+                autocomplete="off"
+                required autofocus/>
+            <div class="invalid-feedback fw-bold">
+                <ValidationMessage For="@(() => Command.Username)"/>
+            </div>
+        </div>
+
+        <div class="text-start mb-3">
+            <label for="password" class="form-label fw-bolder text-bg-white mb-0">
+                Password
+            </label>
+            <InputText
+                @bind-Value="Command.Password"
+                class="form-control bg-white text-black"
+                id="password"
+                type="password"
+                autocomplete="new-password"
+                required autofocus/>
+            <div class="invalid-feedback fw-bold">
+                <ValidationMessage For="@(() => Command.Password)"/>
+            </div>
+        </div>
+
+        <div class="text-center mb-3">
+            <button type="submit" class="btn btn-primary w-100">
+                Register
+            </button>
+        </div>
+
+        <div class="text-start">
+            <div class="col-auto px-0" aria-label="register">
+                Already have an account?
+                <a class="text-primary" href="#" @onclick="@ChangeAuthStateToLoginAsync">
+                    Login
+                </a>
+            </div>
+        </div>
+    </EditForm>
+</div>
+
+@code
+{
+    [Parameter]
+    public EventCallback<AuthModalState> ChangeAuthState { get; set; }
+
+    public EditContext EditContext { get; set; } = default!;
+
+    public UserRegisterCommand Command { get; set; }
+        = new UserRegisterCommand(string.Empty, string.Empty, string.Empty);
+
+    protected override void OnInitialized()
+    {
+        base.OnInitialized();
+        EditContext = BootstrapFormValidationClassProvider.CreateEditContextFor(Command);
+    }
+
+    private async Task ChangeAuthStateToLoginAsync()
+    {
+        await ChangeAuthState.InvokeAsync(AuthModalState.Login);
+    }
+
+    private void RegisterAsync()
+    {
+        Console.WriteLine("submit");
+    }
+}

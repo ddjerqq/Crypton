@@ -48,7 +48,7 @@ public sealed class CooldownAttribute : ActionFilterAttribute
             return;
         }
 
-        context.Result = new StatusCodeResult(429);
+        context.Result = new StatusCodeResult(StatusCodes.Status429TooManyRequests);
         context.HttpContext.Response.Headers.Add("Retry-After", retryAfter.ToString("R"));
     }
 

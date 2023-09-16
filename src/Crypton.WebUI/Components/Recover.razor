@@ -1,0 +1,52 @@
+﻿<div class="d-flex flex-row">
+    <EditForm EditContext="EditContext" OnValidSubmit="RecoverAsync" class="col-12" novalidate>
+        <DataAnnotationsValidator/>
+        <FluentValidationValidator/>
+
+        <div class="text-start mb-2">
+            <label for="email" class="form-label fw-bolder text-bg-white mb-0">
+                Email
+            </label>
+            <InputText
+                @bind-Value="Command.Email"
+                class="form-control bg-white text-black"
+                id="email"
+                type="email"
+                required autofocus/>
+            <div class="invalid-feedback fw-bold">
+                <ValidationMessage For="@(() => Command.Email)"/>
+            </div>
+            <div class="form-text text-muted small">
+                If you have an account registered with us, you will get a recovery email.
+            </div>
+        </div>
+
+        <div class="text-center">
+            <button type="submit" class="btn btn-primary w-100">
+                Recover
+            </button>
+        </div>
+    </EditForm>
+</div>
+
+@code
+{
+    [Parameter]
+    public EventCallback<AuthModalState> ChangeAuthState { get; set; }
+
+    public EditContext EditContext { get; set; } = default!;
+
+    public UserRecoverCommand Command { get; set; }
+        = new UserRecoverCommand(string.Empty);
+
+    protected override void OnInitialized()
+    {
+        base.OnInitialized();
+        EditContext = BootstrapFormValidationClassProvider.CreateEditContextFor(Command);
+    }
+
+    private void RecoverAsync()
+    {
+        Console.WriteLine("submit");
+    }
+}

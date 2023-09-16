@@ -2,7 +2,8 @@
 
 <div class="d-flex flex-column position-relative h-100">
     <div class="border-bottom border-secondary">
-        <Navbar/>
+        @* ReSharper disable once Html.TagShouldNotBeSelfClosed *@
+        <Header/>
     </div>
 
     <main>
@@ -35,12 +36,10 @@
 
 @code
 {
-
     [CascadingParameter(Name = "theme")]
     public required string Theme { get; set; }
 
-    public IconColor IconColor => Theme == "light" ? IconColor.White : IconColor.Dark;
+    public IconColor IconColor => Theme == "light" ? IconColor.Dark : IconColor.White;
 
     private ErrorBoundary ErrorBoundary { get; set; } = null!;
-
 }

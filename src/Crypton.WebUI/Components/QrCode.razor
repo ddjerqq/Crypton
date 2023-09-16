@@ -1,0 +1,42 @@
+﻿@using QRCoder
+
+<img src="data:image/png;base64,@Base64Payload" alt="@Alt" width="@Width" height="@Height" @attributes="@Attributes">
+
+@code
+{
+    [Parameter, EditorRequired]
+    public string Value { get; set; } = string.Empty;
+
+    [Parameter]
+    public string? Alt { get; set; }
+
+    [Parameter]
+    public string Width { get; set; } = "100px";
+
+    [Parameter]
+    public string Height { get; set; } = "100px";
+
+    [Parameter]
+    public int PixelsPerModule { get; set; } = 10;
+
+    [Parameter(CaptureUnmatchedValues = true)]
+    public Dictionary<string, object> Attributes { get; set; } = new Dictionary<string, object>();
+
+    private string Base64Payload { get; set; } = string.Empty;
+
+    protected override async Task OnInitializedAsync()
+    {
+        _ = Task.Run(async () =>
+        {
+            var qrCodeData = QRCodeGenerator.GenerateQrCode(Value, QRCodeGenerator.ECCLevel.H);
+            BitmapByteQRCode qrCode = new BitmapByteQRCode(qrCodeData);
+            byte[] qrCodeImage = qrCode.GetGraphic(PixelsPerModule);
+
+            Base64Payload = Convert.ToBase64String(qrCodeImage);
+
+            await InvokeAsync(StateHasChanged);
+        });
+
+        await base.OnInitializedAsync();
+    }
+}

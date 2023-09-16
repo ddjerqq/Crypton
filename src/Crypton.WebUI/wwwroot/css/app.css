@@ -1,3 +1,8 @@
+/*make the modals align with the rim of the app*/
+:root {
+    --bs-modal-margin: 1.5rem!important;
+}
+
 /*fix bootstrap text alignment issues with the toast*/
 .blazored-toast-progressbar {
     text-align: start !important;
@@ -209,25 +214,3 @@ a[disabled] {
             var(--polkadot-bg) 1px);
     background-size: 35px 35px;
 }
-
-
-/* ===== make bb colors work with bootstrap dark mode ===== */
-
-:root {
-    --bb-sidebar-title-text-color: rgb(var(--bs-white)) !important;
-    --bb-sidebar-brand-icon-color: rgb(var(--bs-white)) !important;
-    --bb-sidebar-navbar-toggler-background-color: rgb(255, 255, 255) !important;
-}
-
-:root {
-    --bb-sidebar-background-color: rgb(var(--bs-light)) !important;
-    --bs-nav-link-color: rgb(var(--bs-black)) !important;
-    --bb-sidebar-nav-item-text-color: rgb(var(--bs-black)) !important;
-}
-
-[data-bs-theme=dark] :root {
-    --bb-sidebar-background-color: rgb(var(--bs-dark)) !important;
-    --bs-nav-link-color: rgb(var(--bs-white)) !important;
-    --bb-sidebar-nav-item-text-color: rgb(var(--bs-white)) !important;
-}
-
