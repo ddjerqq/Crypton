@@ -9,7 +9,7 @@ public sealed record DailyStreak : ValueObjectBase
     /// <summary>
     /// Gets a DateTime object representing the next time the user can collect the daily amount at in UTC
     /// </summary>
-    public DateTime CollectNextDailyAt => DailyCollectedAt.AddDays(1);
+    public DateTime CollectNextDailyAfter => DailyCollectedAt.AddDays(1);
 
     public int Streak { get; private set; } = 0;
 

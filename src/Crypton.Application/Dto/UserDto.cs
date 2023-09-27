@@ -1,20 +1,29 @@
 ﻿using Crypton.Domain.Entities;
+using Crypton.Domain.ValueObjects;
 
 namespace Crypton.Application.Dto;
 
 public sealed class UserDto
 {
-    public Guid Id { get; set; }
+    public Guid Id { get; init; }
 
-    public string? UserName { get; set; }
+    public string? UserName { get; init; }
 
-    public string? Email { get; set; }
+    public string? Email { get; init; }
 
-    public decimal Balance { get; set; }
+    public DateTime? Created { get; init; }
 
-    public DateTime? Created { get; set; }
+    public string? CreatedBy { get; init; } = string.Empty;
 
-    public IEnumerable<ItemDto> Items { get; set; } = new List<ItemDto>();
+    public DateTime? LastModified { get; init; }
+
+    public string? LastModifiedBy { get; init; } = string.Empty;
+
+    public decimal Balance { get; init; }
+
+    public IEnumerable<ItemDto> Items { get; init; } = new List<ItemDto>();
+
+    public DailyStreak DailyStreak { get; init; } = null!;
 
     public static implicit operator UserDto(User user)
     {
@@ -25,7 +34,11 @@ public sealed class UserDto
             Email = user.Email,
             Balance = user.Wallet.Balance,
             Created = user.Created,
+            CreatedBy = user.CreatedBy,
+            LastModified = user.LastModified,
+            LastModifiedBy = user.LastModifiedBy,
             Items = user.Inventory.Select(item => (ItemDto)item).ToList(),
+            DailyStreak = user.DailyStreak,
         };
     }
 }

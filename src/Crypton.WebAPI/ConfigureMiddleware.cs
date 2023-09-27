@@ -23,12 +23,9 @@ public static class ConfigureMiddleware
 
     public static WebApplication ConfigureWebApiMiddleware(this WebApplication app)
     {
-        app.UseHttpLogging();
-
-        app.UseExceptionHandler("/error");
-
         if (app.Environment.IsDevelopment())
         {
+            app.UseWebAssemblyDebugging();
             app.UseSwagger();
             app.UseSwaggerUI();
         }
@@ -37,14 +34,16 @@ public static class ConfigureMiddleware
             app.UseHsts();
         }
 
+        app.UseHttpLogging();
+        app.UseExceptionHandler("/error");
+
         app.UseHttpsRedirection();
 
         if (!app.Environment.IsDevelopment())
         {
             app.UseResponseCompression();
+            app.UseResponseCaching();
         }
-
-        app.UseResponseCaching();
 
         // for front-end
         app.UseBlazorFrameworkFiles();
@@ -57,6 +56,9 @@ public static class ConfigureMiddleware
         app.UseRateLimiter();
 
         // TODO: re-enable for production
+        // TODO fix this so it does not affect static files,
+        // I dont think it will affect it too much, because it is below the static files middleware
+        // need to test this tho.
         // app.UseDigitalSignature();
 
         // before authorization

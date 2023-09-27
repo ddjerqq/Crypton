@@ -63,7 +63,7 @@ internal sealed class BalanceTransactionHandler
 
         // daily already collected
         if (!receiver.DailyStreak.IsEligibleForDaily())
-            return Errors.User.DailyNotReady(receiver.DailyStreak.CollectNextDailyAt);
+            return Errors.User.DailyNotReady(receiver.DailyStreak.CollectNextDailyAfter);
 
         receiver.DailyStreak.CollectDaily();
 

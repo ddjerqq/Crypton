@@ -3,9 +3,12 @@ using System.Security.Claims;
 using System.Threading.RateLimiting;
 using Crypton.Application.Common.Interfaces;
 using Crypton.Infrastructure.BackgroundJobs;
+using Crypton.Infrastructure.Diamond;
 using Crypton.Infrastructure.Idempotency;
+using Crypton.Infrastructure.Middleware;
 using Crypton.Infrastructure.RateLimiting;
 using Crypton.Infrastructure.Services;
+using FluentValidation;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
@@ -88,5 +91,20 @@ public static class ConfigureServices
         });
 
         return services;
+    }
+
+    public static IServiceCollection AddDigitalSignature(this IServiceCollection services)
+    {
+        services.AddScoped<DigitalSignatureMiddleware>();
+        services.AddScoped<IValidator<RulePayload>, RulePayloadValidator>();
+
+        return services;
+    }
+
+    public static WebApplication UseDigitalSignature(this WebApplication app)
+    {
+        app.UseMiddleware<DigitalSignatureMiddleware>();
+
+        return app;
     }
 }

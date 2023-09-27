@@ -1,6 +1,5 @@
 ﻿using System.Security.Cryptography;
 using System.Text;
-using System.Text.Json.Serialization;
 
 namespace Crypton.Infrastructure.Diamond;
 
@@ -15,57 +14,42 @@ namespace Crypton.Infrastructure.Diamond;
 ///
 /// the payload is in the format: var payload {Salt}{timestampMs}{extractedUri}{userId}.
 /// </summary>
-public sealed class Rules : IRules
+public sealed class Rules
 {
-    private Rules(Guid salt, int hashHead, int hashTail, byte checksumStart, IEnumerable<int> checksumIndexes, UInt128 appToken)
+    private const int RotateAt = 10_000;
+    private static int _accessCount = 0;
+    private static Rules _instance = NewRules();
+
+    public static Rules Shared
     {
-        Salt = salt;
-        HashHead = hashHead;
-        HashTail = hashTail;
-        ChecksumIndexes = checksumIndexes.ToArray();
-        ChecksumStart = checksumStart;
-        AppToken = appToken;
+        get
+        {
+            Interlocked.Increment(ref _accessCount);
+
+            if (_accessCount >= RotateAt)
+            {
+                _instance = NewRules();
+            }
+
+            return _instance;
+        }
     }
 
     public Guid Salt { get; init; }
 
-    [JsonIgnore]
     public int HashHead { get; init; }
 
-    [JsonIgnore]
     public int HashTail { get; init; }
 
     public byte ChecksumStart { get; init; }
 
-    public int[] ChecksumIndexes { get; init; }
+    public int[] ChecksumIndexes { get; init; } = null!;
 
-    [JsonIgnore]
     public UInt128 AppToken { get; init; }
 
-    [JsonPropertyName("app_token")]
     public string AppTokenDigest => AppToken.ToString("x16");
 
     public string HashFormat => $"{HashHead:x4}:{{0}}:{{1}}:{HashTail:x8}";
-
-    public static Rules Random()
-    {
-        var salt = Guid.NewGuid();
-
-        int hashHead = RandomNumberGenerator.GetInt32(0x0, 0xffff);
-        int hashTail = RandomNumberGenerator.GetInt32(0x0, 0x7fffffff);
-
-        byte checksumStart = RandomNumberGenerator.GetBytes(1).First();
-
-        var checksumIndexes = Enumerable
-            .Range(0, 32)
-            .Select(_ => RandomNumberGenerator.GetInt32(0, 40));
-
-        var appToken = new UInt128(
-            (ulong)System.Random.Shared.NextInt64(),
-            (ulong)System.Random.Shared.NextInt64());
-
-        return CreateInstance(salt, hashHead, hashTail, checksumStart, checksumIndexes, appToken);
-    }
 
     public string? Sign(string? uri, string? userId, DateTime? timestamp)
     {
@@ -92,14 +76,21 @@ public sealed class Rules : IRules
         return string.Format(HashFormat, digest, $"{sum:D3}");
     }
 
-    internal static Rules CreateInstance(
-        Guid salt,
-        int hashHead,
-        int hashTail,
-        byte checksumStart,
-        IEnumerable<int> checksumIndexes,
-        UInt128 appToken)
+    private static Rules NewRules()
     {
-        return new Rules(salt, hashHead, hashTail, checksumStart, checksumIndexes, appToken);
+        return new Rules
+        {
+            Salt = Guid.NewGuid(),
+            HashHead = RandomNumberGenerator.GetInt32(0x0, 0xffff),
+            HashTail = RandomNumberGenerator.GetInt32(0x0, 0x7fffffff),
+            ChecksumStart = RandomNumberGenerator.GetBytes(1).First(),
+            ChecksumIndexes = Enumerable
+                .Range(0, 32)
+                .Select(_ => RandomNumberGenerator.GetInt32(0, 40))
+                .ToArray(),
+            AppToken = new UInt128(
+                (ulong)Random.Shared.NextInt64(),
+                (ulong)Random.Shared.NextInt64()),
+        };
     }
 }

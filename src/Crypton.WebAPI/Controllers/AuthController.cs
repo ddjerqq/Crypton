@@ -4,10 +4,8 @@ using Crypton.Application.Dto;
 using Crypton.Domain.Common.Errors;
 using Crypton.Domain.Entities;
 using Crypton.Domain.Events;
-using Crypton.Infrastructure.Diamond;
 using Crypton.Infrastructure.Errors;
 using Crypton.Infrastructure.Idempotency;
-using Crypton.Infrastructure.RateLimiting;
 using Crypton.Infrastructure.Services;
 using Crypton.WebAPI.Common.Abstractions;
 using ErrorOr;
@@ -21,18 +19,15 @@ namespace Crypton.WebAPI.Controllers;
 
 public sealed class AuthController : ApiController
 {
-    private readonly IRules _rules;
     private readonly IAppDbContext _dbContext;
     private readonly UserManager<User> _userManager;
     private readonly SignInManager<User> _signInManager;
 
     public AuthController(
-        IRules rules,
         IAppDbContext dbContext,
         UserManager<User> userManager,
         SignInManager<User> signInManager)
     {
-        _rules = rules;
         _dbContext = dbContext;
         _userManager = userManager;
         _signInManager = signInManager;
@@ -44,7 +39,6 @@ public sealed class AuthController : ApiController
     [AllowAnonymous]
     [RequireIdempotency]
     [HttpPost("register")]
-    [Cooldown(1, 3)]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType<ProblemDetails>(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status403Forbidden)]
@@ -78,6 +72,8 @@ public sealed class AuthController : ApiController
     [AllowAnonymous]
     [RequireIdempotency]
     [HttpPost("login")]
+    // TODO change every typed response from ProducesResponseType attribute
+    // to return ActionFilter<T>
     [ProducesResponseType<string>(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status403Forbidden)]
     public async Task<IActionResult> Login([FromBody, BindRequired] UserLoginCommand command)
@@ -106,6 +102,29 @@ public sealed class AuthController : ApiController
     }
 
     /// <summary>
+    /// Login as any user.
+    /// </summary>
+    [AllowAnonymous]
+    [RequireIdempotency]
+    [HttpPost("login_as/{username:required}")]
+    [ProducesResponseType<string>(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status403Forbidden)]
+    public async Task<IActionResult> LoginAs([FromRoute] string username)
+    {
+        if (!HttpContext.RequestServices.GetRequiredService<IHostEnvironment>().IsDevelopment())
+            return NotFound();
+
+        var user = await _userManager.FindByNameAsync(username);
+        if (user is null)
+            return NotFound();
+
+        await _signInManager
+            .SignInAsync(user, true);
+
+        return Ok(JwtTokenManager.GenerateToken(User.Claims));
+    }
+
+    /// <summary>
     /// Sign out
     /// </summary>
     [HttpPost("logout")]
@@ -114,20 +133,6 @@ public sealed class AuthController : ApiController
     {
         await _signInManager.SignOutAsync();
         return Ok();
-    }
-
-    /// <summary>
-    /// Get current digital signature rules.
-    /// </summary>
-    /// <response code="200">Success and <see cref="Rules">Rules</see></response>
-    // TODO some way to deliver these rules to the client, but in secret.
-    [AllowAnonymous]
-    [IgnoreDigitalSignature]
-    [HttpGet("rules")]
-    [ProducesResponseType<Rules>(StatusCodes.Status200OK)]
-    public IActionResult Rules()
-    {
-        return Ok((Rules)_rules);
     }
 
     /// <summary>
@@ -144,6 +149,7 @@ public sealed class AuthController : ApiController
         var user = await _dbContext.Set<User>()
             .Include(x => x.Inventory)
             .ThenInclude(x => x.ItemType)
+            .Include(x => x.DailyStreak)
             .FirstOrDefaultAsync(x => x.Id == userId, ct);
 
         return Ok((UserDto)user!);
@@ -174,6 +180,7 @@ public sealed class AuthController : ApiController
         var users = await _dbContext.Set<User>()
             .Include(x => x.Inventory)
             .ThenInclude(x => x.ItemType)
+            .Include(x => x.DailyStreak)
             .ToListAsync(ct);
 
         return Ok(users.Select(x => (UserDto)x));

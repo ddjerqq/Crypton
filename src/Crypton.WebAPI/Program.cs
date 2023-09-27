@@ -1,6 +1,5 @@
 using Crypton.Application;
 using Crypton.Infrastructure;
-using Crypton.Infrastructure.Diamond;
 using Crypton.Infrastructure.Identity;
 using Crypton.Infrastructure.Persistence;
 using Crypton.WebAPI;
