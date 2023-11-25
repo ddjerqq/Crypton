@@ -14,10 +14,11 @@ public sealed class UserConfiguration : IEntityTypeConfiguration<User>
 
         builder.Ignore(x => x.DomainEvents);
 
-        builder.Property(x => x.Wallet)
-            .HasConversion(
-                wallet => wallet.Balance,
-                balance => new Wallet(balance));
+        // TODO do something about this
+        // builder.Property(x => x.Wallet)
+        //     .HasConversion(
+        //         wallet => wallet.Balance,
+        //         balance => new Wallet(balance));
 
         builder.HasMany(e => e.Inventory)
             .WithOne(x => x.Owner)

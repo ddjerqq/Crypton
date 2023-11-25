@@ -26,10 +26,11 @@ internal sealed class BalanceTransactionHandler
     // base balance transaction
     public async Task<IErrorOr> Handle(BalanceTransactionCommand command, CancellationToken ct)
     {
-        if (!command.SenderWallet.HasBalance(command.Amount))
-            return Errors.From(Errors.Economy.InsufficientFunds);
-
-        command.SenderWallet.Transfer(command.ReceiverWallet, command.Amount);
+        // TODO: we will have a balance / transaction validation service here
+        // if (!command.SenderWallet.HasBalance(command.Amount))
+        //     return Errors.From(Errors.Economy.InsufficientFunds);
+        //
+        // command.SenderWallet.Transfer(command.ReceiverWallet, command.Amount);
 
         _dbContext.Set<User>().TryUpdateIfNotNull(command.Sender);
         _dbContext.Set<User>().TryUpdateIfNotNull(command.Receiver);

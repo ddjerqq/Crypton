@@ -9,9 +9,9 @@ namespace Crypton.Application.Economy.Commands;
 internal sealed record BalanceTransactionCommand(User? Sender, User? Receiver, decimal Amount)
     : IRequest<IErrorOr>
 {
-    public Wallet SenderWallet => Sender is { Wallet: var wallet } ? wallet : new Wallet(decimal.MaxValue);
+    public Wallet SenderWallet => Sender is { Wallet: var wallet } ? wallet : Wallet.NewWallet();
 
-    public Wallet ReceiverWallet => Receiver is { Wallet: var wallet } ? wallet : new Wallet();
+    public Wallet ReceiverWallet => Receiver is { Wallet: var wallet } ? wallet : Wallet.NewWallet();
 }
 
 internal sealed class BalanceTransactionValidator : AbstractValidator<BalanceTransactionCommand>
